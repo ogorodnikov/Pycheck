@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 ACTION = ("L", "R", "F")
 CHERRY = 'C'
 TREE = 'T'
@@ -6,12 +8,41 @@ SNAKE = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
 EMPTY = "."
 
 
+def print_map(field_map):
+    for row in field_map:
+        print(row)
+
+
+def find_step(start, end, field_dict):
+    pass
+
+
+def field_to_dict(field_map):
+    field_dict = defaultdict(set)
+    for y, row in enumerate(field_map):
+        for x, cell in enumerate(row):
+            if cell in SNAKE:
+                field_dict['Snake'].add((x, y))
+                continue
+            field_dict[cell].add((x, y))
+
+    for k, v in field_dict.items():
+        print(f'{k}: {v}')
+
+
 def snake(field_map):
-    return "F" or "R" or "L" or "FRL"
+    print('Field map:')
+    print_map(field_map)
+    print()
+
+    field_to_dict(field_map)
+
+    return None
 
 
 if __name__ == '__main__':
     from random import randint
+
 
     def find_snake(field_map):
         snake = {}
@@ -20,6 +51,7 @@ if __name__ == '__main__':
                 if ch in SNAKE:
                     snake[ch] = (i, j)
         return snake
+
 
     def find_new_head(snake, action):
         head = snake[SNAKE_HEAD]
@@ -33,8 +65,10 @@ if __name__ == '__main__':
         else:
             raise ValueError("The action must be only L,R or F")
 
+
     def pack_map(list_map):
         return [''.join(row) for row in list_map]
+
 
     def check_solution(func, field_map):
         temp_map = [list(row) for row in field_map]
@@ -86,6 +120,7 @@ if __name__ == '__main__':
                 step_count -= 1
                 field_map = pack_map(temp_map)
 
+
     assert check_solution(snake, [
         ".T.....T..",
         ".C........",
@@ -97,14 +132,15 @@ if __name__ == '__main__':
         ".2.T...T..",
         ".3...T....",
         ".4........"]), "Basic map"
-    assert check_solution(snake, [
-        "..T....T.C",
-        ".......T..",
-        "...TTT....",
-        "..T....T..",
-        "..T...T...",
-        ".0T..T....",
-        ".1........",
-        ".2.T..TT..",
-        ".3..TT....",
-        ".4........"]), "Extra map"
+
+    # assert check_solution(snake, [
+    #     "..T....T.C",
+    #     ".......T..",
+    #     "...TTT....",
+    #     "..T....T..",
+    #     "..T...T...",
+    #     ".0T..T....",
+    #     ".1........",
+    #     ".2.T..TT..",
+    #     ".3..TT....",
+    #     ".4........"]), "Extra map"
