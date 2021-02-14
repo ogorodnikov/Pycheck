@@ -19,23 +19,28 @@ def print_map(field_map):
         print(f'{y:{row_number_width}d} {row}')
 
 
+def get_relative_direction(neck, closest_neighbour):
+    pass
+
+
 def find_step_to_cherry(field):
-    start = tuple(field['0'])[0]
-    end = tuple(field['C'])[0]
+    head = tuple(field['0'])[0]
+    neck = tuple(field['1'])[0]
+    cherry = tuple(field['C'])[0]
 
-    print('Start:', start)
-    print('End:', end)
+    head_x, head_y = head
+    cherry_x, cherry_y = cherry
 
-    start_x, start_y = start
-    end_x, end_y = end
-
-    min_distance, closest_neighbour = min((abs(end_x - x) + abs(end_y - y), (x, y))
+    min_distance, closest_neighbour = min((abs(cherry_x - x) + abs(cherry_y - y), (x, y))
                                           for x, y in field['.']
-                                          if abs(start_x - x) < 2
-                                          and abs(start_y - y) < 2)
+                                          if abs(head_x - x) < 2
+                                          and abs(head_y - y) < 2)
     print('Closest neighbour:', closest_neighbour)
 
-    return None
+    next_step_direction = get_relative_direction(neck, closest_neighbour)
+    print('Next step direction:', next_step_direction)
+
+    return next_step_direction
 
 
 def field_map_to_dict(field_map):
