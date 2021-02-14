@@ -1,4 +1,5 @@
 from collections import defaultdict
+from itertools import product
 
 ACTION = ("L", "R", "F")
 CHERRY = 'C'
@@ -20,7 +21,21 @@ def print_map(field_map):
 
 
 def get_relative_direction(neck, closest_neighbour):
-    pass
+    complex_neck = complex(*neck)
+    complex_neighbour = complex(*closest_neighbour)
+    print('Neck:             ', neck)
+    print('Complex neck:     ', complex_neck)
+    print('Closest neighbour:', closest_neighbour)
+    print('Complex neighbour:', complex_neighbour)
+
+    delta = complex_neighbour - complex_neck
+    print('Delta:            ', delta)
+
+    DIRECTIONS = {-1 - 1j: 'L', -2j: 'F', 1 - 1j: 'R'}
+    direction = DIRECTIONS[delta]
+
+    print('Direction:         ', direction)
+    return direction
 
 
 def find_step_to_cherry(field):
@@ -33,8 +48,7 @@ def find_step_to_cherry(field):
 
     min_distance, closest_neighbour = min((abs(cherry_x - x) + abs(cherry_y - y), (x, y))
                                           for x, y in field['.']
-                                          if abs(head_x - x) < 2
-                                          and abs(head_y - y) < 2)
+                                          if abs(head_x - x) + abs(head_y - y) < 2)
     print('Closest neighbour:', closest_neighbour)
 
     next_step_direction = get_relative_direction(neck, closest_neighbour)
