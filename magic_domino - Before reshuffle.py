@@ -1,10 +1,9 @@
 from itertools import combinations_with_replacement, zip_longest
+# from timeit import timeit
 
 MAX_DOMINO_VALUE = 6
-TICK_LIMIT = 10 ** 8
+TICK_LIMIT = 10 ** 7
 
-# _todo - sorted domino_set
-# _todo - square stored in q - instead of tiles
 
 def magic_domino(size, number):
     dominoes = (combinations_with_replacement(range(MAX_DOMINO_VALUE + 1), 2))
@@ -20,7 +19,10 @@ def magic_domino(size, number):
     while q:
         tiles, unused_tiles = q.pop()
 
-        for new_tile in sorted(unused_tiles):
+        if tick >= TICK_LIMIT:
+            raise TimeoutError('Tick limit:', TICK_LIMIT)
+        
+        for new_tile in unused_tiles:
             new_unused_tiles = unused_tiles - {new_tile}
             for new_tile_with_rotation in {new_tile, new_tile[::-1]}:
                 new_tiles = tiles + [new_tile_with_rotation]
@@ -36,7 +38,10 @@ def magic_domino(size, number):
 
                 row_sums = [sum(filter(None, row)) for row in square]
 
-                if any(row_sum > number for row_sum in row_sums):
+                if any(sum(1 for cell in row if cell is not None) == size
+                       and row_sum < number
+                       or row_sum > number
+                       for row, row_sum in zip(square, row_sums)):
                     continue
 
                 columns = list(zip(*square))
@@ -45,61 +50,53 @@ def magic_domino(size, number):
                 if any(column_sum > number for column_sum in column_sums):
                     continue
 
-                # print_square(square, row_sums, column_sums)
-
-                if len(new_tiles) == domino_count:
-                    print('Length matched - tick:', tick)
-
-                    if all(row_sum == number for row_sum in row_sums):
-                        # print('Rows matched - tick:', tick)
-
-                        if all(column_sum == number for column_sum in column_sums):
-                            # print('Columns matched - tick:', tick)
-
-                            diagonal_sums = det_diagonal_sums(square)
-                            # print('Diagonal sums:', diagonal_sums)
-
-                            if all(diagonal_sum == number for diagonal_sum in diagonal_sums):
-                                print('Match found!')
-                                print('Tick:', tick)
-                                print_square(square, row_sums, column_sums)
-                                return square
+                if any(sum(1 for cell in column if cell is not None) == size
+                       and column_sum < number
+                       for column, column_sum in zip(columns, column_sums)):
                     continue
 
-                q.append((new_tiles, new_unused_tiles))
+                # print_square(square, row_sums, column_sums)
 
-                if tick >= TICK_LIMIT:
-                    raise TimeoutError('Tick limit:', TICK_LIMIT)
+
+                if len(new_tiles) < domino_count:
+                    q.append((new_tiles, new_unused_tiles))
+                    continue
+
+                forward_diagonal_sum = sum(square[x][y] for x, y in zip(range(size), range(size)))
+                if forward_diagonal_sum != number:
+                    continue
+
+                backward_diagonal_sum = sum(square[x][size + ~y] for x, y in zip(range(size), range(size)))
+                if backward_diagonal_sum != number:
+                    continue
+
+                print('Match found!')
+                print('Tick:', tick)
+                print_square(square, row_sums, column_sums)
+                print()
+
+                return square
 
     print('All traversed')
     print('Tick:', tick)
-
     return None
-
-
-def det_diagonal_sums(square):
-    square_size = len(square[0])
-
-    diagonal_columns = (((i, i),
-                         (i, square_size - i - 1))
-                        for i in range(square_size))
-    diagonals = zip(*diagonal_columns)
-    diagonal_sums = [sum(square[x][y] for x, y in diagonal) for diagonal in diagonals]
-
-    return diagonal_sums
 
 
 def print_square(square, row_sums, column_sums):
     for row, row_sum in zip(square, row_sums):
-        row_string = ''.join(str(cell) if cell is not None
-                             else '.' for cell in row)
-        print(f'{row_string}│{row_sum}')
+        row_string = ''.join('.' if cell is None
+                             else str(cell)
+                             for cell in row)
+        full_string = row_string + '│' + str(row_sum)
+        print(full_string)
 
     square_size = len(square[0])
     print('─' * square_size + '┘')
 
-    columns_sums_str = ''.join(map(str, column_sums))
-    print(columns_sums_str)
+    column_sum_pairs = (divmod(column_sum, 10) for column_sum in column_sums)
+    for column_sum in zip(*column_sum_pairs):
+        column_sum_string = ''.join(map(str, column_sum))
+        print(column_sum_string)
 
 
 if __name__ == '__main__':
@@ -143,6 +140,11 @@ if __name__ == '__main__':
             tiles.add(tile)
 
 
-    check_data(4, 5, magic_domino(4, 5))
+    # check_data(4, 5, magic_domino(4, 5))
+    # check_data(4, 8, magic_domino(4, 8))
 
-    check_data(4, 9, magic_domino(4, 9))
+    # print(timeit(lambda: check_data(4, 14, magic_domino(4, 14)), number=1))
+    # print(timeit(lambda: check_data(6, 13, magic_domino(6, 13)), number=1))
+    # print(timeit(lambda: check_data(6, 16, magic_domino(6, 16)), number=1))
+
+    check_data(6, 15, magic_domino(6, 15))

@@ -1,36 +1,40 @@
 from itertools import combinations_with_replacement, zip_longest
-# from timeit import timeit
-from random import random, choice
+from timeit import timeit
+from random import sample
 
 MAX_DOMINO_VALUE = 6
-TICK_LIMIT = 10 ** 7
+TICK_LIMIT = 10 ** 4
 
 
 def magic_domino(size, number):
     dominoes = (combinations_with_replacement(range(MAX_DOMINO_VALUE + 1), 2))
-    domino_set = list(set(domino for domino in dominoes if sum(domino) <= number))
+    domino_list = list(domino for domino in dominoes if sum(domino) <= number)
     domino_count = size ** 2 // 2
 
     print('Magical Number:', number)
-    print('Domino set:    ', domino_set)
+    print('Domino list:   ', domino_list)
     print('Domino count:  ', domino_count)
 
     tick = 0
-    q = [([], domino_set)]
+    global_tick = 0
+    q = [([], domino_list)]
     while q:
         tiles, unused_tiles = q.pop()
 
         if tick >= TICK_LIMIT:
-            raise TimeoutError('Tick limit:', TICK_LIMIT)
+            # print('Reshuffling:', global_tick)
+            tick = 0
+            new_domino_list = sample(domino_list, k=len(domino_list))
+            q = [([], new_domino_list)]
+            continue
 
         for new_tile_index in range(len(unused_tiles)):
-            random_tile_index = choice(range(len(unused_tiles)))
             new_unused_tiles = unused_tiles.copy()
-            new_tile = new_unused_tiles.pop(random_tile_index)
-            # new_unused_tiles = list(set(new_unused_tiles))
+            new_tile = new_unused_tiles.pop(new_tile_index)
             for new_tile_with_rotation in {new_tile, new_tile[::-1]}:
                 new_tiles = tiles + [new_tile_with_rotation]
                 tick += 1
+                global_tick += 1
 
                 tiles_iter = iter(new_tiles)
                 square_width = min(size, len(new_tiles))
@@ -59,10 +63,9 @@ def magic_domino(size, number):
                        for column, column_sum in zip(columns, column_sums)):
                     continue
 
-                if tick % 1000 == 0:
-                    print('Tick:', tick)
-                    print_square(square, row_sums, column_sums)
-
+                # print('Tick:', tick)
+                # print('Global tick:', global_tick)
+                # print_square(square, row_sums, column_sums)
 
                 if len(new_tiles) < domino_count:
                     q.append((new_tiles, new_unused_tiles))
@@ -78,6 +81,7 @@ def magic_domino(size, number):
 
                 print('Match found!')
                 print('Tick:', tick)
+                print('Global tick:', global_tick)
                 print_square(square, row_sums, column_sums)
                 print()
 
@@ -151,6 +155,7 @@ if __name__ == '__main__':
 
     # print(timeit(lambda: check_data(4, 14, magic_domino(4, 14)), number=1))
     # print(timeit(lambda: check_data(6, 13, magic_domino(6, 13)), number=1))
-    # print(timeit(lambda: check_data(6, 16, magic_domino(6, 16)), number=1))
+    # print(timeit(lambda: check_data(6, 16, magic_domino(6, 16)), number=10))
 
+    # check_data(6, 20, magic_domino(6, 20))
     check_data(6, 16, magic_domino(6, 16))
