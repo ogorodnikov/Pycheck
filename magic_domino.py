@@ -1,6 +1,7 @@
+from collections import Counter
 from itertools import combinations_with_replacement, zip_longest
 from timeit import timeit
-from random import sample
+from random import sample, choices
 
 MAX_DOMINO_VALUE = 6
 TICK_LIMIT = 10 ** 4
@@ -12,8 +13,13 @@ def magic_domino(size, number):
     domino_count = size ** 2 // 2
 
     print('Magical Number:', number)
-    print('Domino list:   ', domino_list)
-    print('Domino count:  ', domino_count)
+    # print('Domino list:   ', domino_list)
+    # print('Domino count:  ', domino_count)
+
+    # test = list(range(10))
+    # for i in range(10):
+    #     test_sample = choices(test, weights=[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], k=10)
+    #     print('Test sample:', test_sample)
 
     tick = 0
     global_tick = 0
@@ -109,6 +115,44 @@ def print_square(square, row_sums, column_sums):
         print(column_sum_string)
 
 
+def simulate_domino():
+    all_dots = []
+    all_tiles = []
+    for number in range(16, 24):
+        for i in range(10):
+            print('I:', i)
+            square, tiles = magic_domino(6, number)
+            dots = [dot for row in square for dot in row]
+            dots_counter = Counter(dots)
+            tiles_counter = Counter(tiles)
+            all_dots.extend(dots)
+            all_tiles.extend(tiles)
+
+            # print('Square:       ', square)
+            # print('Tiles:        ', tiles)
+            # print('Dots:         ', dots)
+            # print('Dots counter: ', dots_counter)
+            # print('Tiles counter:', tiles_counter)
+            # print()
+
+        print('After number:', number)
+        all_dots_counter = Counter(all_dots)
+        all_tiles_counter = Counter(all_tiles)
+
+        print('All dots counter:')
+        for dot, dot_count in sorted(all_dots_counter.items(), key=lambda item: -item[1]):
+            print(f'{dot}: {dot_count}')
+
+        print('All tiles counter:')
+        for tile, tile_count in sorted(all_tiles_counter.items(), key=lambda item: -item[1]):
+            print(f'{tile}: {tile_count}')
+
+        unused_dots = sorted(set(range(MAX_DOMINO_VALUE + 1)) - set(all_dots))
+        unused_tiles = sorted(set(combinations_with_replacement(range(MAX_DOMINO_VALUE + 1), 2)) - set(all_tiles))
+        print('Unused dots: ', unused_dots)
+        print('Unused tiles:', unused_tiles)
+
+
 if __name__ == '__main__':
     import itertools
 
@@ -159,3 +203,5 @@ if __name__ == '__main__':
 
     # check_data(6, 20, magic_domino(6, 20))
     check_data(6, 16, magic_domino(6, 16))
+
+    # simulate_domino()
