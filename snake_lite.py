@@ -9,25 +9,34 @@ EMPTY = "."
 
 
 def print_map(field_map):
-    for row in field_map:
-        print(row)
+    map_height = len(field_map)
+    map_width = len(field_map[0])
+    row_number_width = (map_height - 1) // 10 + 1
+    column_numbers_string = ''.join(str(i % 10) for i in range(map_width))
+
+    print(' ' + ' ' * row_number_width + column_numbers_string)
+    for y, row in enumerate(field_map):
+        print(f'{y:{row_number_width}d} {row}')
 
 
-def find_step(start, end, field_dict):
-    pass
+def find_step_to_cherry(field):
+    start = field['0']
+    end = field['C']
+
+    print('Start:', start)
+    print('End:', end)
+
+    return None
 
 
-def field_to_dict(field_map):
+def field_map_to_dict(field_map):
     field_dict = defaultdict(set)
     for y, row in enumerate(field_map):
         for x, cell in enumerate(row):
             if cell in SNAKE:
                 field_dict['Snake'].add((x, y))
-                continue
             field_dict[cell].add((x, y))
-
-    for k, v in field_dict.items():
-        print(f'{k}: {v}')
+    return field_dict
 
 
 def snake(field_map):
@@ -35,7 +44,13 @@ def snake(field_map):
     print_map(field_map)
     print()
 
-    field_to_dict(field_map)
+    field = field_map_to_dict(field_map)
+    for k, v in field.items():
+        print(f'{k}: {v}')
+    print()
+
+    next_step = find_step_to_cherry(field)
+    print('Next step:', next_step)
 
     return None
 
