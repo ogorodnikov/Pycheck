@@ -1,5 +1,4 @@
 from collections import defaultdict
-from itertools import product
 
 ACTION = ("L", "R", "F")
 CHERRY = 'C'
@@ -7,6 +6,7 @@ TREE = 'T'
 SNAKE_HEAD = '0'
 SNAKE = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
 EMPTY = "."
+DIRECTIONS = {-1j: 'L', 1: 'F', 1j: 'R'}
 
 
 def print_map(field_map):
@@ -20,18 +20,25 @@ def print_map(field_map):
         print(f'{y:{row_number_width}d} {row}')
 
 
-def get_relative_direction(neck, closest_neighbour):
+def get_relative_direction(neck, head, closest_neighbour):
     complex_neck = complex(*neck)
+    complex_head = complex(*head)
     complex_neighbour = complex(*closest_neighbour)
     print('Neck:             ', neck)
     print('Complex neck:     ', complex_neck)
+    print('Head:             ', head)
+    print('Complex head:     ', complex_head)
     print('Closest neighbour:', closest_neighbour)
     print('Complex neighbour:', complex_neighbour)
 
-    delta = complex_neighbour - complex_neck
+    neck_delta = complex_head - complex_neck
+    neighbour_delta = complex_head - complex_neighbour
+    delta = neck_delta * neighbour_delta
+
+    print('Neck delta:       ', neck_delta)
+    print('Neighbour delta:  ', neighbour_delta)
     print('Delta:            ', delta)
 
-    DIRECTIONS = {-1 - 1j: 'L', -2j: 'F', 1 - 1j: 'R'}
     direction = DIRECTIONS[delta]
 
     print('Direction:         ', direction)
@@ -49,9 +56,8 @@ def find_step_to_cherry(field):
     min_distance, closest_neighbour = min((abs(cherry_x - x) + abs(cherry_y - y), (x, y))
                                           for x, y in field['.']
                                           if abs(head_x - x) + abs(head_y - y) < 2)
-    print('Closest neighbour:', closest_neighbour)
 
-    next_step_direction = get_relative_direction(neck, closest_neighbour)
+    next_step_direction = get_relative_direction(neck, head, closest_neighbour)
     print('Next step direction:', next_step_direction)
 
     return next_step_direction
@@ -80,7 +86,7 @@ def snake(field_map):
     next_step = find_step_to_cherry(field)
     print('Next step:', next_step)
 
-    return None
+    return next_step
 
 
 if __name__ == '__main__':
