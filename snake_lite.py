@@ -6,7 +6,9 @@ TREE = 'T'
 SNAKE_HEAD = '0'
 SNAKE = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
 EMPTY = "."
-DIRECTIONS = {-1j: 'L', 1: 'F', 1j: 'R'}
+DIRECTIONS = {-1j: 'L',
+              1: 'F', -1: 'F',
+              1j: 'R'}
 
 
 def print_map(field_map):
@@ -21,23 +23,26 @@ def print_map(field_map):
 
 
 def get_relative_direction(neck, head, closest_neighbour):
-    complex_neck = complex(*neck)
     complex_head = complex(*head)
+    complex_neck = complex(*neck)
     complex_neighbour = complex(*closest_neighbour)
-    print('Neck:             ', neck)
-    print('Complex neck:     ', complex_neck)
-    print('Head:             ', head)
-    print('Complex head:     ', complex_head)
-    print('Closest neighbour:', closest_neighbour)
-    print('Complex neighbour:', complex_neighbour)
 
-    neck_delta = complex_head - complex_neck
-    neighbour_delta = complex_head - complex_neighbour
+    neck_delta = complex_neck - complex_head
+    neighbour_delta = complex_neighbour - complex_head
     delta = neck_delta * neighbour_delta
 
+    print('Head:     ', head)
+    print('Neck:     ', neck)
+    print('Neighbour:', closest_neighbour)
+    print()
     print('Neck delta:       ', neck_delta)
     print('Neighbour delta:  ', neighbour_delta)
     print('Delta:            ', delta)
+
+    if neck_delta in (1, -1) and neighbour_delta in (1j, -1j):
+        print('Conjugating delta')
+        delta = delta.conjugate()
+        print('New delta:        ', delta)
 
     direction = DIRECTIONS[delta]
 
@@ -54,7 +59,7 @@ def find_step_to_cherry(field):
     cherry_x, cherry_y = cherry
 
     min_distance, closest_neighbour = min((abs(cherry_x - x) + abs(cherry_y - y), (x, y))
-                                          for x, y in field['.']
+                                          for x, y in field['.'] | field['C']
                                           if abs(head_x - x) + abs(head_y - y) < 2)
 
     next_step_direction = get_relative_direction(neck, head, closest_neighbour)
@@ -74,18 +79,14 @@ def field_map_to_dict(field_map):
 
 
 def snake(field_map):
-    print('Field map:')
     print_map(field_map)
     print()
 
     field = field_map_to_dict(field_map)
-    for k, v in field.items():
-        print(f'{k}: {v}')
-    print()
 
     next_step = find_step_to_cherry(field)
     print('Next step:', next_step)
-
+    print()
     return next_step
 
 
