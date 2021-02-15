@@ -22,18 +22,14 @@ def print_map(field_map):
         print(f'{y:{row_number_width}d} {row}')
 
 
-def get_relative_direction(neck, head, closest_neighbour):
-    complex_head = complex(*head)
-    complex_neck = complex(*neck)
-    complex_neighbour = complex(*closest_neighbour)
-
-    neck_delta = complex_neck - complex_head
-    neighbour_delta = complex_neighbour - complex_head
+def get_relative_direction(neck, head, neighbour):
+    neck_delta = neck - head
+    neighbour_delta = neighbour - head
     delta = neck_delta * neighbour_delta
 
     print('Head:     ', head)
     print('Neck:     ', neck)
-    print('Neighbour:', closest_neighbour)
+    print('Neighbour:', neighbour)
     print()
     print('Neck delta:       ', neck_delta)
     print('Neighbour delta:  ', neighbour_delta)
@@ -51,12 +47,12 @@ def get_relative_direction(neck, head, closest_neighbour):
 
 
 def find_step_to_cherry(field):
-    head = tuple(field['0'])[0]
-    neck = tuple(field['1'])[0]
-    cherry = tuple(field['C'])[0]
+    head = complex(*tuple(field['0'])[0])
+    neck = complex(*tuple(field['1'])[0])
+    cherry = complex(*tuple(field['C'])[0])
 
-    head_x, head_y = head
-    cherry_x, cherry_y = cherry
+    head_x, head_y = head.real, head.imag
+    cherry_x, cherry_y = cherry.real, cherry.imag
 
     # min_distance, closest_neighbour = min((abs(cherry_x - x) + abs(cherry_y - y), (x, y))
     #                                       for x, y in field['.'] | field['C']
@@ -64,7 +60,7 @@ def find_step_to_cherry(field):
     #
     # next_step_direction = get_relative_direction(neck, head, closest_neighbour)
 
-    distances, neighbours = zip(*((abs(cherry_x - x) + abs(cherry_y - y), (x, y))
+    distances, neighbours = zip(*((abs(cherry_x - x) + abs(cherry_y - y), complex(x, y))
                                   for x, y in field['.'] | field['C']
                                   if abs(head_x - x) + abs(head_y - y) < 2))
 
