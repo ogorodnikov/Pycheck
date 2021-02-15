@@ -22,6 +22,56 @@ def print_map(field_map):
         print(f'{y:{row_number_width}d} {row}')
 
 
+def field_map_to_dict(field_map):
+    field_dict = defaultdict(set)
+    for y, row in enumerate(field_map):
+        for x, cell in enumerate(row):
+            if cell in SNAKE | {CHERRY}:
+                field_dict[cell] = complex(x, y)
+                continue
+            field_dict[cell].add((x, y))
+
+            if cell == '.':
+                field_dict['.C'].add(complex(x, y))
+
+    return field_dict
+
+
+def find_step_to_cherry(field):
+    head = field['0']
+    neck = field['1']
+    cherry = field['C']
+
+    head_x, head_y = head.real, head.imag
+    cherry_x, cherry_y = cherry.real, cherry.imag
+
+    distances, neighbours = zip(*((abs(cherry_x - x) + abs(cherry_y - y), complex(x, y))
+                                  for x, y in field['.'] | {(cherry_x, cherry_y)}
+                                  if abs(head_x - x) + abs(head_y - y) < 2))
+
+    complex_distances, complex_neighbours = zip(*((abs(neighbour - cherry), neighbour)
+                                                  for neighbour in field['.C'] | {cherry}
+                                                  if abs(neighbour - head) < 1.4))
+
+    print('Neighbours:', neighbours)
+    print('Complex neighbours:', complex_neighbours)
+    print()
+    print('Distances:', distances)
+    print('Complex distances:', complex_distances)
+
+    closest_neighbours = [n for d, n in zip(distances, neighbours) if d == min(distances)]
+    random_closest_neighbour = choice(closest_neighbours)
+
+    print('Closest neighbours:', closest_neighbours)
+    print('Random closest neighbour:', random_closest_neighbour)
+    print()
+
+    next_step_direction = get_relative_direction(neck, head, random_closest_neighbour)
+    print('Next step direction:', next_step_direction)
+
+    return next_step_direction
+
+
 def get_relative_direction(neck, head, neighbour):
     neck_delta = neck - head
     neighbour_delta = neighbour - head
@@ -44,47 +94,6 @@ def get_relative_direction(neck, head, neighbour):
 
     print('Direction:         ', direction)
     return direction
-
-
-def find_step_to_cherry(field):
-    head = complex(*tuple(field['0'])[0])
-    neck = complex(*tuple(field['1'])[0])
-    cherry = complex(*tuple(field['C'])[0])
-
-    head_x, head_y = head.real, head.imag
-    cherry_x, cherry_y = cherry.real, cherry.imag
-
-    # min_distance, closest_neighbour = min((abs(cherry_x - x) + abs(cherry_y - y), (x, y))
-    #                                       for x, y in field['.'] | field['C']
-    #                                       if abs(head_x - x) + abs(head_y - y) < 2)
-    #
-    # next_step_direction = get_relative_direction(neck, head, closest_neighbour)
-
-    distances, neighbours = zip(*((abs(cherry_x - x) + abs(cherry_y - y), complex(x, y))
-                                  for x, y in field['.'] | field['C']
-                                  if abs(head_x - x) + abs(head_y - y) < 2))
-
-    closest_neighbours = [n for d, n in zip(distances, neighbours) if d == min(distances)]
-    random_closest_neighbour = choice(closest_neighbours)
-
-    print('Closest neighbours:', closest_neighbours)
-    print('Random closest neighbour:', random_closest_neighbour)
-    print()
-
-    next_step_direction = get_relative_direction(neck, head, random_closest_neighbour)
-    print('Next step direction:', next_step_direction)
-
-    return next_step_direction
-
-
-def field_map_to_dict(field_map):
-    field_dict = defaultdict(set)
-    for y, row in enumerate(field_map):
-        for x, cell in enumerate(row):
-            if cell in SNAKE:
-                field_dict['Snake'].add((x, y))
-            field_dict[cell].add((x, y))
-    return field_dict
 
 
 def snake(field_map):
