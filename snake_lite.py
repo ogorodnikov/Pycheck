@@ -58,11 +58,24 @@ def find_step_to_cherry(field):
     head_x, head_y = head
     cherry_x, cherry_y = cherry
 
-    min_distance, closest_neighbour = min((abs(cherry_x - x) + abs(cherry_y - y), (x, y))
-                                          for x, y in field['.'] | field['C']
-                                          if abs(head_x - x) + abs(head_y - y) < 2)
+    # min_distance, closest_neighbour = min((abs(cherry_x - x) + abs(cherry_y - y), (x, y))
+    #                                       for x, y in field['.'] | field['C']
+    #                                       if abs(head_x - x) + abs(head_y - y) < 2)
+    #
+    # next_step_direction = get_relative_direction(neck, head, closest_neighbour)
 
-    next_step_direction = get_relative_direction(neck, head, closest_neighbour)
+    distances, neighbours = zip(*((abs(cherry_x - x) + abs(cherry_y - y), (x, y))
+                                  for x, y in field['.'] | field['C']
+                                  if abs(head_x - x) + abs(head_y - y) < 2))
+
+    closest_neighbours = [n for d, n in zip(distances, neighbours) if d == min(distances)]
+    random_closest_neighbour = choice(closest_neighbours)
+
+    print('Closest neighbours:', closest_neighbours)
+    print('Random closest neighbour:', random_closest_neighbour)
+    print()
+
+    next_step_direction = get_relative_direction(neck, head, random_closest_neighbour)
     print('Next step direction:', next_step_direction)
 
     return next_step_direction
@@ -91,7 +104,7 @@ def snake(field_map):
 
 
 if __name__ == '__main__':
-    from random import randint
+    from random import randint, choice
 
 
     def find_snake(field_map):
