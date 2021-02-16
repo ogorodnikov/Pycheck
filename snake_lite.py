@@ -81,22 +81,22 @@ def find_path(field, goal, check_escape=True):
     while q:
         priority, _, field, path = heappop(q)
 
-        print('Popping:')
-        print('    Priority:', priority)
-        print('    Path:', path)
-        print_field(field)
+        # print('Popping:')
+        # print('    Priority:', priority)
+        # print('    Path:', path)
+        # print_field(field)
 
         metrics = get_head_neighbours(field)
         for neighbour, direction in metrics:
             priority = abs(neighbour - goal.copy().pop())
             new_field, tail = move_snake(field, neighbour, goal)
 
-            print('Neighbour:', neighbour)
-            print('    Direction:', direction)
-            print('    Priority:', priority)
-            print('    Tick:', tick)
-            print('New field:')
-            print_field(new_field)
+            # print('Neighbour:', neighbour)
+            # print('    Direction:', direction)
+            # print('    Priority:', priority)
+            # print('    Tick:', tick)
+            # print('New field:')
+            # print_field(new_field)
 
             new_path = path + direction
 
@@ -128,7 +128,7 @@ def move_snake(field, neighbour, goal):
     new_snake = new_head + new_snake_without_head
 
     new_field = {key: value.copy() if isinstance(value, set)
-                 else value
+    else value
                  for key, value in field.items()}
 
     new_field[EMPTY] -= {neighbour}
@@ -136,7 +136,7 @@ def move_snake(field, neighbour, goal):
     new_field.update(new_snake)
 
     if {neighbour} == goal:
-        print('Expanding snake)')
+        # print('Expanding snake)')
         new_field[CHERRY] = set()
         new_field[EMPTY] -= tail
         new_field[str(tail_index + 1)] = tail
@@ -148,7 +148,12 @@ def snake(field_map):
     print_map(field_map)
 
     field = field_map_to_dict(field_map)
-    path = find_path(field, field['C'])
+    cherries = field[CHERRY]
+    print('Cherries:', cherries)
+    for cherry in cherries:
+        print('Cherry:', cherry)
+
+    path = find_path(field, field[CHERRY])
 
     print('Path:', path)
     print()
@@ -259,26 +264,26 @@ if __name__ == '__main__':
     #     ".3...T....",
     #     ".4........"]), "Basic map"
 
-    assert check_solution(snake, [
-        "..T....T.C",
-        ".......T..",
-        "...TTT....",
-        "..T....T..",
-        "..T...T...",
-        ".0T..T....",
-        ".1........",
-        ".2.T..TT..",
-        ".3..TT....",
-        ".4........"]), "Extra map"
+    # assert check_solution(snake, [
+    #     "..T....T.C",
+    #     ".......T..",
+    #     "...TTT....",
+    #     "..T....T..",
+    #     "..T...T...",
+    #     ".0T..T....",
+    #     ".1........",
+    #     ".2.T..TT..",
+    #     ".3..TT....",
+    #     ".4........"]), "Extra map"
 
-    #  0123456789
-    # 0..T....T..
-    # 1.......T..
-    # 2...TTT....
-    # 3..T....T..
-    # 4..T..CT6..
-    # 5..T..T45..
-    # 6....123...
-    # 7...T0.TT..
-    # 8....TT....
-    # 9..........
+    assert check_solution(snake, [
+         ".T.....T..",
+         ".C........",
+         ".....T....",
+         "..T....T..",
+         "..........",
+         ".0...T....",
+         ".1...C....",
+         ".2.T...T..",
+         ".3...T....",
+         ".4........"])
