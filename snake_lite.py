@@ -115,11 +115,11 @@ def find_path(field, goal):
 
             new_path = path + direction
 
-            if neighbour == goal:
-                print('Goal reached')
+            if {neighbour} == goal:
+                print('Goal reached ============================================')
                 return new_path
 
-            # q.append((new_field, new_path))
+            q.append((new_field, new_path))
 
 
 def move_snake(field, neighbour):
@@ -154,7 +154,6 @@ def move_snake(field, neighbour):
 
 def snake(field_map):
     print_map(field_map)
-    print()
 
     field = field_map_to_dict(field_map)
 
@@ -166,7 +165,7 @@ def snake(field_map):
     print('Path:', path)
     print()
 
-    return next_step
+    return path
 
 
 if __name__ == '__main__':
@@ -250,17 +249,28 @@ if __name__ == '__main__':
                 field_map = pack_map(temp_map)
 
 
-    assert check_solution(snake, [
-        ".T.....T..",
-        ".C........",
-        ".....T....",
-        "..T....T..",
-        "..........",
-        ".0...T....",
-        ".1........",
-        ".2.T...T..",
-        ".3...T....",
-        ".4........"]), "Basic map"
+    snake([".T.....T..",
+           ".C........",
+           ".....T....",
+           "..T....T..",
+           "..........",
+           ".0...T....",
+           ".1........",
+           ".2.T...T..",
+           ".3...T....",
+           ".4........"])
+
+    # assert check_solution(snake, [
+    #     ".T.....T..",
+    #     ".C........",
+    #     ".....T....",
+    #     "..T....T..",
+    #     "..........",
+    #     ".0...T....",
+    #     ".1........",
+    #     ".2.T...T..",
+    #     ".3...T....",
+    #     ".4........"]), "Basic map"
 
     # assert check_solution(snake, [
     #     "..T....T.C",
