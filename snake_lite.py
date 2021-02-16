@@ -88,41 +88,49 @@ def get_relative_direction(neck, head, neighbour):
 def get_head_neighbours(field):
     head = field['0'].copy().pop()
     neck = field['1'].copy().pop()
-    cherry = field['C'].copy().pop()
+    cherry = field['C']
 
-    metrics = ((abs(neighbour - cherry),
-                neighbour,
-                get_relative_direction(neck, head, neighbour))
-               for neighbour in field[EMPTY] | {cherry}
+    metrics = ((neighbour, get_relative_direction(neck, head, neighbour))
+               for neighbour in field[EMPTY] | cherry
                if abs(neighbour - head) < 1.4)
 
     return metrics
 
 
-def find_path(field, goal):
+def find_path(field, goal, check_escape=True):
     tick = 0
     q = [(0, tick, field, '')]
     while q:
         priority, _, field, path = heappop(q)
 
-        metrics = get_head_neighbours(field)
-        for distance, neighbour, direction in metrics:
-            print('Neighbour:', neighbour)
-            print('Distance: ', distance)
-            print('Direction:', direction)
+        print('Popping:')
+        print('    Priority:', priority)
+        print('    Path:', path)
+        print_field(field)
 
+        metrics = get_head_neighbours(field)
+        for neighbour, direction in metrics:
+            priority = abs(neighbour - goal.copy().pop())
             new_field = move_snake(field, neighbour)
+
+            print('Neighbour:', neighbour)
+            print('    Direction:', direction)
+            print('    Priority:', priority)
+            print('    Tick:', tick)
             print('New field:')
             print_field(new_field)
 
             new_path = path + direction
 
             if {neighbour} == goal:
-                print('Goal reached ============================================')
+                print('Goal reached')
+                # if check_escape:
+                #     escape_path = find_path(new_field, {0}, check_escape=False)
+                #     print('Escape path:', escape_path)
                 return new_path
 
             tick += 1
-            heappush(q, (0, tick, new_field, new_path))
+            heappush(q, (priority, tick, new_field, new_path))
 
 
 def move_snake(field, neighbour):
