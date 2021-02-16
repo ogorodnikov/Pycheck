@@ -20,6 +20,26 @@ def print_map(field_map):
         print(f'{y:{row_number_width}d} {row}')
 
 
+def print_field(field):
+    snake_cells = {field[snake_key] for snake_key in field.keys() & SNAKE}
+    all_cells = field[EMPTY] | field[TREE] | {field[CHERRY]} | snake_cells
+
+    field_width = int(max(cell.real for cell in all_cells)) + 1
+    field_height = int(max(cell.imag for cell in all_cells)) + 1
+
+    row_number_width = (field_height - 1) // 10 + 1
+    column_numbers_string = ''.join(str(i % 10) for i in range(field_width))
+
+    print(' ' + ' ' * row_number_width + column_numbers_string)
+    for y in range(field_height):
+        row_string = ''
+        for x in range(field_width):
+            for key in field:
+                if isinstance(field[key], set) and complex(x, y) in field[key] or complex(x, y) == field[key]:
+                    row_string += key
+        print(f'{y:{row_number_width}d} {row_string}')
+
+
 def field_map_to_dict(field_map):
     field_dict = defaultdict(set)
 
@@ -72,6 +92,8 @@ def find_path(field, goal):
     while q:
         field, path = q.pop(0)
 
+        print_field(field)
+
         metrics = get_head_neighbours(field)
         for distance, neighbour, direction in metrics:
             print('Neighbour:', neighbour)
@@ -89,7 +111,7 @@ def find_path(field, goal):
                 print('Goal reached')
                 return new_path
 
-            # todo - q.append((new_field, new_path))
+            # q.append((new_field, new_path))
 
 
 def get_moved_snake(field, neighbour):
