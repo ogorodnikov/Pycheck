@@ -88,7 +88,7 @@ def find_path(field, goal, check_escape=True):
 
         metrics = get_head_neighbours(field)
         for neighbour, direction in metrics:
-            priority = abs(neighbour - goal.copy().pop())
+            priority = abs(neighbour - goal)
             new_field, tail = move_snake(field, neighbour, goal)
 
             # print('Neighbour:', neighbour)
@@ -100,11 +100,11 @@ def find_path(field, goal, check_escape=True):
 
             new_path = path + direction
 
-            if {neighbour} == goal:
+            if neighbour == goal:
                 print('Goal reached')
                 if check_escape:
-                    escape_path = find_path(new_field, tail, check_escape=False)
                     print('Tail:', tail)
+                    escape_path = find_path(new_field, tail.copy().pop(), check_escape=False)
                     print('Escape path:', escape_path)
                     if escape_path is None:
                         continue
@@ -128,14 +128,14 @@ def move_snake(field, neighbour, goal):
     new_snake = new_head + new_snake_without_head
 
     new_field = {key: value.copy() if isinstance(value, set)
-    else value
+                 else value
                  for key, value in field.items()}
 
     new_field[EMPTY] -= {neighbour}
     new_field[EMPTY] |= tail
     new_field.update(new_snake)
 
-    if {neighbour} == goal:
+    if neighbour == goal:
         # print('Expanding snake)')
         new_field[CHERRY] = set()
         new_field[EMPTY] -= tail
@@ -150,14 +150,16 @@ def snake(field_map):
     field = field_map_to_dict(field_map)
     cherries = field[CHERRY]
     print('Cherries:', cherries)
+
+    paths = []
     for cherry in cherries:
         print('Cherry:', cherry)
+        path = find_path(field, cherry)
+        paths.append(path)
 
-    path = find_path(field, field[CHERRY])
-
-    print('Path:', path)
+    print('Paths:', paths)
     print()
-    return path
+    return paths[0]
 
 
 if __name__ == '__main__':
