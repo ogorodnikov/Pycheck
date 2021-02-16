@@ -4,7 +4,7 @@ ACTION = ("L", "R", "F")
 CHERRY = 'C'
 TREE = 'T'
 SNAKE_HEAD = '0'
-SNAKE = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
+SNAKE = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'}
 EMPTY = '.'
 DIRECTIONS = {-1j: 'L', 1: 'F', -1: 'F', 1j: 'R'}
 
@@ -67,7 +67,6 @@ def find_step_to_cherry(field):
 
     print('Closest neighbours:', closest_neighbours)
     print('Random closest neighbour:', random_closest_neighbour)
-    print()
 
     next_step_direction = get_relative_direction(neck, head, random_closest_neighbour)
     return next_step_direction
@@ -78,22 +77,10 @@ def get_relative_direction(neck, head, neighbour):
     neighbour_delta = neighbour - head
     delta = neck_delta * neighbour_delta
 
-    # print('Head:     ', head)
-    # print('Neck:     ', neck)
-    # print('Neighbour:', neighbour)
-    # print()
-    # print('Neck delta:       ', neck_delta)
-    # print('Neighbour delta:  ', neighbour_delta)
-    # print('Delta:            ', delta)
-
     if neck_delta in (1, -1) and neighbour_delta in (1j, -1j):
-        # print('Conjugating delta')
         delta = delta.conjugate()
-        # print('New delta:        ', delta)
 
     direction = DIRECTIONS[delta]
-
-    # print('Direction:         ', direction)
     return direction
 
 
@@ -115,8 +102,6 @@ def find_path(field, goal):
     q = [(field, '')]
     while q:
         field, path = q.pop(0)
-
-        print('Pop field:', field)
 
         metrics = get_head_neighbours(field)
         for distance, neighbour, direction in metrics:
@@ -148,7 +133,6 @@ def move_snake(field, neighbour):
                                        for cell in snake_cells)))
     new_head = [(SNAKE_HEAD, {neighbour})]
     new_snake = new_head + new_snake_without_head
-    print('New snake:', new_snake)
 
     new_field = {key: value.copy() if isinstance(value, set)
                  else value
@@ -163,8 +147,7 @@ def move_snake(field, neighbour):
         print('Eating')
         new_field[CHERRY] = set()
         new_field[EMPTY] -= tail
-        new_tail_index = tail_index + 1
-        field[str(new_tail_index)] = tail
+        new_field[str(tail_index + 1)] = tail
 
     return new_field
 
