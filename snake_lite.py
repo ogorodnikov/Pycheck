@@ -21,7 +21,7 @@ def print_map(field_map):
 
 
 def print_field(field):
-    snake_cells = {field[snake_key] for snake_key in field.keys() & SNAKE}
+    snake_cells = {field[snake_key].copy().pop() for snake_key in field.keys() & SNAKE}
     all_cells = field[EMPTY] | field[TREE] | field[CHERRY] | snake_cells
 
     field_width = int(max(cell.real for cell in all_cells)) + 1
@@ -116,6 +116,8 @@ def find_path(field, goal):
     while q:
         field, path = q.pop(0)
 
+        print('Pop field:', field)
+
         metrics = get_head_neighbours(field)
         for distance, neighbour, direction in metrics:
             print('Neighbour:', neighbour)
@@ -138,26 +140,31 @@ def find_path(field, goal):
 def move_snake(field, neighbour):
     snake_cells = sorted(field.keys() & SNAKE)
     snake_cells_without_head = snake_cells[1:]
-    tail = field[max(snake_cells)]
+    tail_index = max(map(int, snake_cells))
+    tail = field[str(tail_index)]
 
     new_snake_without_head = list(zip(snake_cells_without_head,
-                                      (field[cell].copy().pop()
+                                      (field[cell]
                                        for cell in snake_cells)))
-    new_head = [(SNAKE_HEAD, neighbour)]
+    new_head = [(SNAKE_HEAD, {neighbour})]
     new_snake = new_head + new_snake_without_head
+    print('New snake:', new_snake)
 
     new_field = {key: value.copy() if isinstance(value, set)
                  else value
                  for key, value in field.items()}
 
-    if new_field[CHERRY] == neighbour:
-        print('Eating)')
-        # todo - eating
-        # new_field[CHERRY] = set()
-
     new_field[EMPTY] -= {neighbour}
     new_field[EMPTY] |= tail
     new_field.update(new_snake)
+
+    cherry = new_field[CHERRY].copy().pop()
+    if cherry == neighbour:
+        print('Eating')
+        new_field[CHERRY] = set()
+        new_field[EMPTY] -= tail
+        new_tail_index = tail_index + 1
+        field[str(new_tail_index)] = tail
 
     return new_field
 
