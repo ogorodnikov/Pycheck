@@ -6,9 +6,7 @@ TREE = 'T'
 SNAKE_HEAD = '0'
 SNAKE = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
 EMPTY = "."
-DIRECTIONS = {-1j: 'L',
-              1: 'F', -1: 'F',
-              1j: 'R'}
+DIRECTIONS = {-1j: 'L',  1: 'F', -1: 'F', 1j: 'R'}
 
 
 def print_map(field_map):
@@ -24,15 +22,13 @@ def print_map(field_map):
 
 def field_map_to_dict(field_map):
     field_dict = defaultdict(set)
+
     for y, row in enumerate(field_map):
         for x, cell in enumerate(row):
             if cell in SNAKE | {CHERRY}:
                 field_dict[cell] = complex(x, y)
                 continue
-            field_dict[cell].add((x, y))
-
-            if cell == '.':
-                field_dict['.C'].add(complex(x, y))
+            field_dict[cell].add(complex(x, y))
 
     return field_dict
 
@@ -42,22 +38,9 @@ def find_step_to_cherry(field):
     neck = field['1']
     cherry = field['C']
 
-    head_x, head_y = head.real, head.imag
-    cherry_x, cherry_y = cherry.real, cherry.imag
-
-    distances, neighbours = zip(*((abs(cherry_x - x) + abs(cherry_y - y), complex(x, y))
-                                  for x, y in field['.'] | {(cherry_x, cherry_y)}
-                                  if abs(head_x - x) + abs(head_y - y) < 2))
-
-    complex_distances, complex_neighbours = zip(*((abs(neighbour - cherry), neighbour)
-                                                  for neighbour in field['.C'] | {cherry}
-                                                  if abs(neighbour - head) < 1.4))
-
-    print('Neighbours:', neighbours)
-    print('Complex neighbours:', complex_neighbours)
-    print()
-    print('Distances:', distances)
-    print('Complex distances:', complex_distances)
+    distances, neighbours = zip(*((abs(neighbour - cherry), neighbour)
+                                  for neighbour in field['.'] | {cherry}
+                                  if abs(neighbour - head) < 1.4))
 
     closest_neighbours = [n for d, n in zip(distances, neighbours) if d == min(distances)]
     random_closest_neighbour = choice(closest_neighbours)
