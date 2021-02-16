@@ -1,4 +1,5 @@
 from collections import defaultdict
+from heapq import heappop, heappush
 
 ACTION = ("L", "R", "F")
 CHERRY = 'C'
@@ -99,9 +100,10 @@ def get_head_neighbours(field):
 
 
 def find_path(field, goal):
-    q = [(field, '')]
+    tick = 0
+    q = [(0, tick, field, '')]
     while q:
-        field, path = q.pop(0)
+        priority, _, field, path = heappop(q)
 
         metrics = get_head_neighbours(field)
         for distance, neighbour, direction in metrics:
@@ -119,7 +121,8 @@ def find_path(field, goal):
                 print('Goal reached ============================================')
                 return new_path
 
-            q.append((new_field, new_path))
+            tick += 1
+            heappush(q, (0, tick, new_field, new_path))
 
 
 def move_snake(field, neighbour):
