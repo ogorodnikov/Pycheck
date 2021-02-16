@@ -59,15 +59,15 @@ def get_head_neighbours(field):
     cherry = field['C']
 
     metrics = ((abs(neighbour - cherry),
-               neighbour,
-               get_relative_direction(neck, head, neighbour))
+                neighbour,
+                get_relative_direction(neck, head, neighbour))
                for neighbour in field[EMPTY] | {cherry}
                if abs(neighbour - head) < 1.4)
 
     return metrics
 
 
-def find_path(start, end, field):
+def find_path(field, goal):
     q = [(field, '')]
     while q:
         field, path = q.pop(0)
@@ -78,25 +78,29 @@ def find_path(start, end, field):
             print('Distance: ', distance)
             print('Direction:', direction)
 
-            new_field = move_snake(field, neighbour)
-            # print_map(new_field)
+            moved_snake = get_moved_snake(field, neighbour)
+
+            new_field = field.copy()
+            new_field.update(moved_snake)
+
+            new_path = path + direction
+
+            if neighbour == goal:
+                print('Goal reached')
+                return new_path
+
+            # todo - q.append((new_field, new_path))
 
 
-def move_snake(field, neighbour):
+def get_moved_snake(field, neighbour):
     snake_cells = sorted(field.keys() & SNAKE)
     snake_cells_without_head = snake_cells[1:]
 
-    new_snake_without_head = list(zip(snake_cells_without_head, (field[cell] for cell in snake_cells)))
+    moved_snake_without_head = list(zip(snake_cells_without_head, (field[cell] for cell in snake_cells)))
     new_head = [(SNAKE_HEAD, neighbour)]
-    new_snake = new_head + new_snake_without_head
-    print('New snake:', new_snake)
+    moved_snake = new_head + moved_snake_without_head
 
-
-    new_field = field.copy()
-
-
-    return field
-
+    return moved_snake
 
 
 def get_relative_direction(neck, head, neighbour):
@@ -133,7 +137,7 @@ def snake(field_map):
     print('Next step:', next_step)
     print()
 
-    path = find_path(field['0'], field['C'], field)
+    path = find_path(field, field['C'])
     print('Path:', path)
     print()
 
