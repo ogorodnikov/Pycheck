@@ -83,12 +83,17 @@ def find_path(start, end, field):
 
 
 def move_snake(field, neighbour):
-    snake_keys = field.keys() & SNAKE
-    tail = max(snake_keys)
-    print('Tail:', tail)
+    snake_cells = sorted(field.keys() & SNAKE)
+    snake_cells_without_head = snake_cells[1:]
+
+    new_snake_without_head = list(zip(snake_cells_without_head, (field[cell] for cell in snake_cells)))
+    new_head = [(SNAKE_HEAD, neighbour)]
+    new_snake = new_head + new_snake_without_head
+    print('New snake:', new_snake)
+
 
     new_field = field.copy()
-    new_field[tail] = EMPTY
+
 
     return field
 
