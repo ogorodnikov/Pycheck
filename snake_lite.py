@@ -22,7 +22,7 @@ def print_map(field_map):
 
 def print_field(field):
     snake_cells = {field[snake_key] for snake_key in field.keys() & SNAKE}
-    all_cells = field[EMPTY] | field[TREE] | {field[CHERRY]} | snake_cells
+    all_cells = field[EMPTY] | field[TREE] | field[CHERRY] | snake_cells
 
     field_width = int(max(cell.real for cell in all_cells)) + 1
     field_height = int(max(cell.imag for cell in all_cells)) + 1
@@ -45,18 +45,18 @@ def field_map_to_dict(field_map):
 
     for y, row in enumerate(field_map):
         for x, cell in enumerate(row):
-            if cell in SNAKE | {CHERRY}:
-                field_dict[cell] = complex(x, y)
-                continue
+            # if cell in SNAKE | {CHERRY}:
+            #     field_dict[cell] = complex(x, y)
+            #     continue
             field_dict[cell].add(complex(x, y))
 
     return field_dict
 
 
 def find_step_to_cherry(field):
-    head = field['0']
-    neck = field['1']
-    cherry = field['C']
+    head = field['0'].copy().pop()
+    neck = field['1'].copy().pop()
+    cherry = field['C'].copy().pop()
 
     distances, neighbours = zip(*((abs(neighbour - cherry), neighbour)
                                   for neighbour in field[EMPTY] | {cherry}
@@ -98,9 +98,9 @@ def get_relative_direction(neck, head, neighbour):
 
 
 def get_head_neighbours(field):
-    head = field['0']
-    neck = field['1']
-    cherry = field['C']
+    head = field['0'].copy().pop()
+    neck = field['1'].copy().pop()
+    cherry = field['C'].copy().pop()
 
     metrics = ((abs(neighbour - cherry),
                 neighbour,
@@ -140,7 +140,9 @@ def move_snake(field, neighbour):
     snake_cells_without_head = snake_cells[1:]
     tail = field[max(snake_cells)]
 
-    new_snake_without_head = list(zip(snake_cells_without_head, (field[cell] for cell in snake_cells)))
+    new_snake_without_head = list(zip(snake_cells_without_head,
+                                      (field[cell].copy().pop()
+                                       for cell in snake_cells)))
     new_head = [(SNAKE_HEAD, neighbour)]
     new_snake = new_head + new_snake_without_head
 
@@ -154,7 +156,7 @@ def move_snake(field, neighbour):
         # new_field[CHERRY] = set()
 
     new_field[EMPTY] -= {neighbour}
-    new_field[EMPTY] |= {tail}
+    new_field[EMPTY] |= tail
     new_field.update(new_snake)
 
     return new_field
