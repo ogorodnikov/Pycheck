@@ -6,7 +6,7 @@ TREE = 'T'
 SNAKE_HEAD = '0'
 SNAKE = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
 EMPTY = "."
-DIRECTIONS = {-1j: 'L',  1: 'F', -1: 'F', 1j: 'R'}
+DIRECTIONS = {-1j: 'L', 1: 'F', -1: 'F', 1j: 'R'}
 
 
 def print_map(field_map):
@@ -53,6 +53,20 @@ def find_step_to_cherry(field):
     print('Next step direction:', next_step_direction)
 
     return next_step_direction
+
+
+def get_head_neighbours(field):
+    head = field['0']
+    neck = field['1']
+    cherry = field['C']
+
+    metrics = ((abs(neighbour - cherry),
+               neighbour,
+               get_relative_direction(neck, head, neighbour))
+               for neighbour in field['.'] | {cherry}
+               if abs(neighbour - head) < 1.4)
+
+    return metrics
 
 
 def get_relative_direction(neck, head, neighbour):
