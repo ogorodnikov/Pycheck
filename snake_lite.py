@@ -46,9 +46,6 @@ def field_map_to_dict(field_map):
 
     for y, row in enumerate(field_map):
         for x, cell in enumerate(row):
-            # if cell in SNAKE | {CHERRY}:
-            #     field_dict[cell] = complex(x, y)
-            #     continue
             field_dict[cell].add(complex(x, y))
 
     return field_dict
@@ -109,6 +106,8 @@ def find_path(field, goal, check_escape=True):
                     escape_path = find_path(new_field, tail, check_escape=False)
                     print('Tail:', tail)
                     print('Escape path:', escape_path)
+                    if escape_path is None:
+                        continue
 
                 return new_path
 
@@ -118,7 +117,6 @@ def find_path(field, goal, check_escape=True):
 
 def move_snake(field, neighbour, goal):
     snake_cells = list(map(str, sorted(map(int, field.keys() & SNAKE))))
-    print('Snake cells:', snake_cells)
     snake_cells_without_head = snake_cells[1:]
     tail_index = max(map(int, snake_cells))
     tail = field[str(tail_index)]
@@ -154,12 +152,11 @@ def snake(field_map):
 
     print('Path:', path)
     print()
-
     return path
 
 
 if __name__ == '__main__':
-    from random import randint, choice
+    from random import randint
 
 
     def find_snake(field_map):
@@ -250,26 +247,38 @@ if __name__ == '__main__':
     #        ".3...T....",
     #        ".4........"])
 
-    assert check_solution(snake, [
-        ".T.....T..",
-        ".C........",
-        ".....T....",
-        "..T....T..",
-        "..........",
-        ".0...T....",
-        ".1........",
-        ".2.T...T..",
-        ".3...T....",
-        ".4........"]), "Basic map"
-
     # assert check_solution(snake, [
-    #     "..T....T.C",
-    #     ".......T..",
-    #     "...TTT....",
+    #     ".T.....T..",
+    #     ".C........",
+    #     ".....T....",
     #     "..T....T..",
-    #     "..T...T...",
-    #     ".0T..T....",
+    #     "..........",
+    #     ".0...T....",
     #     ".1........",
-    #     ".2.T..TT..",
-    #     ".3..TT....",
-    #     ".4........"]), "Extra map"
+    #     ".2.T...T..",
+    #     ".3...T....",
+    #     ".4........"]), "Basic map"
+
+    assert check_solution(snake, [
+        "..T....T.C",
+        ".......T..",
+        "...TTT....",
+        "..T....T..",
+        "..T...T...",
+        ".0T..T....",
+        ".1........",
+        ".2.T..TT..",
+        ".3..TT....",
+        ".4........"]), "Extra map"
+
+    #  0123456789
+    # 0..T....T..
+    # 1.......T..
+    # 2...TTT....
+    # 3..T....T..
+    # 4..T..CT6..
+    # 5..T..T45..
+    # 6....123...
+    # 7...T0.TT..
+    # 8....TT....
+    # 9..........
