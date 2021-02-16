@@ -111,7 +111,7 @@ def find_path(field, goal, check_escape=True):
         metrics = get_head_neighbours(field)
         for neighbour, direction in metrics:
             priority = abs(neighbour - goal.copy().pop())
-            new_field = move_snake(field, neighbour)
+            new_field, tail = move_snake(field, neighbour, goal)
 
             print('Neighbour:', neighbour)
             print('    Direction:', direction)
@@ -124,17 +124,20 @@ def find_path(field, goal, check_escape=True):
 
             if {neighbour} == goal:
                 print('Goal reached')
-                # if check_escape:
-                #     escape_path = find_path(new_field, {0}, check_escape=False)
-                #     print('Escape path:', escape_path)
+                if check_escape:
+                    escape_path = find_path(new_field, tail, check_escape=False)
+                    print('Tail:', tail)
+                    print('Escape path:', escape_path)
+
                 return new_path
 
             tick += 1
             heappush(q, (priority, tick, new_field, new_path))
 
 
-def move_snake(field, neighbour):
-    snake_cells = sorted(field.keys() & SNAKE)
+def move_snake(field, neighbour, goal):
+    snake_cells = list(map(str, sorted(map(int, field.keys() & SNAKE))))
+    print('Snake cells:', snake_cells)
     snake_cells_without_head = snake_cells[1:]
     tail_index = max(map(int, snake_cells))
     tail = field[str(tail_index)]
@@ -153,14 +156,13 @@ def move_snake(field, neighbour):
     new_field[EMPTY] |= tail
     new_field.update(new_snake)
 
-    cherry = new_field[CHERRY].copy().pop()
-    if cherry == neighbour:
-        print('Eating')
+    if {neighbour} == goal:
+        print('Expanding snake)')
         new_field[CHERRY] = set()
         new_field[EMPTY] -= tail
         new_field[str(tail_index + 1)] = tail
 
-    return new_field
+    return new_field, tail
 
 
 def snake(field_map):
@@ -260,28 +262,28 @@ if __name__ == '__main__':
                 field_map = pack_map(temp_map)
 
 
-    snake([".T.....T..",
-           ".C........",
-           ".....T....",
-           "..T....T..",
-           "..........",
-           ".0...T....",
-           ".1........",
-           ".2.T...T..",
-           ".3...T....",
-           ".4........"])
+    # snake([".T.....T..",
+    #        ".C........",
+    #        ".....T....",
+    #        "..T....T..",
+    #        "..........",
+    #        ".0...T....",
+    #        ".1........",
+    #        ".2.T...T..",
+    #        ".3...T....",
+    #        ".4........"])
 
-    # assert check_solution(snake, [
-    #     ".T.....T..",
-    #     ".C........",
-    #     ".....T....",
-    #     "..T....T..",
-    #     "..........",
-    #     ".0...T....",
-    #     ".1........",
-    #     ".2.T...T..",
-    #     ".3...T....",
-    #     ".4........"]), "Basic map"
+    assert check_solution(snake, [
+        ".T.....T..",
+        ".C........",
+        ".....T....",
+        "..T....T..",
+        "..........",
+        ".0...T....",
+        ".1........",
+        ".2.T...T..",
+        ".3...T....",
+        ".4........"]), "Basic map"
 
     # assert check_solution(snake, [
     #     "..T....T.C",
