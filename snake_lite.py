@@ -5,7 +5,7 @@ CHERRY = 'C'
 TREE = 'T'
 SNAKE_HEAD = '0'
 SNAKE = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
-EMPTY = "."
+EMPTY = '.'
 DIRECTIONS = {-1j: 'L', 1: 'F', -1: 'F', 1j: 'R'}
 
 
@@ -39,7 +39,7 @@ def find_step_to_cherry(field):
     cherry = field['C']
 
     distances, neighbours = zip(*((abs(neighbour - cherry), neighbour)
-                                  for neighbour in field['.'] | {cherry}
+                                  for neighbour in field[EMPTY] | {cherry}
                                   if abs(neighbour - head) < 1.4))
 
     closest_neighbours = [n for d, n in zip(distances, neighbours) if d == min(distances)]
@@ -50,8 +50,6 @@ def find_step_to_cherry(field):
     print()
 
     next_step_direction = get_relative_direction(neck, head, random_closest_neighbour)
-    print('Next step direction:', next_step_direction)
-
     return next_step_direction
 
 
@@ -63,10 +61,37 @@ def get_head_neighbours(field):
     metrics = ((abs(neighbour - cherry),
                neighbour,
                get_relative_direction(neck, head, neighbour))
-               for neighbour in field['.'] | {cherry}
+               for neighbour in field[EMPTY] | {cherry}
                if abs(neighbour - head) < 1.4)
 
     return metrics
+
+
+def find_path(start, end, field):
+    q = [(field, '')]
+    while q:
+        field, path = q.pop(0)
+
+        metrics = get_head_neighbours(field)
+        for distance, neighbour, direction in metrics:
+            print('Neighbour:', neighbour)
+            print('Distance: ', distance)
+            print('Direction:', direction)
+
+            new_field = move_snake(field, neighbour)
+            # print_map(new_field)
+
+
+def move_snake(field, neighbour):
+    snake_keys = field.keys() & SNAKE
+    tail = max(snake_keys)
+    print('Tail:', tail)
+
+    new_field = field.copy()
+    new_field[tail] = EMPTY
+
+    return field
+
 
 
 def get_relative_direction(neck, head, neighbour):
@@ -74,22 +99,22 @@ def get_relative_direction(neck, head, neighbour):
     neighbour_delta = neighbour - head
     delta = neck_delta * neighbour_delta
 
-    print('Head:     ', head)
-    print('Neck:     ', neck)
-    print('Neighbour:', neighbour)
-    print()
-    print('Neck delta:       ', neck_delta)
-    print('Neighbour delta:  ', neighbour_delta)
-    print('Delta:            ', delta)
+    # print('Head:     ', head)
+    # print('Neck:     ', neck)
+    # print('Neighbour:', neighbour)
+    # print()
+    # print('Neck delta:       ', neck_delta)
+    # print('Neighbour delta:  ', neighbour_delta)
+    # print('Delta:            ', delta)
 
     if neck_delta in (1, -1) and neighbour_delta in (1j, -1j):
-        print('Conjugating delta')
+        # print('Conjugating delta')
         delta = delta.conjugate()
-        print('New delta:        ', delta)
+        # print('New delta:        ', delta)
 
     direction = DIRECTIONS[delta]
 
-    print('Direction:         ', direction)
+    # print('Direction:         ', direction)
     return direction
 
 
@@ -102,6 +127,11 @@ def snake(field_map):
     next_step = find_step_to_cherry(field)
     print('Next step:', next_step)
     print()
+
+    path = find_path(field['0'], field['C'], field)
+    print('Path:', path)
+    print()
+
     return next_step
 
 
