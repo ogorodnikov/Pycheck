@@ -73,58 +73,6 @@ def find_step_to_cherry(field):
     return next_step_direction
 
 
-def get_head_neighbours(field):
-    head = field['0']
-    neck = field['1']
-    cherry = field['C']
-
-    metrics = ((abs(neighbour - cherry),
-                neighbour,
-                get_relative_direction(neck, head, neighbour))
-               for neighbour in field[EMPTY] | {cherry}
-               if abs(neighbour - head) < 1.4)
-
-    return metrics
-
-
-def find_path(field, goal):
-    q = [(field, '')]
-    while q:
-        field, path = q.pop(0)
-
-        print_field(field)
-
-        metrics = get_head_neighbours(field)
-        for distance, neighbour, direction in metrics:
-            print('Neighbour:', neighbour)
-            print('Distance: ', distance)
-            print('Direction:', direction)
-
-            moved_snake = get_moved_snake(field, neighbour)
-
-            new_field = field.copy()
-            new_field.update(moved_snake)
-
-            new_path = path + direction
-
-            if neighbour == goal:
-                print('Goal reached')
-                return new_path
-
-            # q.append((new_field, new_path))
-
-
-def get_moved_snake(field, neighbour):
-    snake_cells = sorted(field.keys() & SNAKE)
-    snake_cells_without_head = snake_cells[1:]
-
-    moved_snake_without_head = list(zip(snake_cells_without_head, (field[cell] for cell in snake_cells)))
-    new_head = [(SNAKE_HEAD, neighbour)]
-    moved_snake = new_head + moved_snake_without_head
-
-    return moved_snake
-
-
 def get_relative_direction(neck, head, neighbour):
     neck_delta = neck - head
     neighbour_delta = neighbour - head
@@ -147,6 +95,59 @@ def get_relative_direction(neck, head, neighbour):
 
     # print('Direction:         ', direction)
     return direction
+
+
+def get_head_neighbours(field):
+    head = field['0']
+    neck = field['1']
+    cherry = field['C']
+
+    metrics = ((abs(neighbour - cherry),
+                neighbour,
+                get_relative_direction(neck, head, neighbour))
+               for neighbour in field[EMPTY] | {cherry}
+               if abs(neighbour - head) < 1.4)
+
+    return metrics
+
+
+def find_path(field, goal):
+    q = [(field, '')]
+    while q:
+        field, path = q.pop(0)
+
+        metrics = get_head_neighbours(field)
+        for distance, neighbour, direction in metrics:
+            print('Neighbour:', neighbour)
+            print('Distance: ', distance)
+            print('Direction:', direction)
+
+            new_field = move_snake(field, neighbour)
+            print('New field:')
+            print_field(new_field)
+
+            new_path = path + direction
+
+            if neighbour == goal:
+                print('Goal reached')
+                return new_path
+
+            # q.append((new_field, new_path))
+
+
+def move_snake(field, neighbour):
+    snake_cells = sorted(field.keys() & SNAKE)
+    snake_cells_without_head = snake_cells[1:]
+
+    new_snake_without_head = list(zip(snake_cells_without_head, (field[cell] for cell in snake_cells)))
+    new_head = [(SNAKE_HEAD, neighbour)]
+    new_snake = new_head + new_snake_without_head
+
+    new_field = field.copy()
+    new_field[EMPTY] -= {neighbour}
+    new_field.update(new_snake)
+
+    return new_field
 
 
 def snake(field_map):
