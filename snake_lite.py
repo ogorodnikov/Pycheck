@@ -54,25 +54,6 @@ def field_map_to_dict(field_map):
     return field_dict
 
 
-def find_step_to_cherry(field):
-    head = field['0'].copy().pop()
-    neck = field['1'].copy().pop()
-    cherry = field['C'].copy().pop()
-
-    distances, neighbours = zip(*((abs(neighbour - cherry), neighbour)
-                                  for neighbour in field[EMPTY] | {cherry}
-                                  if abs(neighbour - head) < 1.4))
-
-    closest_neighbours = [n for d, n in zip(distances, neighbours) if d == min(distances)]
-    random_closest_neighbour = choice(closest_neighbours)
-
-    print('Closest neighbours:', closest_neighbours)
-    print('Random closest neighbour:', random_closest_neighbour)
-
-    next_step_direction = get_relative_direction(neck, head, random_closest_neighbour)
-    return next_step_direction
-
-
 def get_relative_direction(neck, head, neighbour):
     neck_delta = neck - head
     neighbour_delta = neighbour - head
@@ -169,12 +150,8 @@ def snake(field_map):
     print_map(field_map)
 
     field = field_map_to_dict(field_map)
-
-    next_step = find_step_to_cherry(field)
-    print('Next step:', next_step)
-    print()
-
     path = find_path(field, field['C'])
+
     print('Path:', path)
     print()
 
