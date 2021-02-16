@@ -144,7 +144,15 @@ def move_snake(field, neighbour):
     new_head = [(SNAKE_HEAD, neighbour)]
     new_snake = new_head + new_snake_without_head
 
-    new_field = field.copy()
+    new_field = {key: value.copy() if isinstance(value, set)
+                 else value
+                 for key, value in field.items()}
+
+    if new_field[CHERRY] == neighbour:
+        print('Eating)')
+        # todo - eating
+        # new_field[CHERRY] = set()
+
     new_field[EMPTY] -= {neighbour}
     new_field[EMPTY] |= {tail}
     new_field.update(new_snake)
