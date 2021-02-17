@@ -158,8 +158,10 @@ def snake(field_map):
         paths.append(path)
 
     print('Paths:', paths)
+    shortest_path = min(paths, key=len)
+    print('Shortest path:', shortest_path)
     print()
-    return paths[0]
+    return shortest_path
 
 
 if __name__ == '__main__':
