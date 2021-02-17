@@ -9,6 +9,7 @@ SNAKE_HEAD = '0'
 SNAKE = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'}
 EMPTY = '.'
 DIRECTIONS = {-1j: 'L', 1: 'F', -1: 'F', 1j: 'R'}
+TICK_LIMIT = 10000
 
 
 def print_map(field_map):
@@ -89,6 +90,10 @@ def find_path(field, goal, is_escape=False):
         # print('>>> Popping:')
         # print('Path:', path)
         # print_field(field)
+
+        if tick >= TICK_LIMIT:
+            print('    Tick limit reached:', tick)
+            return None
 
         metrics = get_head_neighbours(field, is_escape=is_escape)
         for neighbour, direction in metrics:
@@ -326,3 +331,15 @@ if __name__ == '__main__':
                                       "..TTTTTTT.",
                                       "..654321..",
                                       "..C....0.."]), "Extra 3"
+
+
+# 0 ..........
+# 1 ..T.T.....
+# 2 ..T.T.....
+# 3 ..TCT.....
+# 4 ..T.T.....
+# 5 ..T.TTTTT.
+# 6 ..TC......
+# 7 ..TTTTTTT.
+# 8 ......76..
+# 9 ..012345..
