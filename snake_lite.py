@@ -81,12 +81,20 @@ def find_path(field, goal, check_escape=True):
     while q:
         priority, _, field, path = heappop(q)
 
+        # print('>>> Popping:')
+        # print('Path:', path)
+        # print_field(field)
+
         metrics = get_head_neighbours(field)
         for neighbour, direction in metrics:
-            priority = abs(neighbour - goal)
+            priority = abs(neighbour - goal) * len(path)
             new_field, tail = move_snake(field, neighbour, goal)
 
             new_path = path + direction
+
+            # print('Neighbour:', neighbour)
+            # print('New field:')
+            # print_field(new_field)
 
             if neighbour == goal:
 
@@ -266,29 +274,29 @@ if __name__ == '__main__':
     #     ".3...T....",
     #     ".4........"]), "Basic map"
 
-    assert snake(["..T....T..",
-                  ".C.....T..",
-                  "...TTT....",
-                  "..T....T..",
-                  "..T...T6..",
-                  "..T.0T45..",
-                  "....123...",
-                  "...T..TT..",
-                  "....TT....",
-                  ".........."]), "1+j1"
+    # assert snake(["..T....T..",
+    #               ".C.....T..",
+    #               "...TTT....",
+    #               "..T....T..",
+    #               "..T...T6..",
+    #               "..T.0T45..",
+    #               "....123...",
+    #               "...T..TT..",
+    #               "....TT....",
+    #               ".........."]), "1+j1"
 
-    # for _ in range(100):
-    #     assert check_solution(snake, [
-    #         "..T....T.C",
-    #         ".......T..",
-    #         "...TTT....",
-    #         "..T....T..",
-    #         "..T...T...",
-    #         ".0T..T....",
-    #         ".1........",
-    #         ".2.T..TT..",
-    #         ".3..TT....",
-    #         ".4........"]), "Extra map"
+    for _ in range(100):
+        assert check_solution(snake, [
+            "..T....T.C",
+            ".......T..",
+            "...TTT....",
+            "..T....T..",
+            "..T...T...",
+            ".0T..T....",
+            ".1........",
+            ".2.T..TT..",
+            ".3..TT....",
+            ".4........"]), "Extra map"
 
     # assert check_solution(snake, [
     #      ".T.....T..",
