@@ -3,6 +3,7 @@ from heapq import heappop, heappush
 
 ACTION = ("L", "R", "F")
 CHERRY = 'C'
+OTHER_CHERRY = '*'
 TREE = 'T'
 SNAKE_HEAD = '0'
 SNAKE = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'}
@@ -63,19 +64,22 @@ def get_relative_direction(neck, head, neighbour):
     return direction
 
 
-def get_head_neighbours(field):
+def get_head_neighbours(field, is_escape):
     head = field['0'].copy().pop()
     neck = field['1'].copy().pop()
     cherry = field['C']
 
+    allowed_cells = field[EMPTY] | cherry
+    if is_escape:
+        allowed_cells |= field[OTHER_CHERRY]
     metrics = ((neighbour, get_relative_direction(neck, head, neighbour))
-               for neighbour in field[EMPTY] | cherry
+               for neighbour in allowed_cells
                if abs(neighbour - head) < 1.4)
 
     return metrics
 
 
-def find_path(field, goal, check_escape=True):
+def find_path(field, goal, is_escape=False):
     tick = 0
     q = [(0, tick, field, '')]
     while q:
@@ -85,7 +89,7 @@ def find_path(field, goal, check_escape=True):
         # print('Path:', path)
         # print_field(field)
 
-        metrics = get_head_neighbours(field)
+        metrics = get_head_neighbours(field, is_escape=is_escape)
         for neighbour, direction in metrics:
             priority = abs(neighbour - goal) * len(path)
             new_field, tail = move_snake(field, neighbour, goal)
@@ -98,9 +102,9 @@ def find_path(field, goal, check_escape=True):
 
             if neighbour == goal:
 
-                if check_escape:
+                if not is_escape:
                     print('    Proposed path:', new_path)
-                    escape_path = find_path(new_field, tail.copy().pop(), check_escape=False)
+                    escape_path = find_path(new_field, tail.copy().pop(), is_escape=True)
                     if escape_path:
                         print('    Escape possible to:', tail.copy().pop())
                         print('    Escape path:', escape_path)
@@ -158,7 +162,8 @@ def snake(field_map):
         other_cherries = cherries - {cherry}
 
         field[CHERRY] = {cherry}
-        field[TREE] |= other_cherries
+        field[OTHER_CHERRY] = other_cherries
+        print('Field OTHER CHERRY :', field[OTHER_CHERRY])
 
         path = find_path(field, cherry)
         paths.append(path)
@@ -285,18 +290,18 @@ if __name__ == '__main__':
     #               "....TT....",
     #               ".........."]), "1+j1"
 
-    for _ in range(100):
-        assert check_solution(snake, [
-            "..T....T.C",
-            ".......T..",
-            "...TTT....",
-            "..T....T..",
-            "..T...T...",
-            ".0T..T....",
-            ".1........",
-            ".2.T..TT..",
-            ".3..TT....",
-            ".4........"]), "Extra map"
+    # for _ in range(100):
+    #     assert check_solution(snake, [
+    #         "..T....T.C",
+    #         ".......T..",
+    #         "...TTT....",
+    #         "..T....T..",
+    #         "..T...T...",
+    #         ".0T..T....",
+    #         ".1........",
+    #         ".2.T..TT..",
+    #         ".3..TT....",
+    #         ".4........"]), "Extra map"
 
     # assert check_solution(snake, [
     #      ".T.....T..",
@@ -309,3 +314,14 @@ if __name__ == '__main__':
     #      ".2.T...T..",
     #      ".3...T....",
     #      ".4........"]), "Two cherries"
+
+    assert check_solution(snake, ["..........",
+                                  "..T.T.....",
+                                  "..T.T.....",
+                                  "..T.T.....",
+                                  "..T.T.....",
+                                  "..T.TTTTT.",
+                                  "..TC......",
+                                  "..TTTTTTT.",
+                                  "..654321..",
+                                  "..C....0.."]), "Extra 3"
