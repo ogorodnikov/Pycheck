@@ -12,37 +12,6 @@ DIRECTIONS = {-1j: 'L', 1: 'F', -1: 'F', 1j: 'R'}
 TICK_LIMIT = 10000
 
 
-def print_map(field_map):
-    map_height = len(field_map)
-    map_width = len(field_map[0])
-    row_number_width = (map_height - 1) // 10 + 1
-    column_numbers_string = ''.join(str(i % 10) for i in range(map_width))
-
-    print(' ' + ' ' * row_number_width + column_numbers_string)
-    for y, row in enumerate(field_map):
-        print(f'{y:{row_number_width}d} {row}')
-
-
-def print_field(field):
-    snake_cells = {field[snake_key].copy().pop() for snake_key in field.keys() & SNAKE}
-    all_cells = field[EMPTY] | field[TREE] | field[CHERRY] | snake_cells
-
-    field_width = int(max(cell.real for cell in all_cells)) + 1
-    field_height = int(max(cell.imag for cell in all_cells)) + 1
-
-    row_number_width = (field_height - 1) // 10 + 1
-    column_numbers_string = ''.join(str(i % 10) for i in range(field_width))
-
-    print(' ' + ' ' * row_number_width + column_numbers_string)
-    for y in range(field_height):
-        row_string = ''
-        for x in range(field_width):
-            for key in field:
-                if isinstance(field[key], set) and complex(x, y) in field[key] or complex(x, y) == field[key]:
-                    row_string += key
-        print(f'{y:{row_number_width}d} {row_string}')
-
-
 def field_map_to_dict(field_map):
     field_dict = defaultdict(set)
 
@@ -178,6 +147,34 @@ def snake(field_map):
     print('Shortest path:', shortest_path)
     print()
     return shortest_path
+
+
+def print_map(field_map):
+    map_height = len(field_map)
+    map_width = len(field_map[0])
+    row_number_width = (map_height - 1) // 10 + 1
+    column_numbers_string = ''.join(str(i % 10) for i in range(map_width))
+
+    print(' ' + ' ' * row_number_width + column_numbers_string)
+    for y, row in enumerate(field_map):
+        print(f'{y:{row_number_width}d} {row}')
+
+
+def print_field(field):
+    all_cells = {cell for key in field for cell in field[key]}
+
+    field_width = int(max(cell.real for cell in all_cells)) + 1
+    field_height = int(max(cell.imag for cell in all_cells)) + 1
+
+    row_number_width = (field_height - 1) // 10 + 1
+    column_numbers_string = ''.join(str(i % 10) for i in range(field_width))
+
+    print(' ' + ' ' * row_number_width + column_numbers_string)
+    for y in range(field_height):
+        row_string = ''.join(key for x in range(field_width)
+                             for key in field
+                             if complex(x, y) in field[key])
+        print(f'{y:{row_number_width}d} {row_string}')
 
 
 if __name__ == '__main__':
@@ -320,7 +317,7 @@ if __name__ == '__main__':
     #      ".3...T....",
     #      ".4........"]), "Two cherries"
 
-    for _ in range(10):
+    for _ in range(1):
         assert check_solution(snake, ["..........",
                                       "..T.T.....",
                                       "..T.T.....",
