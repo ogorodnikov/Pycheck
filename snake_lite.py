@@ -51,28 +51,15 @@ def field_map_to_dict(field_map):
     return field_dict
 
 
-def get_relative_direction(neck, head, neighbour, field):
+def get_relative_direction(neck, head, neighbour):
     neck_delta = neck - head
     neighbour_delta = neighbour - head
     delta = neck_delta * neighbour_delta
 
-    print()
-    print_field(field)
-    print('Head:     ', head)
-    print('Neck:     ', neck)
-    print('Neighbour:', neighbour)
-    print('Neck delta:       ', neck_delta)
-    print('Neighbour delta:  ', neighbour_delta)
-    print('Delta:            ', delta)
-
     if neck_delta in (1, -1) and neighbour_delta in (1j, -1j):
-        print('Conjugating delta')
         delta = delta.conjugate()
-        print('New delta:        ', delta)
 
     direction = DIRECTIONS[delta]
-
-    print('=== Direction:         ', direction)
     return direction
 
 
@@ -81,7 +68,7 @@ def get_head_neighbours(field):
     neck = field['1'].copy().pop()
     cherry = field['C']
 
-    metrics = ((neighbour, get_relative_direction(neck, head, neighbour, field))
+    metrics = ((neighbour, get_relative_direction(neck, head, neighbour))
                for neighbour in field[EMPTY] | cherry
                if abs(neighbour - head) < 1.4)
 
@@ -94,32 +81,24 @@ def find_path(field, goal, check_escape=True):
     while q:
         priority, _, field, path = heappop(q)
 
-        # print('Popping:')
-        # print('    Priority:', priority)
-        # print('    Path:', path)
-        # print_field(field)
-
         metrics = get_head_neighbours(field)
         for neighbour, direction in metrics:
             priority = abs(neighbour - goal)
             new_field, tail = move_snake(field, neighbour, goal)
 
-            # print('Neighbour:', neighbour)
-            # print('    Direction:', direction)
-            # print('    Priority:', priority)
-            # print('    Tick:', tick)
-            # print('New field:')
-            # print_field(new_field)
-
             new_path = path + direction
 
             if neighbour == goal:
-                print('Goal reached')
+
                 if check_escape:
-                    print('Tail:', tail)
+                    print('    Proposed path:', new_path)
                     escape_path = find_path(new_field, tail.copy().pop(), check_escape=False)
-                    print('Escape path:', escape_path)
-                    if escape_path is None:
+                    if escape_path:
+                        print('    Escape possible to:', tail.copy().pop())
+                        print('    Escape path:', escape_path)
+                        print('Path accepted:', new_path)
+                    else:
+                        print('    But no escape!')
                         continue
 
                 return new_path
@@ -141,7 +120,7 @@ def move_snake(field, neighbour, goal):
     new_snake = new_head + new_snake_without_head
 
     new_field = {key: value.copy() if isinstance(value, set)
-                 else value
+    else value
                  for key, value in field.items()}
 
     new_field[EMPTY] -= {neighbour}
@@ -169,12 +148,9 @@ def snake(field_map):
     for cherry in cherries:
         print('Going for cherry:', cherry)
         other_cherries = cherries - {cherry}
-        print('Other cherries:', other_cherries)
 
         field[CHERRY] = {cherry}
         field[TREE] |= other_cherries
-        print('Field CHERRY :', field[CHERRY])
-        print('Field TREE :', field[TREE])
 
         path = find_path(field, cherry)
         paths.append(path)
@@ -267,16 +243,16 @@ if __name__ == '__main__':
                 field_map = pack_map(temp_map)
 
 
-    # snake([".T.....T..",
-    #        ".C........",
-    #        ".....T....",
-    #        "..T....T..",
-    #        "..........",
-    #        ".0...T....",
-    #        ".1........",
-    #        ".2.T...T..",
-    #        ".3...T....",
-    #        ".4........"])
+    # assert snake([".T.....T..",
+    #               ".C........",
+    #               ".....T....",
+    #               "..T....T..",
+    #               "..........",
+    #               ".0...T....",
+    #               ".1........",
+    #               ".2.T...T..",
+    #               ".3...T....",
+    #               ".4........"]) == 'FFFF', "Single map"
 
     # assert check_solution(snake, [
     #     ".T.....T..",
@@ -290,26 +266,27 @@ if __name__ == '__main__':
     #     ".3...T....",
     #     ".4........"]), "Basic map"
 
-    # assert check_solution(snake, [
-    #     "..T....T.C",
-    #     ".......T..",
-    #     "...TTT....",
-    #     "..T....T..",
-    #     "..T...T...",
-    #     ".0T..T....",
-    #     ".1........",
-    #     ".2.T..TT..",
-    #     ".3..TT....",
-    #     ".4........"]), "Extra map"
+    for _ in range(10):
+        assert check_solution(snake, [
+            "..T....T.C",
+            ".......T..",
+            "...TTT....",
+            "..T....T..",
+            "..T...T...",
+            ".0T..T....",
+            ".1........",
+            ".2.T..TT..",
+            ".3..TT....",
+            ".4........"]), "Extra map"
 
-    assert check_solution(snake, [
-         ".T.....T..",
-         ".C........",
-         ".....T....",
-         "..T....T..",
-         "..........",
-         ".0...T....",
-         ".1...C....",
-         ".2.T...T..",
-         ".3...T....",
-         ".4........"])
+    # assert check_solution(snake, [
+    #      ".T.....T..",
+    #      ".C........",
+    #      ".....T....",
+    #      "..T....T..",
+    #      "..........",
+    #      ".0...T....",
+    #      ".1...C....",
+    #      ".2.T...T..",
+    #      ".3...T....",
+    #      ".4........"]), "Two cherries"
