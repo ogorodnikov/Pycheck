@@ -67,14 +67,15 @@ def get_relative_direction(neck, head, neighbour):
 def get_head_neighbours(field, is_escape):
     head = field['0'].copy().pop()
     neck = field['1'].copy().pop()
-    cherry = field['C']
 
-    allowed_cells = field[EMPTY] | cherry
     if is_escape:
-        allowed_cells |= field[OTHER_CHERRY]
+        allowed_cells = field[EMPTY] | field[CHERRY] | field[OTHER_CHERRY]
+    else:
+        allowed_cells = field[EMPTY] | field[CHERRY]
+
     metrics = ((neighbour, get_relative_direction(neck, head, neighbour))
                for neighbour in allowed_cells
-               if abs(neighbour - head) < 1.4)
+               if 0 < abs(neighbour - head) < 1.4)
 
     return metrics
 
@@ -163,13 +164,12 @@ def snake(field_map):
 
         field[CHERRY] = {cherry}
         field[OTHER_CHERRY] = other_cherries
-        print('Field OTHER CHERRY :', field[OTHER_CHERRY])
 
         path = find_path(field, cherry)
         paths.append(path)
 
     print('Paths:', paths)
-    shortest_path = min(paths, key=len)
+    shortest_path = min(filter(None, paths), key=len)
     print('Shortest path:', shortest_path)
     print()
     return shortest_path
@@ -266,7 +266,7 @@ if __name__ == '__main__':
     #               ".2.T...T..",
     #               ".3...T....",
     #               ".4........"]) == 'FFFF', "Single map"
-
+    #
     # assert check_solution(snake, [
     #     ".T.....T..",
     #     ".C........",
@@ -278,7 +278,7 @@ if __name__ == '__main__':
     #     ".2.T...T..",
     #     ".3...T....",
     #     ".4........"]), "Basic map"
-
+    #
     # assert snake(["..T....T..",
     #               ".C.....T..",
     #               "...TTT....",
@@ -289,8 +289,8 @@ if __name__ == '__main__':
     #               "...T..TT..",
     #               "....TT....",
     #               ".........."]), "1+j1"
-
-    # for _ in range(100):
+    #
+    # for _ in range(10):
     #     assert check_solution(snake, [
     #         "..T....T.C",
     #         ".......T..",
@@ -302,7 +302,7 @@ if __name__ == '__main__':
     #         ".2.T..TT..",
     #         ".3..TT....",
     #         ".4........"]), "Extra map"
-
+    #
     # assert check_solution(snake, [
     #      ".T.....T..",
     #      ".C........",
@@ -315,13 +315,14 @@ if __name__ == '__main__':
     #      ".3...T....",
     #      ".4........"]), "Two cherries"
 
-    assert check_solution(snake, ["..........",
-                                  "..T.T.....",
-                                  "..T.T.....",
-                                  "..T.T.....",
-                                  "..T.T.....",
-                                  "..T.TTTTT.",
-                                  "..TC......",
-                                  "..TTTTTTT.",
-                                  "..654321..",
-                                  "..C....0.."]), "Extra 3"
+    for _ in range(10):
+        assert check_solution(snake, ["..........",
+                                      "..T.T.....",
+                                      "..T.T.....",
+                                      "..T.T.....",
+                                      "..T.T.....",
+                                      "..T.TTTTT.",
+                                      "..TC......",
+                                      "..TTTTTTT.",
+                                      "..654321..",
+                                      "..C....0.."]), "Extra 3"
