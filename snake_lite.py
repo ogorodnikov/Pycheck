@@ -51,15 +51,28 @@ def field_map_to_dict(field_map):
     return field_dict
 
 
-def get_relative_direction(neck, head, neighbour):
+def get_relative_direction(neck, head, neighbour, field):
     neck_delta = neck - head
     neighbour_delta = neighbour - head
     delta = neck_delta * neighbour_delta
 
+    print()
+    print_field(field)
+    print('Head:     ', head)
+    print('Neck:     ', neck)
+    print('Neighbour:', neighbour)
+    print('Neck delta:       ', neck_delta)
+    print('Neighbour delta:  ', neighbour_delta)
+    print('Delta:            ', delta)
+
     if neck_delta in (1, -1) and neighbour_delta in (1j, -1j):
+        print('Conjugating delta')
         delta = delta.conjugate()
+        print('New delta:        ', delta)
 
     direction = DIRECTIONS[delta]
+
+    print('=== Direction:         ', direction)
     return direction
 
 
@@ -68,7 +81,7 @@ def get_head_neighbours(field):
     neck = field['1'].copy().pop()
     cherry = field['C']
 
-    metrics = ((neighbour, get_relative_direction(neck, head, neighbour))
+    metrics = ((neighbour, get_relative_direction(neck, head, neighbour, field))
                for neighbour in field[EMPTY] | cherry
                if abs(neighbour - head) < 1.4)
 
@@ -145,6 +158,7 @@ def move_snake(field, neighbour, goal):
 
 
 def snake(field_map):
+    print('New map:')
     print_map(field_map)
 
     field = field_map_to_dict(field_map)
@@ -153,7 +167,15 @@ def snake(field_map):
 
     paths = []
     for cherry in cherries:
-        print('Cherry:', cherry)
+        print('Going for cherry:', cherry)
+        other_cherries = cherries - {cherry}
+        print('Other cherries:', other_cherries)
+
+        field[CHERRY] = {cherry}
+        field[TREE] |= other_cherries
+        print('Field CHERRY :', field[CHERRY])
+        print('Field TREE :', field[TREE])
+
         path = find_path(field, cherry)
         paths.append(path)
 
