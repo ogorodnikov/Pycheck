@@ -14,11 +14,9 @@ TICK_LIMIT = 10000
 
 def field_map_to_dict(field_map):
     field_dict = defaultdict(set)
-
     for y, row in enumerate(field_map):
         for x, cell in enumerate(row):
             field_dict[cell].add(complex(x, y))
-
     return field_dict
 
 
@@ -26,18 +24,14 @@ def get_head_neighbours(field, is_escape):
     head = field['0'].copy().pop()
     neck = field['1'].copy().pop()
 
-    if is_escape:
-        allowed_cells = field[EMPTY] | field[CHERRY] | field[OTHER_CHERRY]
-    else:
-        allowed_cells = field[EMPTY] | field[CHERRY]
+    allowed_cells = field[EMPTY] | field[CHERRY] | (field[OTHER_CHERRY] if is_escape else set())
+    # allowed_cells = field[EMPTY] | field[CHERRY] | set(filter(lambda _: is_escape, field[OTHER_CHERRY]))
 
-    allowed_cells -= {neck}
-
-    metrics = ((neighbour, DIRECTIONS[(neighbour - head) / (head - neck)])
-               for neighbour in allowed_cells
-               if 0 < abs(neighbour - head) < 1.4)
-
-    return metrics
+    for neighbour in allowed_cells - {neck}:
+        if 0 < abs(neighbour - head) < 1.4:
+            complex_quotient = (neighbour - head) / (head - neck)
+            direction = DIRECTIONS[complex_quotient]
+            yield neighbour, direction
 
 
 def find_path(field, goal, is_escape=False):
