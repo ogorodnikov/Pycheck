@@ -9,7 +9,6 @@ SNAKE_HEAD = '0'
 SNAKE = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'}
 EMPTY = '.'
 DIRECTIONS = {-1j: 'L', 1: 'F', 1j: 'R'}
-TICK_LIMIT = 10000
 
 
 def field_map_to_dict(field_map):
@@ -41,16 +40,13 @@ def find_path(field, goal, is_escape=False):
         priority, _, field, path = heappop(q)
 
         # print('>>> Popping:')
-        # print('Path:', path)
         # print_field(field)
-
-        if tick >= TICK_LIMIT:
-            # print('    Tick limit reached:', tick)
-            return None
+        # print('Path:    ', path)
 
         for neighbour, direction in get_head_neighbours(field, is_escape=is_escape):
 
-            priority = abs(neighbour - goal) * len(path)
+            priority = abs(neighbour - goal) * len(path) ** 2
+
             new_field, tail = move_snake(field, neighbour, goal)
             new_path = path + direction
 
@@ -242,20 +238,20 @@ if __name__ == '__main__':
                 field_map = pack_map(temp_map)
 
 
-    for _ in range(10):
-        assert check_solution(snake, [
-            "..T....T.C",
-            ".......T..",
-            "...TTT....",
-            "..T....T..",
-            "..T...T...",
-            ".0T..T....",
-            ".1........",
-            ".2.T..TT..",
-            ".3..TT....",
-            ".4........"]), "Extra map"
+    # for _ in range(100):
+    #     assert check_solution(snake, [
+    #         "..T....T.C",
+    #         ".......T..",
+    #         "...TTT....",
+    #         "..T....T..",
+    #         "..T...T...",
+    #         ".0T..T....",
+    #         ".1........",
+    #         ".2.T..TT..",
+    #         ".3..TT....",
+    #         ".4........"]), "Extra map"
 
-    for _ in range(10):
+    for _ in range(100):
         assert check_solution(snake, [
             "..........",
             "..T.T.....",
