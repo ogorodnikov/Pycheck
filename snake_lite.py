@@ -90,7 +90,7 @@ def move_snake(field, neighbour, goal):
     new_snake = new_head + new_snake_without_head
 
     new_field = {key: value.copy() if isinstance(value, set)
-                 else value
+    else value
                  for key, value in field.items()}
 
     new_field[EMPTY] -= {neighbour}
@@ -242,73 +242,28 @@ if __name__ == '__main__':
                 field_map = pack_map(temp_map)
 
 
-    # assert snake([".T.....T..",
-    #               ".C........",
-    #               ".....T....",
-    #               "..T....T..",
-    #               "..........",
-    #               ".0...T....",
-    #               ".1........",
-    #               ".2.T...T..",
-    #               ".3...T....",
-    #               ".4........"]) == 'FFFF', "Single map"
-    #
-    # assert check_solution(snake, [
-    #     ".T.....T..",
-    #     ".C........",
-    #     ".....T....",
-    #     "..T....T..",
-    #     "..........",
-    #     ".0...T....",
-    #     ".1........",
-    #     ".2.T...T..",
-    #     ".3...T....",
-    #     ".4........"]), "Basic map"
-    #
-    # assert snake(["..T....T..",
-    #               ".C.....T..",
-    #               "...TTT....",
-    #               "..T....T..",
-    #               "..T...T6..",
-    #               "..T.0T45..",
-    #               "....123...",
-    #               "...T..TT..",
-    #               "....TT....",
-    #               ".........."]), "1+j1"
-    #
-    # for _ in range(100):
-    #     assert check_solution(snake, [
-    #         "..T....T.C",
-    #         ".......T..",
-    #         "...TTT....",
-    #         "..T....T..",
-    #         "..T...T...",
-    #         ".0T..T....",
-    #         ".1........",
-    #         ".2.T..TT..",
-    #         ".3..TT....",
-    #         ".4........"]), "Extra map"
-    #
-    # assert check_solution(snake, [
-    #      ".T.....T..",
-    #      ".C........",
-    #      ".....T....",
-    #      "..T....T..",
-    #      "..........",
-    #      ".0...T....",
-    #      ".1...C....",
-    #      ".2.T...T..",
-    #      ".3...T....",
-    #      ".4........"]), "Two cherries"
+    for _ in range(10):
+        assert check_solution(snake, [
+            "..T....T.C",
+            ".......T..",
+            "...TTT....",
+            "..T....T..",
+            "..T...T...",
+            ".0T..T....",
+            ".1........",
+            ".2.T..TT..",
+            ".3..TT....",
+            ".4........"]), "Extra map"
 
     for _ in range(10):
-        assert check_solution(snake, ["..........",
-                                      "..T.T.....",
-                                      "..T.T.....",
-                                      "..T.T.....",
-                                      "..T.T.....",
-                                      "..T.TTTTT.",
-                                      "..TC......",
-                                      "..TTTTTTT.",
-                                      "..654321..",
-                                      "..C....0.."]), "Extra 3"
+        assert check_solution(snake, [
+            "..........",
+            "..T.T.....",
+            "..T.T.....",
+            "..T.T.....",
+            "..T.T.....",
+            "..T.TTTTT.",
+            "..TC......",
+            "..TTTTTTT.",
+            "..654321..",
+            "..C....0.."]), "Extra 3"
