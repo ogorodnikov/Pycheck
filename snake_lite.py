@@ -27,10 +27,46 @@ def get_relative_direction(neck, head, neighbour):
     neighbour_delta = neighbour - head
     delta = neck_delta * neighbour_delta
 
+    conjugated_delta = delta
     if neck_delta in (1, -1) and neighbour_delta in (1j, -1j):
-        delta = delta.conjugate()
+        conjugated_delta = delta.conjugate()
 
-    direction = DIRECTIONS[delta]
+    # if neck_delta / neighbour_delta != conjugated_delta or True:
+    #     print(neck_delta / neighbour_delta == conjugated_delta)
+    #     print('Neck / neighbour: ', neck_delta / neighbour_delta)
+    #     print('Neighbour / neck: ', neighbour_delta / neck_delta)
+    #     print('-Neck / neighbour:', -neck_delta / neighbour_delta)
+    #     print('Neighbour / -neck:', neighbour_delta / -neck_delta)
+    #     print('Neck / -neighbour:', neck_delta / -neighbour_delta)
+    #     print('-Neighbour / neck:', -neighbour_delta / neck_delta)
+    #     print('Delta:            ', delta)
+    #     if conjugated_delta != delta:
+    #         print('Conjugated delta: ', conjugated_delta)
+    #     print()
+
+    # complex_list = (1 + 0j, 0 + 1j, -1 + 0j, 0 - 1j)
+    # for a in complex_list:
+    #     for b in complex_list:
+    #         print(f'{a:10}, {b:10}, {a/b:10}')
+
+    delta_neigh = neighbour - head
+    delta_head = head - neck
+    quotient = delta_neigh / delta_head
+
+    if quotient == -1:
+
+        print('Neighbour:  ', neighbour)
+        print('Head:       ', head)
+        print('Neck:       ', neck)
+        print()
+        print('Delta neigh:', delta_neigh)
+        print('Delta head: ', delta_head)
+        print('Quotient:   ', quotient)
+        print('Conjugated: ', conjugated_delta)
+        print()
+        raise
+
+    direction = DIRECTIONS[conjugated_delta]
     return direction
 
 
@@ -42,6 +78,8 @@ def get_head_neighbours(field, is_escape):
         allowed_cells = field[EMPTY] | field[CHERRY] | field[OTHER_CHERRY]
     else:
         allowed_cells = field[EMPTY] | field[CHERRY]
+
+    allowed_cells -= {neck}
 
     metrics = ((neighbour, get_relative_direction(neck, head, neighbour))
                for neighbour in allowed_cells
@@ -292,7 +330,7 @@ if __name__ == '__main__':
     #               "....TT....",
     #               ".........."]), "1+j1"
     #
-    # for _ in range(10):
+    # for _ in range(100):
     #     assert check_solution(snake, [
     #         "..T....T.C",
     #         ".......T..",
@@ -317,26 +355,14 @@ if __name__ == '__main__':
     #      ".3...T....",
     #      ".4........"]), "Two cherries"
 
-    for _ in range(1):
-        assert check_solution(snake, ["..........",
-                                      "..T.T.....",
-                                      "..T.T.....",
-                                      "..T.T.....",
-                                      "..T.T.....",
-                                      "..T.TTTTT.",
-                                      "..TC......",
-                                      "..TTTTTTT.",
-                                      "..654321..",
-                                      "..C....0.."]), "Extra 3"
-
-
-# 0 ..........
-# 1 ..T.T.....
-# 2 ..T.T.....
-# 3 ..TCT.....
-# 4 ..T.T.....
-# 5 ..T.TTTTT.
-# 6 ..TC......
-# 7 ..TTTTTTT.
-# 8 ......76..
-# 9 ..012345..
+    # for _ in range(100):
+    #     assert check_solution(snake, ["..........",
+    #                                   "..T.T.....",
+    #                                   "..T.T.....",
+    #                                   "..T.T.....",
+    #                                   "..T.T.....",
+    #                                   "..T.TTTTT.",
+    #                                   "..TC......",
+    #                                   "..TTTTTTT.",
+    #                                   "..654321..",
+    #                                   "..C....0.."]), "Extra 3"
