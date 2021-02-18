@@ -107,27 +107,28 @@ def move_snake(field, neighbour, goal):
 
 
 def snake(field_map):
-    print('New map:')
+    print('New field map:')
     print_map(field_map)
+    print()
 
     field = field_map_to_dict(field_map)
     cherries = field[CHERRY]
-    print('Cherries:', cherries)
+    print('Cherries:          ', cherries)
 
     paths = []
     for cherry in cherries:
-        print('Going for cherry:', cherry)
-        other_cherries = cherries - {cherry}
+        print('Going for cherry:  ', cherry)
 
         field[CHERRY] = {cherry}
-        field[OTHER_CHERRY] = other_cherries
+        field[OTHER_CHERRY] = cherries - {cherry}
 
         path = find_path(field, cherry)
         paths.append(path)
 
-    print('Paths:', paths)
     shortest_path = min(filter(None, paths), key=len)
-    print('Shortest path:', shortest_path)
+
+    print('Paths:             ', paths)
+    print('Shortest path:     ', shortest_path)
     print()
     return shortest_path
 
