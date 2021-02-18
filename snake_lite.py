@@ -8,7 +8,7 @@ TREE = 'T'
 SNAKE_HEAD = '0'
 SNAKE = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'}
 EMPTY = '.'
-DIRECTIONS = {-1j: 'L', 1: 'F', -1: 'F', 1j: 'R'}
+DIRECTIONS = {-1j: 'L', 1: 'F', 1j: 'R'}
 TICK_LIMIT = 10000
 
 
@@ -22,54 +22,6 @@ def field_map_to_dict(field_map):
     return field_dict
 
 
-def get_relative_direction(neck, head, neighbour):
-    neck_delta = neck - head
-    neighbour_delta = neighbour - head
-    delta = neck_delta * neighbour_delta
-
-    conjugated_delta = delta
-    if neck_delta in (1, -1) and neighbour_delta in (1j, -1j):
-        conjugated_delta = delta.conjugate()
-
-    # if neck_delta / neighbour_delta != conjugated_delta or True:
-    #     print(neck_delta / neighbour_delta == conjugated_delta)
-    #     print('Neck / neighbour: ', neck_delta / neighbour_delta)
-    #     print('Neighbour / neck: ', neighbour_delta / neck_delta)
-    #     print('-Neck / neighbour:', -neck_delta / neighbour_delta)
-    #     print('Neighbour / -neck:', neighbour_delta / -neck_delta)
-    #     print('Neck / -neighbour:', neck_delta / -neighbour_delta)
-    #     print('-Neighbour / neck:', -neighbour_delta / neck_delta)
-    #     print('Delta:            ', delta)
-    #     if conjugated_delta != delta:
-    #         print('Conjugated delta: ', conjugated_delta)
-    #     print()
-
-    # complex_list = (1 + 0j, 0 + 1j, -1 + 0j, 0 - 1j)
-    # for a in complex_list:
-    #     for b in complex_list:
-    #         print(f'{a:10}, {b:10}, {a/b:10}')
-
-    delta_neigh = neighbour - head
-    delta_head = head - neck
-    quotient = delta_neigh / delta_head
-
-    if quotient == -1:
-
-        print('Neighbour:  ', neighbour)
-        print('Head:       ', head)
-        print('Neck:       ', neck)
-        print()
-        print('Delta neigh:', delta_neigh)
-        print('Delta head: ', delta_head)
-        print('Quotient:   ', quotient)
-        print('Conjugated: ', conjugated_delta)
-        print()
-        raise
-
-    direction = DIRECTIONS[conjugated_delta]
-    return direction
-
-
 def get_head_neighbours(field, is_escape):
     head = field['0'].copy().pop()
     neck = field['1'].copy().pop()
@@ -81,7 +33,7 @@ def get_head_neighbours(field, is_escape):
 
     allowed_cells -= {neck}
 
-    metrics = ((neighbour, get_relative_direction(neck, head, neighbour))
+    metrics = ((neighbour, DIRECTIONS[(neighbour - head) / (head - neck)])
                for neighbour in allowed_cells
                if 0 < abs(neighbour - head) < 1.4)
 
@@ -355,14 +307,14 @@ if __name__ == '__main__':
     #      ".3...T....",
     #      ".4........"]), "Two cherries"
 
-    # for _ in range(100):
-    #     assert check_solution(snake, ["..........",
-    #                                   "..T.T.....",
-    #                                   "..T.T.....",
-    #                                   "..T.T.....",
-    #                                   "..T.T.....",
-    #                                   "..T.TTTTT.",
-    #                                   "..TC......",
-    #                                   "..TTTTTTT.",
-    #                                   "..654321..",
-    #                                   "..C....0.."]), "Extra 3"
+    for _ in range(10):
+        assert check_solution(snake, ["..........",
+                                      "..T.T.....",
+                                      "..T.T.....",
+                                      "..T.T.....",
+                                      "..T.T.....",
+                                      "..T.TTTTT.",
+                                      "..TC......",
+                                      "..TTTTTTT.",
+                                      "..654321..",
+                                      "..C....0.."]), "Extra 3"
