@@ -45,32 +45,31 @@ def find_path(field, goal, is_escape=False):
         # print_field(field)
 
         if tick >= TICK_LIMIT:
-            print('    Tick limit reached:', tick)
+            # print('    Tick limit reached:', tick)
             return None
 
-        metrics = get_head_neighbours(field, is_escape=is_escape)
-        for neighbour, direction in metrics:
+        for neighbour, direction in get_head_neighbours(field, is_escape=is_escape):
+
             priority = abs(neighbour - goal) * len(path)
             new_field, tail = move_snake(field, neighbour, goal)
-
             new_path = path + direction
 
-            # print('Neighbour:', neighbour)
+            # print('+++ Neighbour:', neighbour)
             # print('New field:')
             # print_field(new_field)
 
             if neighbour == goal:
 
                 if not is_escape:
-                    print('    Proposed path:', new_path)
-                    escape_path = find_path(new_field, tail.copy().pop(), is_escape=True)
-                    if escape_path:
-                        print('    Escape possible to:', tail.copy().pop())
-                        print('    Escape path:', escape_path)
-                        print('Path accepted:', new_path)
-                    else:
+                    print('    Proposed path: ', new_path)
+                    escape_path = find_path(new_field, tail, is_escape=True)
+                    if not escape_path:
                         print('    But no escape!')
                         continue
+
+                    print('    Escape to tail:', tail)
+                    print('    Escape path:   ', escape_path)
+                    print('Path accepted:     ', new_path)
 
                 return new_path
 
@@ -91,7 +90,7 @@ def move_snake(field, neighbour, goal):
     new_snake = new_head + new_snake_without_head
 
     new_field = {key: value.copy() if isinstance(value, set)
-    else value
+                 else value
                  for key, value in field.items()}
 
     new_field[EMPTY] -= {neighbour}
@@ -104,7 +103,7 @@ def move_snake(field, neighbour, goal):
         new_field[EMPTY] -= tail
         new_field[str(tail_index + 1)] = tail
 
-    return new_field, tail
+    return new_field, tail.copy().pop()
 
 
 def snake(field_map):
