@@ -78,23 +78,38 @@ def find_path(field, goal, is_escape=False):
 
 def move_snake(field, neighbour, goal):
     snake_cells = list(map(str, sorted(map(int, field.keys() & SNAKE))))
+    print()
+    print('Snake cells:', snake_cells)
+
     snake_cells_without_head = snake_cells[1:]
+    print('Snake cells without head:', snake_cells_without_head)
+
     tail_index = max(map(int, snake_cells))
+    print('Tail index:', tail_index)
     tail = field[str(tail_index)]
+    print('Tail:', tail)
 
     new_snake_without_head = list(zip(snake_cells_without_head,
                                       (field[cell]
                                        for cell in snake_cells)))
+    print('New snake without head:', new_snake_without_head)
     new_head = [(SNAKE_HEAD, {neighbour})]
+    print('New head:', new_head)
     new_snake = new_head + new_snake_without_head
+    print('New snake:', new_snake)
 
-    new_field = {key: value.copy() if isinstance(value, set)
-                 else value
-                 for key, value in field.items()}
+    new_snake = list(zip(snake_cells, [{neighbour}] + [field[cell] for cell in snake_cells]))
+    print('New snake:', new_snake)
+
+    new_field = {key: value.copy() for key, value in field.items()}
 
     new_field[EMPTY] -= {neighbour}
     new_field[EMPTY] |= tail
     new_field.update(new_snake)
+
+    print_field(new_field)
+
+
 
     if neighbour == goal:
         # print('Expanding snake)')
