@@ -6,8 +6,11 @@ CHERRY = 'C'
 OTHER_CHERRY = '*'
 TREE = 'T'
 SNAKE_HEAD = '0'
-SNAKE = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'}
 EMPTY = '.'
+
+# https://github.com/mame/quine-relay
+SNAKE_LIMIT = 128
+SNAKE = set(map(str, range(SNAKE_LIMIT)))
 DIRECTIONS = {-1j: 'L', 1: 'F', 1j: 'R'}
 
 
@@ -86,7 +89,7 @@ def move_snake(field, neighbour, goal):
     new_snake = new_head + new_snake_without_head
 
     new_field = {key: value.copy() if isinstance(value, set)
-    else value
+                 else value
                  for key, value in field.items()}
 
     new_field[EMPTY] -= {neighbour}
