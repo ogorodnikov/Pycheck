@@ -1,5 +1,6 @@
+from cmath import phase
 from collections import defaultdict
-from itertools import product
+from itertools import product, permutations
 from typing import List
 
 BAT = 'B'
@@ -16,21 +17,31 @@ def map_to_field(bunker_map):
     return field
 
 
-def get_wall_corners(field):
-    wall_corners = []
+def check_connection(bat_a, bat_b, wall):
+    print('Bat a:', bat_a)
+    print('Bat b:', bat_b)
 
-    for wall in field[WALL]:
-        print('Wall:', wall)
-        corners = []
+    wall_corners = [wall + complex(*delta) for delta in product((-0.5, 0.5), repeat=2)]
+    print('Wall corners:', wall_corners)
 
-        for delta in product((0, 1), repeat=2):
-            print('Delta:', delta)
-            corners.append(wall + complex(*delta))
+    bat_a_to_corners_vectors = [wall_corner - bat_a for wall_corner in wall_corners]
+    print('Bat a to wall corners vectors:', bat_a_to_corners_vectors)
 
-        print('Corners:', corners)
-        wall_corners.append(corners)
+    angles = [phase(vector) for vector in bat_a_to_corners_vectors]
+    print('Angles:', angles)
 
-    return wall_corners
+    min_angle = min(angles)
+    max_angle = max(angles)
+    print('Min angle:', min_angle)
+    print('Max angle:', max_angle)
+
+    bat_a_to_b_angle = phase(bat_b - bat_a)
+    print('Bat a to b angle:', bat_a_to_b_angle)
+
+    is_connected = not(min_angle <= bat_a_to_b_angle <= max_angle)
+    print('Is connected:', is_connected)
+    print()
+    return is_connected
 
 
 def checkio(bunker: List[str]) -> [int, float]:
@@ -39,8 +50,19 @@ def checkio(bunker: List[str]) -> [int, float]:
     field = map_to_field(bunker)
     print('Field:', field)
 
-    wall_corners = get_wall_corners(field)
-    print('Wall corners:', wall_corners)
+    # bat_2 = field[BAT].pop()
+    # bat_1 = field[BAT].pop()
+    # wall = field[WALL].pop()
+    # print('Bat 1:', bat_1)
+    # print('Bat 2:', bat_2)
+    # print('Wall:', wall)
+    #
+    # check_connection(bat_1, bat_2, wall)
+
+    for bat_a, bat_b in permutations(field[BAT], 2):
+        for wall in field[WALL]:
+            check_connection(bat_a, bat_b, wall)
+
 
 
 
