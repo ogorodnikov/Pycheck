@@ -1,4 +1,5 @@
 from collections import defaultdict
+from itertools import product
 from typing import List
 
 BAT = 'B'
@@ -8,11 +9,28 @@ EMPTY = '-'
 
 
 def map_to_field(bunker_map):
-    field = defaultdict(set)
+    field = defaultdict(list)
     for y, row in enumerate(bunker_map):
         for x, cell in enumerate(row):
-            field[cell] |= {complex(x, y)}
+            field[cell].append(complex(x, y))
     return field
+
+
+def get_wall_corners(field):
+    wall_corners = []
+
+    for wall in field[WALL]:
+        print('Wall:', wall)
+        corners = []
+
+        for delta in product((0, 1), repeat=2):
+            print('Delta:', delta)
+            corners.append(wall + complex(*delta))
+
+        print('Corners:', corners)
+        wall_corners.append(corners)
+
+    return wall_corners
 
 
 def checkio(bunker: List[str]) -> [int, float]:
@@ -20,6 +38,13 @@ def checkio(bunker: List[str]) -> [int, float]:
 
     field = map_to_field(bunker)
     print('Field:', field)
+
+    wall_corners = get_wall_corners(field)
+    print('Wall corners:', wall_corners)
+
+
+
+
 
     return 4
 
