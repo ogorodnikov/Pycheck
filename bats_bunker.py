@@ -1,4 +1,4 @@
-from cmath import phase
+from cmath import phase, polar, sin, pi, tau
 from collections import defaultdict
 from itertools import product, permutations
 from typing import List
@@ -21,6 +21,7 @@ def map_to_field(bunker_map):
 def check_connection(bat_a, bat_b, wall):
     print('Bat a:', bat_a)
     print('Bat b:', bat_b)
+    print('--- Wall:', wall)
 
     wall_corners = [wall + complex(*delta) for delta in product((-0.5, 0.5), repeat=2)]
     print('    Wall corners:', wall_corners)
@@ -31,12 +32,12 @@ def check_connection(bat_a, bat_b, wall):
     angles = [phase(vector) for vector in bat_a_to_corners_vectors]
     print('    Angles:', angles)
 
-    min_angle = min(angles)
-    max_angle = max(angles)
+    min_angle = min(angles) % tau
+    max_angle = max(angles) % tau
     print('    Min angle:', min_angle)
     print('    Max angle:', max_angle)
 
-    bat_a_to_b_angle = phase(bat_b - bat_a)
+    bat_a_to_b_angle = phase(bat_b - bat_a) % tau
     print('    Bat a to b angle:', bat_a_to_b_angle)
 
     bat_a_to_wall_distance = abs(wall - bat_a)
@@ -125,6 +126,14 @@ def checkio(bunker: List[str]) -> [int, float]:
     shortest_path = find_shortest_path(CAVE_ENTRANCE, field[ALPHA_BAT].copy().pop(), bat_connections)
     print('Shortest path:', shortest_path)
     print()
+
+    # n = 16
+    # for angle in (1j ** (i / n * 4) for i in range(n + 1)):
+    #     print('Phase:', phase(angle))
+    #     print('Polar:', polar(angle))
+    #     print('Phase angle 2 pi:', phase(angle) % tau)
+    #     print()
+
     return shortest_path
 
 
@@ -147,12 +156,15 @@ if __name__ == '__main__':
     # assert almost_equal(checkio([
     #     "B--",
     #     "-BA",
-    #     "--W"]), 2.24), "2nd example"
+    #     "--W"]), 2.24)
 
     assert almost_equal(checkio([
-        "BWB--B",
-        "-W-WW-",
-        "B-BWAB"]), 12), "3rd example"
+        "BWA"]), float('inf'))
+
+    # assert almost_equal(checkio([
+    #     "BWB--B",
+    #     "-W-WW-",
+    #     "B-BWAB"]), 12), "3rd example"
 
     # assert almost_equal(checkio([
     #     "B---B-",
