@@ -37,13 +37,15 @@ def check_connection(bat_a, bat_b, wall):
     print('    Min angle:                    ', min_angle)
     print('    Max angle:                    ', max_angle)
 
-    alt_angles = [phase(vector) for vector in bat_a_to_corners_vectors]
-    print('    Alt angles:                   ', alt_angles)
+    angle_delta = max_angle - min_angle
+    print('    Angle delta:                  ', angle_delta)
 
-    alt_min_angle = min(alt_angles)
-    alt_max_angle = max(alt_angles)
-    print('    Alt Min angle:                ', alt_min_angle)
-    print('    Alt Max angle:                ', alt_max_angle)
+    if angle_delta > pi:
+        print('        Angle delta > pi')
+
+        min_angle, max_angle = max_angle - tau, min_angle
+        print('        New min angle:            ', min_angle)
+        print('        New max angle:            ', max_angle)
 
     bat_a_to_b_angle = phase(bat_b - bat_a) % tau
     print('    Bat a to b angle:             ', bat_a_to_b_angle)
@@ -60,13 +62,7 @@ def check_connection(bat_a, bat_b, wall):
     is_in_sector = min_angle <= bat_a_to_b_angle <= max_angle
     print('    Is in sector:                 ', is_in_sector)
 
-    alt_is_in_sector = alt_min_angle <= bat_a_to_b_angle <= alt_max_angle
-    print('    Alt is in sector:             ', alt_is_in_sector)
-
-    is_in_sector_or_alt_sector = is_in_sector or alt_is_in_sector
-    print('    Is in sector or alt sector:   ', is_in_sector_or_alt_sector)
-
-    is_connected = not (is_in_sector_or_alt_sector and wall_is_closer_then_bat_b)
+    is_connected = not (is_in_sector and wall_is_closer_then_bat_b)
 
     print('Is connected:', is_connected)
     print()
@@ -175,18 +171,18 @@ if __name__ == '__main__':
     #     "-BA",
     #     "--W"]), 2.24)
 
-    # assert almost_equal(checkio([
-    #     "BWA"]), float('inf'))
+    assert almost_equal(checkio([
+        "BWA"]), float('inf'))
 
     # assert almost_equal(checkio([
     #       "--B",
     #       "-W-",
     #       "A--"]), float('inf'))
 
-    assert almost_equal(checkio([
-        "BWB--B",
-        "-W-WW-",
-        "B-BWAB"]), 12), "3rd example"
+    # assert almost_equal(checkio([
+    #     "BWB--B",
+    #     "-W-WW-",
+    #     "B-BWAB"]), 12), "3rd example"
 
     # assert almost_equal(checkio([
     #     "B---B-",
