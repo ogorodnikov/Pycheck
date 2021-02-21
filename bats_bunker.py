@@ -25,21 +25,11 @@ def map_to_field(bunker_map):
 
 def get_bat_connections(field):
     all_bats = field[BAT] + field[ALPHA_BAT]
-    # print('All bats:', all_bats)
-    # print()
 
     bat_connections = defaultdict(set)
     for bat_a, bat_b in permutations(all_bats, 2):
-        # print('Bat a:', bat_a)
-        # print('Bat b:', bat_b)
         if all(check_connection(bat_a, bat_b, wall) for wall in field[WALL]):
-            # print('=== Connected:', bat_a, bat_b)
-            # print()
             bat_connections[bat_a] |= {bat_b}
-        else:
-            # print('=== Not connected:', bat_a, bat_b)
-            # print()
-            pass
 
     return bat_connections
 
