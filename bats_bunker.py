@@ -108,63 +108,45 @@ def check_connection(bat_a, bat_b, wall):
 
 def find_shortest_path(start, goal, connections, path_len=0, level=0):
     global tick, min_path_len
-    print('Tick:', tick)
-    print('Start:', start)
-    print('Level:', level)
-    print('Min path length:', min_path_len)
+    # print('Tick:', tick)
+    # print('Start:', start)
+    # print('Level:', level)
+    # print('Min path length:', min_path_len)
+    # print()
 
     if start == goal:
         return 0
 
-    distances = []
+    min_total_distance = float('inf')
     for neighbour in connections[start]:
-        print('    Neighbour:', neighbour)
+        # print('    Neighbour:', neighbour)
 
         distance = abs(neighbour - start)
-        print('        Distance:', distance)
-
         new_path_len = path_len + distance
-        print('        New path len:', new_path_len)
+        # print('        New path len:', new_path_len)
 
         if new_path_len >= min_path_len:
-            print('        --- New path len reached already found minimum:', min_path_len)
+            # print('        --- Reached existing minimum:', min_path_len)
             continue
 
         if neighbour == goal:
-            print('        >>> Goal found')
-            print('        Distance:', distance)
-            print('        New path len:', new_path_len)
-
-            if new_path_len < min_path_len:
-                min_path_len = new_path_len
-                print('        +++ New Min path len', min_path_len)
-
-            return distance
+            # print('        >>> Goal found at:', new_path_len)
+            min_path_len = min(min_path_len, new_path_len)
+            return new_path_len
 
         new_connections = {key: {e for e in value} for key, value in connections.items()}
         new_connections[start] -= {neighbour}
         new_connections[neighbour] -= {start}
-        # print('        New connections:', new_connections)
 
         tick += 1
 
-        neighbour_to_goal_distance = find_shortest_path(neighbour, goal, new_connections, new_path_len, level + 1)
-        print('        Neighbour to goal distance:', neighbour_to_goal_distance)
+        total_distance = find_shortest_path(neighbour, goal, new_connections, new_path_len, level + 1)
+        # print('        Total distance:', total_distance)
 
-        total_distance = distance + neighbour_to_goal_distance
-        print('        Total distance:', total_distance)
+        min_total_distance = min(min_total_distance, total_distance)
 
-        distances.append(total_distance)
-
-    print('Distances from', start, ':', distances)
-
-    if not distances:
-        return float('inf')
-
-    min_distance = min(distances)
-    print('Min distance from', start, ':', min_distance)
-    print()
-    return min_distance
+    # print('Min total distance:', min_total_distance)
+    return min_total_distance
 
 
 def checkio(bunker: List[str]) -> [int, float]:
@@ -211,15 +193,15 @@ if __name__ == '__main__':
     #     "BWB--B",
     #     "-W-WW-",
     #     "B-BWAB"]), 12), "3rd example"
-
-    assert almost_equal(checkio([
-        "B---B-",
-        "-WWW-B",
-        "-WA--B",
-        "-W-B--",
-        "-WWW-B",
-        "B-BWB-"]), 9.24), "4th example"
-
+    #
+    # assert almost_equal(checkio([
+    #     "B---B-",
+    #     "-WWW-B",
+    #     "-WA--B",
+    #     "-W-B--",
+    #     "-WWW-B",
+    #     "B-BWB-"]), 9.24), "4th example"
+    #
     # assert almost_equal(checkio([
     #     "B-B--B-",
     #     "-W-W-W-",
@@ -229,14 +211,32 @@ if __name__ == '__main__':
     #     "BW-W-W-",
     #     "-B--B-B"]), 16), "Extra 5"
 
+    # assert almost_equal(checkio([
+    #     "B-B--B-B-B--B-B-B--B-",
+    #     "-W-W-W--W-W-W--W-W-W-",
+    #     "--B---B--B---B--B---B",
+    #     "BW-W-B-BW-W-B-BW-W-W-",
+    #     "----W------B------A--",
+    #     "BW-W-W-BW-W-W-BW-W-W-",
+    #     "-B--B-B-B--B-B-B--B-B"]), 24.83)
+
+    print(timeit(lambda: almost_equal(checkio([
+        "B-B--B-B-B--B-",
+        "-W-W-W--W-W-W-",
+        "--B---B--B---B",
+        "BW-W-W-BW-W-W-",
+        "----W------A--",
+        "BW-W-W-BW-W-W-",
+        "-B--B-B-B--B-B"]), 19), number=1))
+
     # print(timeit(lambda: almost_equal(checkio([
-    #     "B-B--B-B-B--B-",
-    #     "-W-W-W--W-W-W-",
-    #     "--B---B--B---B",
-    #     "BW-W-W-BW-W-W-",
-    #     "----W------A--",
-    #     "BW-W-W-BW-W-W-",
-    #     "-B--B-B-B--B-B"]), 16), number=1))
+    #     "B-B--B-B-B--B-B-B--B-",
+    #     "-W-W-W--W-W-W--W-W-W-",
+    #     "--B---B--B---B--B---B",
+    #     "BW-W-B-BW-W-B-BW-W-W-",
+    #     "----W------B------A--",
+    #     "BW-W-W-BW-W-W-BW-W-W-",
+    #     "-B--B-B-B--B-B-B--B-B"]), 24.83), number=1))
 
     ### Line tests
 
