@@ -106,7 +106,6 @@ def check_connection(bat_a, bat_b, wall):
         is_in_sector = min_angle <= bat_a_to_b_angle <= max_angle
         print('    Is in sector:                 ', is_in_sector)
 
-
     bat_a_to_wall_distance = abs(wall - bat_a)
     print('    Bat a to wall distance:       ', bat_a_to_wall_distance)
 
