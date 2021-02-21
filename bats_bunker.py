@@ -9,7 +9,7 @@ ALPHA_BAT = 'A'
 WALL = 'W'
 EMPTY = '-'
 CAVE_ENTRANCE = (0 + 0j)
-DELTAS = (0.5 - 0.5j), (-0.5 - 0.5j), (-0.5 + 0.5j), (+0.5 + 0.5j)
+WALL_DELTAS = (0.5 - 0.5j), (-0.5 - 0.5j), (-0.5 + 0.5j), (+0.5 + 0.5j)
 
 tick = 0
 min_path_len = float('inf')
@@ -28,8 +28,13 @@ def get_bat_connections(field):
 
     bat_connections = defaultdict(set)
     for bat_a, bat_b in permutations(all_bats, 2):
+        # print('Bat a:', bat_a)
+        # print('Bat b:', bat_b)
         if all(check_connection(bat_a, bat_b, wall) for wall in field[WALL]):
             bat_connections[bat_a] |= {bat_b}
+            # print('=== Connected:', bat_a, bat_b)
+        # else:
+        #     print('=== Not connected:', bat_a, bat_b)
 
     return bat_connections
 
@@ -37,7 +42,7 @@ def get_bat_connections(field):
 def check_connection(bat_a, bat_b, wall):
     # print('--- Wall:                         ', wall)
 
-    wall_corners = [wall + delta for delta in DELTAS]
+    wall_corners = [wall + delta for delta in WALL_DELTAS]
     # print('    Wall corners:                 ', wall_corners)
 
     bat_a_to_corners_vectors = [wall_corner - bat_a for wall_corner in wall_corners]
@@ -57,9 +62,6 @@ def check_connection(bat_a, bat_b, wall):
     bat_a_to_b_vector = bat_b - bat_a
     # print('    Bat a to b vector:            ', bat_a_to_b_vector)
 
-    bat_a_to_b_angle_without_tau = phase(bat_a_to_b_vector.conjugate())
-    # print('    Bat a to b angle without tau: ', bat_a_to_b_angle_without_tau)
-
     bat_a_to_b_angle = phase(bat_a_to_b_vector.conjugate()) % tau
     # print('    Bat a to b angle:             ', bat_a_to_b_angle)
 
@@ -73,12 +75,15 @@ def check_connection(bat_a, bat_b, wall):
         # print('        Recalculated min angle:   ', recalculated_min_angle)
         # print('        Recalculated max angle:   ', recalculated_max_angle)
 
-        is_in_sector = recalculated_min_angle <= bat_a_to_b_angle_without_tau <= recalculated_max_angle
-        # print('        Is in sector:             ', is_in_sector)
+        recalculated_bat_a_to_b_angle = phase(bat_a_to_b_vector.conjugate())
+        # print('        Recalculated bat a to b angle:', recalculated_bat_a_to_b_angle)
 
-    else:
-        is_in_sector = min_angle <= bat_a_to_b_angle <= max_angle
-        # print('    Is in sector:                 ', is_in_sector)
+        min_angle = recalculated_min_angle
+        max_angle = recalculated_max_angle
+        bat_a_to_b_angle = recalculated_bat_a_to_b_angle
+
+    is_in_sector = min_angle <= bat_a_to_b_angle <= max_angle
+    # print('    Is in sector:                 ', is_in_sector)
 
     bat_a_to_wall_distance = abs(wall - bat_a)
     # print('    Bat a to wall distance:       ', bat_a_to_wall_distance)
@@ -98,9 +103,9 @@ def check_connection(bat_a, bat_b, wall):
 
 def find_shortest_path(start, goal, connections, path_len=0, level=0):
     global tick, min_path_len
-    # print('Tick:', tick)
-    # print('Start:', start)
-    # print('Level:', level)
+    # print('Tick:           ', tick)
+    # print('Start:          ', start)
+    # print('Level:          ', level)
     # print('Min path length:', min_path_len)
     # print()
 
@@ -120,7 +125,7 @@ def find_shortest_path(start, goal, connections, path_len=0, level=0):
             continue
 
         if neighbour == goal:
-            # print('        >>> Goal found at:', new_path_len)
+            # print('        >>> Goal reached at:', new_path_len)
             min_path_len = min(min_path_len, new_path_len)
             return new_path_len
 
@@ -140,13 +145,23 @@ def find_shortest_path(start, goal, connections, path_len=0, level=0):
 
 
 def checkio(bunker: List[str]) -> [int, float]:
+    global tick
     global min_path_len
+    tick = 0
     min_path_len = float('inf')
 
     field = map_to_field(bunker)
-
     bat_connections = get_bat_connections(field)
 
+    print_summary(bunker, bat_connections)
+
+    shortest_path = find_shortest_path(CAVE_ENTRANCE, field[ALPHA_BAT].copy().pop(), bat_connections)
+    print('Shortest path:', shortest_path)
+    print()
+    return shortest_path
+
+
+def print_summary(bunker, bat_connections):
     print('Bunker:')
     [print(row) for row in bunker]
     print()
@@ -155,12 +170,6 @@ def checkio(bunker: List[str]) -> [int, float]:
     for bat, connections in bat_connections.items():
         print(f'{bat:7}: {connections}')
     print()
-
-    shortest_path = find_shortest_path(CAVE_ENTRANCE, field[ALPHA_BAT].copy().pop(), bat_connections)
-
-    print('Shortest path:', shortest_path)
-    print()
-    return shortest_path
 
 
 if __name__ == '__main__':
@@ -201,6 +210,15 @@ if __name__ == '__main__':
     #     "BW-W-W-",
     #     "-B--B-B"]), 16), "Extra 5"
 
+    assert almost_equal(checkio([
+        "B-B--B-B-B--B-",
+        "-W-W-W--W-W-W-",
+        "--B---B--B---B",
+        "BW-W-W-BW-W-W-",
+        "----W------A--",
+        "BW-W-W-BW-W-W-",
+        "-B--B-B-B--B-B"]), 19)
+
     # assert almost_equal(checkio([
     #     "B-B--B-B-B--B-B-B--B-",
     #     "-W-W-W--W-W-W--W-W-W-",
@@ -210,14 +228,16 @@ if __name__ == '__main__':
     #     "BW-W-W-BW-W-W-BW-W-W-",
     #     "-B--B-B-B--B-B-B--B-B"]), 24.83)
 
-    print(timeit(lambda: almost_equal(checkio([
-        "B-B--B-B-B--B-",
-        "-W-W-W--W-W-W-",
-        "--B---B--B---B",
-        "BW-W-W-BW-W-W-",
-        "----W------A--",
-        "BW-W-W-BW-W-W-",
-        "-B--B-B-B--B-B"]), 19), number=1))
+    ### Timeit tests
+
+    # print(timeit(lambda: almost_equal(checkio([
+    #     "B-B--B-B-B--B-",
+    #     "-W-W-W--W-W-W-",
+    #     "--B---B--B---B",
+    #     "BW-W-W-BW-W-W-",
+    #     "----W------A--",
+    #     "BW-W-W-BW-W-W-",
+    #     "-B--B-B-B--B-B"]), 19), number=1))
 
     # print(timeit(lambda: almost_equal(checkio([
     #     "B-B--B-B-B--B-B-B--B-",
