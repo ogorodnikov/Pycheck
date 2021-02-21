@@ -21,37 +21,52 @@ def map_to_field(bunker_map):
 def check_connection(bat_a, bat_b, wall):
     print('Bat a:', bat_a)
     print('Bat b:', bat_b)
-    print('--- Wall:', wall)
+    print('--- Wall:                         ', wall)
 
     wall_corners = [wall + complex(*delta) for delta in product((-0.5, 0.5), repeat=2)]
-    print('    Wall corners:', wall_corners)
+    print('    Wall corners:                 ', wall_corners)
 
     bat_a_to_corners_vectors = [wall_corner - bat_a for wall_corner in wall_corners]
     print('    Bat a to wall corners vectors:', bat_a_to_corners_vectors)
 
-    angles = [phase(vector) for vector in bat_a_to_corners_vectors]
-    print('    Angles:', angles)
+    angles = [phase(vector) % tau for vector in bat_a_to_corners_vectors]
+    print('    Angles:                       ', angles)
 
-    min_angle = min(angles) % tau
-    max_angle = max(angles) % tau
-    print('    Min angle:', min_angle)
-    print('    Max angle:', max_angle)
+    min_angle = min(angles)
+    max_angle = max(angles)
+    print('    Min angle:                    ', min_angle)
+    print('    Max angle:                    ', max_angle)
+
+    alt_angles = [phase(vector) for vector in bat_a_to_corners_vectors]
+    print('    Alt angles:                   ', alt_angles)
+
+    alt_min_angle = min(alt_angles)
+    alt_max_angle = max(alt_angles)
+    print('    Alt Min angle:                ', alt_min_angle)
+    print('    Alt Max angle:                ', alt_max_angle)
 
     bat_a_to_b_angle = phase(bat_b - bat_a) % tau
-    print('    Bat a to b angle:', bat_a_to_b_angle)
+    print('    Bat a to b angle:             ', bat_a_to_b_angle)
 
     bat_a_to_wall_distance = abs(wall - bat_a)
-    print('    Bat a to wall distance:', bat_a_to_wall_distance)
+    print('    Bat a to wall distance:       ', bat_a_to_wall_distance)
 
     bat_a_to_bat_b_distance = abs(bat_b - bat_a)
-    print('    Bat a to bat b distance:', bat_a_to_bat_b_distance)
+    print('    Bat a to bat b distance:      ', bat_a_to_bat_b_distance)
 
     wall_is_closer_then_bat_b = bat_a_to_wall_distance < bat_a_to_bat_b_distance
-    print('    Wall is closer then bat b:', wall_is_closer_then_bat_b)
+    print('    Wall is closer then bat b:    ', wall_is_closer_then_bat_b)
 
     is_in_sector = min_angle <= bat_a_to_b_angle <= max_angle
-    print('    Is in sector:', is_in_sector)
-    is_connected = not (is_in_sector and wall_is_closer_then_bat_b)
+    print('    Is in sector:                 ', is_in_sector)
+
+    alt_is_in_sector = alt_min_angle <= bat_a_to_b_angle <= alt_max_angle
+    print('    Alt is in sector:             ', alt_is_in_sector)
+
+    is_in_sector_or_alt_sector = is_in_sector or alt_is_in_sector
+    print('    Is in sector or alt sector:   ', is_in_sector_or_alt_sector)
+
+    is_connected = not (is_in_sector_or_alt_sector and wall_is_closer_then_bat_b)
 
     print('Is connected:', is_connected)
     print()
@@ -113,10 +128,12 @@ def checkio(bunker: List[str]) -> [int, float]:
     bat_connections = defaultdict(set)
     for bat_a, bat_b in permutations(all_bats, 2):
         if all(check_connection(bat_a, bat_b, wall) for wall in field[WALL]):
-            print(bat_a, 'is connected with', bat_b)
+            print('===', bat_a, 'is connected with', bat_b)
+            print()
             bat_connections[bat_a] |= {bat_b}
         else:
-            print(bat_a, 'is not connected with', bat_b)
+            print('===', bat_a, 'is not connected with', bat_b)
+            print()
 
     print('Bat connections:')
     for bat, connections in bat_connections.items():
@@ -147,7 +164,7 @@ if __name__ == '__main__':
     #     "B--",
     #     "---",
     #     "--A"]), 2.83), "1st example"
-    #
+
     # assert almost_equal(checkio([
     #     "B-B",
     #     "BW-",
@@ -158,13 +175,18 @@ if __name__ == '__main__':
     #     "-BA",
     #     "--W"]), 2.24)
 
-    assert almost_equal(checkio([
-        "BWA"]), float('inf'))
+    # assert almost_equal(checkio([
+    #     "BWA"]), float('inf'))
 
     # assert almost_equal(checkio([
-    #     "BWB--B",
-    #     "-W-WW-",
-    #     "B-BWAB"]), 12), "3rd example"
+    #       "--B",
+    #       "-W-",
+    #       "A--"]), float('inf'))
+
+    assert almost_equal(checkio([
+        "BWB--B",
+        "-W-WW-",
+        "B-BWAB"]), 12), "3rd example"
 
     # assert almost_equal(checkio([
     #     "B---B-",
