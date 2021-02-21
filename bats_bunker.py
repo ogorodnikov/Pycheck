@@ -8,6 +8,7 @@ ALPHA_BAT = 'A'
 WALL = 'W'
 EMPTY = '-'
 CAVE_ENTRANCE = (0 + 0j)
+DELTAS = (0.5 - 0.5j), (-0.5 - 0.5j), (-0.5 + 0.5j), (+0.5 + 0.5j)
 
 
 def map_to_field(bunker_map):
@@ -62,13 +63,13 @@ def find_shortest_path(start, goal, connections):
 def check_connection(bat_a, bat_b, wall):
     print('--- Wall:                         ', wall)
 
-    wall_corners = [wall + complex(*delta) for delta in product((-0.5, 0.5), repeat=2)]
+    wall_corners = [wall + delta for delta in DELTAS]
     print('    Wall corners:                 ', wall_corners)
 
     bat_a_to_corners_vectors = [wall_corner - bat_a for wall_corner in wall_corners]
     print('    Bat a to wall corners vectors:', bat_a_to_corners_vectors)
 
-    angles = [phase(vector) % tau for vector in bat_a_to_corners_vectors]
+    angles = [phase(vector.conjugate()) % tau for vector in bat_a_to_corners_vectors]
     print('    Angles:                       ', angles)
 
     min_angle = min(angles)
@@ -76,19 +77,35 @@ def check_connection(bat_a, bat_b, wall):
     print('    Min angle:                    ', min_angle)
     print('    Max angle:                    ', max_angle)
 
-    bat_a_to_b_angle = phase(bat_b - bat_a) % tau
-    print('    Bat a to b angle:             ', bat_a_to_b_angle)
-
     angle_delta = max_angle - min_angle
     print('    Angle delta:                  ', angle_delta)
 
-    if angle_delta < pi:
+    bat_a_to_b_vector = bat_b - bat_a
+    print('    Bat a to b vector:            ', bat_a_to_b_vector)
+
+    bat_a_to_b_angle_without_tau = phase(bat_a_to_b_vector.conjugate())
+    print('    Bat a to b angle without tau: ', bat_a_to_b_angle_without_tau)
+
+    bat_a_to_b_angle = phase(bat_a_to_b_vector.conjugate()) % tau
+    print('    Bat a to b angle:             ', bat_a_to_b_angle)
+
+    if angle_delta >= pi:
+        print('        Angle delta >= pi')
+        recalculated_angles = [phase(vector.conjugate()) for vector in bat_a_to_corners_vectors]
+        print('        Recalculated angles:      ', recalculated_angles)
+
+        recalculated_min_angle = min(recalculated_angles)
+        recalculated_max_angle = max(recalculated_angles)
+        print('        Recalculated min angle:   ', recalculated_min_angle)
+        print('        Recalculated max angle:   ', recalculated_max_angle)
+
+        is_in_sector = recalculated_min_angle <= bat_a_to_b_angle_without_tau <= recalculated_max_angle
+        print('        Is in sector:             ', is_in_sector)
+
+    else:
         is_in_sector = min_angle <= bat_a_to_b_angle <= max_angle
         print('    Is in sector:                 ', is_in_sector)
-    else:
-        print('        Angle delta > pi')
-        is_in_sector = 0 <= bat_a_to_b_angle <= min_angle or max_angle <= bat_a_to_b_angle <= tau
-        print('        Is in sector:                 ', is_in_sector)
+
 
     bat_a_to_wall_distance = abs(wall - bat_a)
     print('    Bat a to wall distance:       ', bat_a_to_wall_distance)
@@ -116,26 +133,27 @@ def get_bat_connections(field):
         print('Bat a:', bat_a)
         print('Bat b:', bat_b)
         if all(check_connection(bat_a, bat_b, wall) for wall in field[WALL]):
-            print('===', bat_a, 'is connected with', bat_b)
+            print('=== Connected:', bat_a, bat_b)
             print()
             bat_connections[bat_a] |= {bat_b}
         else:
-            print('===', bat_a, 'is not connected with', bat_b)
+            print('=== Not connected:', bat_a, bat_b)
             print()
 
     return bat_connections
 
 
 def checkio(bunker: List[str]) -> [int, float]:
-    print('Bunker:')
-    [print(row) for row in bunker]
-
     field = map_to_field(bunker)
     print('Field:', field)
 
     bat_connections = get_bat_connections(field)
 
     shortest_path = find_shortest_path(CAVE_ENTRANCE, field[ALPHA_BAT].copy().pop(), bat_connections)
+
+    print('Bunker:')
+    [print(row) for row in bunker]
+    print()
 
     print('Bat connections:')
     for bat, connections in bat_connections.items():
@@ -153,36 +171,39 @@ if __name__ == '__main__':
         return correct - precision < checked < correct + precision
 
 
-    # assert almost_equal(checkio([
-    #     "B--",
-    #     "---",
-    #     "--A"]), 2.83), "1st example"
+    assert almost_equal(checkio([
+        "B--",
+        "---",
+        "--A"]), 2.83), "1st example"
 
     assert almost_equal(checkio([
         "B-B",
         "BW-",
         "-BA"]), 4), "2nd example"
 
-    # assert almost_equal(checkio([
-    #     "B--",
-    #     "-BA",
-    #     "--W"]), 2.24)
-    #
-    # assert almost_equal(checkio([
-    #     "BWB--B",
-    #     "-W-WW-",
-    #     "B-BWAB"]), 12), "3rd example"
+    assert almost_equal(checkio([
+        "BWB--B",
+        "-W-WW-",
+        "B-BWAB"]), 12), "3rd example"
 
-    # assert almost_equal(checkio([
-    #     "B---B-",
-    #     "-WWW-B",
-    #     "-WA--B",
-    #     "-W-B--",
-    #     "-WWW-B",
-    #     "B-BWB-"]), 9.24), "4th example"
+    assert almost_equal(checkio([
+        "B---B-",
+        "-WWW-B",
+        "-WA--B",
+        "-W-B--",
+        "-WWW-B",
+        "B-BWB-"]), 9.24), "4th example"
+
+
+    ### Line tests
 
     # assert almost_equal(checkio([
     #     "BWA"]), float('inf'))
+
+    # assert almost_equal(checkio([
+    #     "B",
+    #     "W",
+    #     "A"]), float('inf'))
 
     # assert almost_equal(checkio([
     #       "--B",
