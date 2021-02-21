@@ -1,6 +1,7 @@
 from cmath import phase, pi, tau
 from collections import defaultdict
 from itertools import product, permutations
+# from timeit import timeit
 from typing import List
 
 BAT = 'B'
@@ -19,18 +20,23 @@ def map_to_field(bunker_map):
     return field
 
 
-def find_shortest_path(start, goal, connections):
+def find_shortest_path(start, goal, connections, min_path_length=float('inf')):
     print('Start:', start)
 
     if start == goal:
         return 0
 
     distances = []
+    new_min_path_length = min_path_length
     for neighbour in connections[start]:
         print('    Neighbour:', neighbour)
 
         distance = abs(neighbour - start)
         print('        Distance:', distance)
+
+        if distance >= min_path_length:
+            print('        Distance exceeds already found minimum:', min_path_length)
+            continue
 
         if neighbour == goal:
             print('        === Goal found, returning distance:', distance)
@@ -41,8 +47,10 @@ def find_shortest_path(start, goal, connections):
         new_connections[neighbour] -= {start}
         print('        New connections:', new_connections)
 
-        neighbour_to_goal_distance = find_shortest_path(neighbour, goal, new_connections)
+        neighbour_to_goal_distance = find_shortest_path(neighbour, goal, new_connections, new_min_path_length)
         print('        Neighbour to goal distance:', neighbour_to_goal_distance)
+
+        new_min_path_length = min(new_min_path_length, neighbour_to_goal_distance)
 
         total_distance = distance + neighbour_to_goal_distance
         print('        Total distance:', total_distance)
@@ -170,29 +178,46 @@ if __name__ == '__main__':
         return correct - precision < checked < correct + precision
 
 
-    assert almost_equal(checkio([
-        "B--",
-        "---",
-        "--A"]), 2.83), "1st example"
+    # assert almost_equal(checkio([
+    #     "B--",
+    #     "---",
+    #     "--A"]), 2.83), "1st example"
+    #
+    # assert almost_equal(checkio([
+    #     "B-B",
+    #     "BW-",
+    #     "-BA"]), 4), "2nd example"
+    #
+    # assert almost_equal(checkio([
+    #     "BWB--B",
+    #     "-W-WW-",
+    #     "B-BWAB"]), 12), "3rd example"
+    #
+    # assert almost_equal(checkio([
+    #     "B---B-",
+    #     "-WWW-B",
+    #     "-WA--B",
+    #     "-W-B--",
+    #     "-WWW-B",
+    #     "B-BWB-"]), 9.24), "4th example"
+    #
+    # assert almost_equal(checkio([
+    #     "B-B--B-",
+    #     "-W-W-W-",
+    #     "--B---B",
+    #     "BW-W-W-",
+    #     "----A--",
+    #     "BW-W-W-",
+    #     "-B--B-B"]), 16), "Extra 5"
 
-    assert almost_equal(checkio([
-        "B-B",
-        "BW-",
-        "-BA"]), 4), "2nd example"
-
-    assert almost_equal(checkio([
-        "BWB--B",
-        "-W-WW-",
-        "B-BWAB"]), 12), "3rd example"
-
-    assert almost_equal(checkio([
-        "B---B-",
-        "-WWW-B",
-        "-WA--B",
-        "-W-B--",
-        "-WWW-B",
-        "B-BWB-"]), 9.24), "4th example"
-
+    print(timeit(lambda: almost_equal(checkio([
+        "B-B--B-",
+        "-W-W-W-",
+        "--B---B",
+        "BW-W-W-",
+        "----A--",
+        "BW-W-W-",
+        "-B--B-B"]), 16), number=10))
 
     ### Line tests
 
