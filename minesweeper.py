@@ -1,5 +1,53 @@
+from collections import defaultdict
+from itertools import product
+
+NUMBERS = range(1, 9)
+EMPTY = 0
+UNKNOWN = -1
+
+
+def field_to_dict(field):
+    field_dict = defaultdict(set)
+    for y, row in enumerate(field):
+        for x, cell in enumerate(row):
+            field_dict[cell] |= {complex(x, y)}
+    return field_dict
+
+
 def checkio(field):
-    return [False, 0, 0]
+    print('New field:')
+    [print(''.join(f'{cell:3}' for cell in row)) for row in field]
+    print()
+
+    field_dict = field_to_dict(field)
+
+    print('Field dictionary:')
+    [print(key, value) for key, value in field_dict.items()]
+
+    all_cells = {cell for key in field_dict for cell in field_dict[key]}
+
+    for number in NUMBERS:
+        print('Number:', number)
+        for cell in field_dict[number]:
+            print('    Cell:', cell)
+            neighbours = {cell + complex(x, y) for x, y in product(range(-1, 2), repeat=2)} & all_cells
+            print('    Neighbours:', neighbours)
+
+            unknown_neighbours = neighbours & field_dict[UNKNOWN]
+            print('    Unknown neighbours:', unknown_neighbours)
+
+            if number == len(unknown_neighbours):
+                print('    ==== Mines predicted:', unknown_neighbours)
+                x = unknown_neighbours.copy().pop().real
+                y = unknown_neighbours.copy().pop().imag
+                print('        X:', x)
+                print('        Y:', y)
+                return (True, y, x)
+
+    if field[0][0] == -1:
+        return (False, 0, 0)
+
+    return None
 
 
 if __name__ == '__main__':
