@@ -1,4 +1,20 @@
 def move2048(state, move):
+    print('State:')
+    [print(row) for row in state]
+    print()
+
+    if move == 'left':
+        lines = state
+    elif move == 'up':
+        lines = [line for line in zip(*state)]
+    elif move == 'right':
+        lines = [line[::-1] for line in state]
+    elif move == 'down':
+        lines = [line[::-1] for line in zip(*state)]
+
+    print('Lines:')
+    [print(line) for line in lines]
+
     return state
 
 
