@@ -17,31 +17,25 @@ def board_to_field(board):
 def get_stone_groups(field):
 
     groups = defaultdict(list)
-    new_field = {key: set(value) for key, value in field.items()}
+
+    def get_group(color):
+        group = set()
+        q = [field[color].pop()]
+        while q:
+            a = q.pop()
+            group |= {a}
+            for b in (a + delta for delta in DELTAS):
+                if b in field[color]:
+                    field[color] -= {b}
+                    group |= {b}
+                    q.append(b)
+        groups[color] += [group]
 
     while True:
-        group = set()
-        if new_field[WHITE]:
-
-            q = [new_field[WHITE].pop()]
-            while q:
-                a = q.pop()
-                group |= {a}
-                # print('A:', a)
-                # print('New field WHITE :', new_field[WHITE])
-                for b in (a + delta for delta in DELTAS):
-                    # print('B:', b)
-                    if b in new_field[WHITE]:
-                        new_field[WHITE] -= {b}
-                        group |= {b}
-                        q.append(b)
-                # print('New field WHITE :', new_field[WHITE])
-
-            groups[WHITE] += [group]
-
-
-        # elif new_field[BLACK]:
-        #     pass
+        if field[WHITE]:
+            get_group(WHITE)
+        elif field[BLACK]:
+            get_group(BLACK)
         else:
             return groups
 
