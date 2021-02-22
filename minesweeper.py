@@ -4,6 +4,7 @@ from itertools import product
 NUMBERS = range(1, 9)
 EMPTY = 0
 UNKNOWN = -1
+MINE = 9
 
 
 def field_to_dict(field):
@@ -18,6 +19,11 @@ def checkio(field):
     print('New field:')
     [print(''.join(f'{cell:3}' for cell in row)) for row in field]
     print()
+
+    if field[0][0] == -1:
+        print('Field[0][0] is unknown - returning Field[0][0]')
+        print()
+        return False, 0, 0
 
     field_dict = field_to_dict(field)
 
@@ -36,16 +42,29 @@ def checkio(field):
             unknown_neighbours = neighbours & field_dict[UNKNOWN]
             print('    Unknown neighbours:', unknown_neighbours)
 
-            if number == len(unknown_neighbours):
-                print('    ==== Mines predicted:', unknown_neighbours)
-                x = unknown_neighbours.copy().pop().real
-                y = unknown_neighbours.copy().pop().imag
-                print('        X:', x)
-                print('        Y:', y)
-                return (True, y, x)
+            mine_neighbours = neighbours & field_dict[MINE]
+            print('    Mine neighbours:', mine_neighbours)
 
-    if field[0][0] == -1:
-        return (False, 0, 0)
+            undetected_mines_count = number - len(mine_neighbours)
+            print('    Undetected mines count:', undetected_mines_count)
+
+            if undetected_mines_count and undetected_mines_count == len(unknown_neighbours):
+                print('    ==== Mines predicted:', unknown_neighbours)
+                x = int(unknown_neighbours.copy().pop().real)
+                y = int(unknown_neighbours.copy().pop().imag)
+                print('    X:', x)
+                print('    Y:', y)
+                return True, y, x
+
+            if not undetected_mines_count and unknown_neighbours:
+                print('    ---- Empty predicted:', unknown_neighbours)
+                x = int(unknown_neighbours.copy().pop().real)
+                y = int(unknown_neighbours.copy().pop().imag)
+                print('    X:', x)
+                print('    Y:', y)
+                return False, y, x
+
+
 
     return None
 
