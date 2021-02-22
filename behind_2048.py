@@ -1,12 +1,15 @@
 from itertools import tee
 
 FIELD_WIDTH = 4
+NEW_TILE_PRIORITIES = reversed(range(FIELD_WIDTH ** 2))
+NEW_TILE = 2
+EMPTY = 0
 
 
 def shift_line(line):
     print('Line:', line)
 
-    filtered_line = list(filter(None, line))
+    filtered_line = list(filter(lambda cell: cell != EMPTY, line))
     print('Filtered line:', filtered_line)
 
     a_iter, b_iter = tee(filtered_line)
@@ -22,7 +25,7 @@ def shift_line(line):
         else:
             shifted_line.append(a)
 
-    shifted_line += [0] * (FIELD_WIDTH - len(shifted_line))
+    shifted_line += [EMPTY] * (FIELD_WIDTH - len(shifted_line))
 
     print('Shifted line:', shifted_line)
     print()
@@ -50,25 +53,41 @@ def move2048(state, move):
     shifted_lines = [shift_line(line) for line in lines]
     print('Shifted lines:')
     [print(line) for line in shifted_lines]
+    print()
 
     shifted_field = []
     if move == 'left':
-        shifted_field = shifted_lines
+        shifted_field = [list(line) for line in shifted_lines]
     elif move == 'up':
-        shifted_field = [line for line in zip(*shifted_lines)]
+        shifted_field = [list(line) for line in zip(*shifted_lines)]
     elif move == 'right':
-        shifted_field = [line[::-1] for line in shifted_lines]
+        shifted_field = [list(line[::-1]) for line in shifted_lines]
     elif move == 'down':
-        shifted_field = [line[::-1] for line in zip(*shifted_lines)]
+        shifted_field = [list(line[::-1]) for line in zip(*shifted_lines)]
 
     print('Shifted field:')
     [print(line) for line in shifted_field]
+    print()
 
-    return state
+    for priority in NEW_TILE_PRIORITIES:
+        print('Priority:', priority)
+
+        y, x = divmod(priority, FIELD_WIDTH)
+        print('(x, y):', (x, y))
+
+        if shifted_field[y][x] == EMPTY:
+            print('Adding 2')
+            shifted_field[y][x] = NEW_TILE
+            break
+    print()
+
+    print('Shifted field with new 2:')
+    [print(line) for line in shifted_field]
+    print()
+    return shifted_field
 
 
 if __name__ == '__main__':
-
     assert move2048([[0, 2, 0, 0],
                      [0, 0, 0, 0],
                      [0, 0, 0, 0],
