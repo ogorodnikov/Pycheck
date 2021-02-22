@@ -15,7 +15,36 @@ def board_to_field(board):
 
 
 def get_stone_groups(field):
-    pass
+
+    groups = defaultdict(list)
+    new_field = {key: set(value) for key, value in field.items()}
+
+    while True:
+        group = set()
+        if new_field[WHITE]:
+
+            q = [new_field[WHITE].pop()]
+            while q:
+                a = q.pop()
+                group |= {a}
+                # print('A:', a)
+                # print('New field WHITE :', new_field[WHITE])
+                for b in (a + delta for delta in DELTAS):
+                    # print('B:', b)
+                    if b in new_field[WHITE]:
+                        new_field[WHITE] -= {b}
+                        group |= {b}
+                        q.append(b)
+                # print('New field WHITE :', new_field[WHITE])
+
+            groups[WHITE] += [group]
+
+
+        # elif new_field[BLACK]:
+        #     pass
+        else:
+            return groups
+
 
 
 def get_eaten_counter(stone_groups, field):
@@ -30,6 +59,7 @@ def go_game(board):
     print('Field:', field)
 
     stone_groups = get_stone_groups(field)
+    print('Stone groups:', stone_groups)
 
     eaten_counter = get_eaten_counter(stone_groups, field)
 
