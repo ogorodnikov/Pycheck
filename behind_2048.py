@@ -1,4 +1,4 @@
-from itertools import tee
+from itertools import tee, zip_longest
 
 FIELD_WIDTH = 4
 NEW_TILE_PRIORITIES = reversed(range(FIELD_WIDTH ** 2))
@@ -7,32 +7,31 @@ EMPTY = 0
 
 
 def shift_line(line):
-    print('Line:', line)
+    print('Line:         ', line)
 
     filtered_line = list(filter(lambda cell: cell != EMPTY, line))
     print('Filtered line:', filtered_line)
 
-    a_iter, b_iter = tee(filtered_line)
-    next(b_iter, None)
+    line_iter = iter(filtered_line)
 
     shifted_line = []
-    for a, b in zip(a_iter, b_iter):
-        print('A:', a)
-        print('B:', b)
+    for a, b in zip_longest(line_iter, line_iter, fillvalue=EMPTY):
+        print('         A, B:', (a, b))
 
         if a == b:
             shifted_line.append(a + b)
         else:
-            shifted_line.append(a)
+            shifted_line.extend([a, b])
 
     shifted_line += [EMPTY] * (FIELD_WIDTH - len(shifted_line))
 
-    print('Shifted line:', shifted_line)
+    print('Shifted line: ', shifted_line)
     print()
     return shifted_line
 
 
 def move2048(state, move):
+    print('Move:', move)
     print('State:')
     [print(row) for row in state]
     print()
@@ -49,6 +48,7 @@ def move2048(state, move):
 
     print('Lines:')
     [print(line) for line in lines]
+    print()
 
     shifted_lines = [shift_line(line) for line in lines]
     print('Shifted lines:')
@@ -88,14 +88,15 @@ def move2048(state, move):
 
 
 if __name__ == '__main__':
-    assert move2048([[0, 2, 0, 0],
-                     [0, 0, 0, 0],
-                     [0, 0, 0, 0],
-                     [0, 2, 0, 0]], 'up') == [[0, 4, 0, 0],
-                                              [0, 0, 0, 0],
-                                              [0, 0, 0, 0],
-                                              [0, 0, 0, 2]], "Start. Move Up!"
 
+    # assert move2048([[0, 2, 0, 0],
+    #                  [0, 0, 0, 0],
+    #                  [0, 0, 0, 0],
+    #                  [0, 2, 0, 0]], 'up') == [[0, 4, 0, 0],
+    #                                           [0, 0, 0, 0],
+    #                                           [0, 0, 0, 0],
+    #                                           [0, 0, 0, 2]], "Start. Move Up!"
+    #
     # assert move2048([[4, 0, 0, 0],
     #                  [0, 4, 0, 0],
     #                  [0, 0, 0, 0],
@@ -103,13 +104,15 @@ if __name__ == '__main__':
     #                                              [0, 0, 0, 4],
     #                                              [0, 0, 0, 0],
     #                                              [0, 0, 2, 16]], "Simple right"
-    # assert move2048([[2, 0, 2, 2],
-    #                  [0, 4, 4, 4],
-    #                  [8, 8, 8, 16],
-    #                  [0, 0, 0, 0]], 'right') == [[0, 0, 2, 4],
-    #                                              [0, 0, 4, 8],
-    #                                              [0, 8, 16, 16],
-    #                                              [0, 0, 0, 2]], "Three merging"
+
+    assert move2048([[2, 0, 2, 2],
+                     [0, 4, 4, 4],
+                     [8, 8, 8, 16],
+                     [0, 0, 0, 0]], 'right') == [[0, 0, 2, 4],
+                                                 [0, 0, 4, 8],
+                                                 [0, 8, 16, 16],
+                                                 [0, 0, 0, 2]], "Three merging"
+
     # assert move2048([[256, 0, 256, 4],
     #                  [16, 8, 8, 0],
     #                  [32, 32, 32, 32],
