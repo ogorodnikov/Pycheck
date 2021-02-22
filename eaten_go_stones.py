@@ -11,11 +11,17 @@ def board_to_field(board):
     for y, row in enumerate(board):
         for x, cell in enumerate(row):
             field[cell] |= {complex(x, y)}
+
+    # field = {key: {complex(x, y)
+    #                for y, row in enumerate(board)
+    #                for x, cell in enumerate(row)
+    #                if cell == key}
+    #          for key in {cell for row in board for cell in row}}
+
     return field
 
 
 def get_stone_groups(field):
-
     new_field = {key: set(value) for key, value in field.items()}
 
     groups = defaultdict(list)
@@ -42,36 +48,29 @@ def get_stone_groups(field):
             return groups
 
 
-def get_liberties(stone_group):
-    liberties = set()
-    for stone in stone_group:
-        liberties |= {stone + delta for delta in DELTAS}
-    liberties -= stone_group
-    return liberties
-
-
 def get_eaten_counter(stone_groups, field):
-    print('Field:', field)
     all_cells = {cell for key in field for cell in field[key]}
-    print('All cells:', all_cells)
-    print('Len all cells :', len(all_cells))
+    eaten_counter = {}
 
     for color in stone_groups:
-        print('Color:', color)
-        if color == WHITE:
-            opposite_color = BLACK
-        else:
-            opposite_color = WHITE
+        # print('Color:', color)
+
+        eaten_counter[color] = 0
+        opposite_color = WHITE if color == BLACK else BLACK
 
         for stone_group in stone_groups[color]:
-            print('Stone group:', stone_group)
+            # print('Stone group:', stone_group)
 
-            liberties = get_liberties(stone_group) & all_cells
-            print('    Liberties:', liberties)
+            liberties = {stone + delta for delta in DELTAS for stone in stone_group} - stone_group & all_cells
+            # print('    Liberties:', liberties)
 
             is_group_surrounded = liberties <= field[opposite_color]
-            print('    Is group surrounded:', is_group_surrounded)
+            # print('    Is group surrounded:', is_group_surrounded)
 
+            if is_group_surrounded:
+                eaten_counter[color] += len(stone_group)
+
+    return eaten_counter
 
 
 def go_game(board):
@@ -79,22 +78,18 @@ def go_game(board):
     [print(row) for row in board]
 
     field = board_to_field(board)
-    print('Field:', field)
+    # print('Field:', field)
 
     stone_groups = get_stone_groups(field)
-    print('Stone groups:', stone_groups)
+    # print('Stone groups:', stone_groups)
 
     eaten_counter = get_eaten_counter(stone_groups, field)
-
-    eaten_counter = {'B': 3, 'W': 4}
-
     print('Eaten counter:', eaten_counter)
     print()
     return eaten_counter
 
 
 if __name__ == '__main__':
-
     assert go_game(['++++W++++',
                     '+++WBW+++',
                     '++BWBBW++',
