@@ -1,17 +1,19 @@
 from collections import defaultdict
 from itertools import product
 
-NUMBERS = range(1, 9)
+MINE = 9
 EMPTY = 0
 UNKNOWN = -1
-MINE = 9
+NUMBERS = range(1, 9)
 
 
 def field_to_dict(field):
     field_dict = defaultdict(set)
+
     for y, row in enumerate(field):
         for x, cell in enumerate(row):
             field_dict[cell] |= {complex(x, y)}
+
     return field_dict
 
 
@@ -21,52 +23,41 @@ def checkio(field):
     print()
 
     if field[0][0] == -1:
-        print('Field[0][0] is unknown - returning Field[0][0]')
-        print()
         return False, 0, 0
 
     field_dict = field_to_dict(field)
-
-    print('Field dictionary:')
-    [print(key, value) for key, value in field_dict.items()]
-
     all_cells = {cell for key in field_dict for cell in field_dict[key]}
 
     for number in NUMBERS:
-        print('Number:', number)
         for cell in field_dict[number]:
-            print('    Cell:', cell)
+
             neighbours = {cell + complex(x, y) for x, y in product(range(-1, 2), repeat=2)} & all_cells
-            print('    Neighbours:', neighbours)
-
-            unknown_neighbours = neighbours & field_dict[UNKNOWN]
-            print('    Unknown neighbours:', unknown_neighbours)
-
             mine_neighbours = neighbours & field_dict[MINE]
-            print('    Mine neighbours:', mine_neighbours)
-
+            unknown_neighbours = neighbours & field_dict[UNKNOWN]
             undetected_mines_count = number - len(mine_neighbours)
-            print('    Undetected mines count:', undetected_mines_count)
 
-            if undetected_mines_count and undetected_mines_count == len(unknown_neighbours):
-                print('    ==== Mines predicted:', unknown_neighbours)
-                x = int(unknown_neighbours.copy().pop().real)
-                y = int(unknown_neighbours.copy().pop().imag)
-                print('    X:', x)
-                print('    Y:', y)
+            # print('Cell:                  ', cell)
+            # print('Number:                ', number)
+            # print('Neighbours:            ', neighbours)
+            # print('Mine neighbours:       ', mine_neighbours)
+            # print('Unknown neighbours:    ', unknown_neighbours)
+            # print('Undetected mines count:', undetected_mines_count)
+
+            if undetected_mines_count == len(unknown_neighbours) != 0:
+                prediction = unknown_neighbours.pop()
+                x = int(prediction.real)
+                y = int(prediction.imag)
+                print('Mine cell predicted:', (x, y))
                 return True, y, x
 
             if not undetected_mines_count and unknown_neighbours:
-                print('    ---- Empty predicted:', unknown_neighbours)
-                x = int(unknown_neighbours.copy().pop().real)
-                y = int(unknown_neighbours.copy().pop().imag)
-                print('    X:', x)
-                print('    Y:', y)
+                prediction = unknown_neighbours.pop()
+                x = int(prediction.real)
+                y = int(prediction.imag)
+                print('Empty cell predicted:', (x, y))
                 return False, y, x
 
-
-
-    return None
+    raise ValueError('No predictions found')
 
 
 if __name__ == '__main__':
@@ -123,26 +114,26 @@ if __name__ == '__main__':
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]), "Simple"
 
-    # assert check_solution(checkio, [
-    #     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 1, 1, 0, 0, 0, 1, 1, 1, 0],
-    #     [0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
-    #     [0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
-    #     [0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
-    #     [0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
-    #     [0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
-    #     [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-    #     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]), "Gate"
-    #
-    # assert check_solution(checkio, [
-    #     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-    #     [0, 0, 1, 1, 0, 0, 1, 0, 0, 0],
-    #     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    #     [0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
-    #     [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-    #     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
-    #     [0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-    #     [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]]), "Various"
+    assert check_solution(checkio, [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 1, 0, 0, 0, 1, 1, 1, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+        [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]), "Gate"
+
+    assert check_solution(checkio, [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+        [0, 0, 1, 1, 0, 0, 1, 0, 0, 0],
+        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+        [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+        [0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]]), "Various"
