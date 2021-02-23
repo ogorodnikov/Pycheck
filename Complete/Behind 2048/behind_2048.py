@@ -18,18 +18,18 @@ def shift_line(line):
     a_iter, b_iter = tee(filtered_line)
     next(b_iter, None)
 
-    # shifted_line = []
-    # for a, b in zip_longest(a_iter, b_iter, fillvalue=EMPTY):
-    #     if a == b:
-    #         shifted_line.append(a + b)
-    #         next(a_iter, None)
-    #         next(b_iter, None)
-    #     else:
-    #         shifted_line.append(a)
+    shifted_line = []
+    for a, b in zip_longest(a_iter, b_iter, fillvalue=EMPTY):
+        if a == b:
+            shifted_line.append(a + b)
+            next(a_iter, None)
+            next(b_iter, None)
+        else:
+            shifted_line.append(a)
 
-    shifted_line = [a if a != b else
-                    a + b + (0 if next(a_iter, None) and next(b_iter, None) else 0)
-                    for a, b in zip_longest(a_iter, b_iter, fillvalue=EMPTY)]
+    # shifted_line = [a if a != b else
+    #                 a + b + (0 if next(a_iter, None) and next(b_iter, None) else 0)
+    #                 for a, b in zip_longest(a_iter, b_iter, fillvalue=EMPTY)]
 
     shifted_line += [EMPTY] * (FIELD_WIDTH - len(shifted_line))
 
@@ -83,21 +83,14 @@ def move2048(state, move):
 
     resulting_field = shifted_list.copy()
     for priority in NEW_TILE_PRIORITIES:
-        print('Priority:', priority)
 
         y, x = divmod(priority, FIELD_WIDTH)
-        print('(x, y):', (x, y))
+        print('Priority:', priority, (x, y))
 
         if resulting_field[y][x] == EMPTY:
             print('Adding 2')
             resulting_field[y][x] = NEW_TILE
             break
-    print()
-
-    print('=========================')
-    print('Initial move:', move)
-    print('Initial state:')
-    [print(row) for row in state]
     print()
 
     print('Resulting field:')
