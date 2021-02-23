@@ -69,21 +69,22 @@ def move2048(state, move):
     elif move == 'right':
         shifted_field = [list(line[::-1]) for line in shifted_lines]
     elif move == 'down':
-        shifted_field = [list(line[::-1]) for line in zip(*shifted_lines)]
+        shifted_field = [list(line) for line in zip(*(row[::-1] for row in shifted_lines))]
 
     print('Shifted field:')
     [print(line) for line in shifted_field]
     print()
 
+    resulting_field = shifted_field.copy()
     for priority in NEW_TILE_PRIORITIES:
         print('Priority:', priority)
 
         y, x = divmod(priority, FIELD_WIDTH)
         print('(x, y):', (x, y))
 
-        if shifted_field[y][x] == EMPTY:
+        if resulting_field[y][x] == EMPTY:
             print('Adding 2')
-            shifted_field[y][x] = NEW_TILE
+            resulting_field[y][x] = NEW_TILE
             break
     print()
 
@@ -93,21 +94,34 @@ def move2048(state, move):
     [print(row) for row in state]
     print()
 
-    print('Shifted field with new 2:')
-    [print(line) for line in shifted_field]
+    print('Resulting field:')
+    [print(line) for line in resulting_field]
     print()
 
-    if any(cell == GOAL for row in shifted_field for cell in row):
-        print('Goal reached')
-        victory_field = [list(VICTORY_BANNER)] * FIELD_WIDTH
-        print('Victory field:', victory_field)
-        return victory_field
+    output_field = resulting_field.copy()
 
-    return shifted_field
+    if all(cell != EMPTY for row in shifted_field for cell in row):
+        print('No moves left')
+        output_field = get_banner(LOSE_BANNER)
+
+    if any(cell == GOAL for row in resulting_field for cell in row):
+        print('Goal reached')
+        output_field = get_banner(VICTORY_BANNER)
+
+    print('Output field:')
+    [print(line) for line in output_field]
+    print()
+    return output_field
+
+
+def get_banner(banner_string):
+    repetitions_count = FIELD_WIDTH ** 2 // len(banner_string)
+    banner_lines = [iter(banner_string * repetitions_count)] * FIELD_WIDTH
+    banner = [list(line) for line in zip_longest(*banner_lines)]
+    return banner
 
 
 if __name__ == '__main__':
-
     # assert move2048([[0, 2, 0, 0],
     #                  [0, 0, 0, 0],
     #                  [0, 0, 0, 0],
@@ -136,7 +150,6 @@ if __name__ == '__main__':
     #                                              [0, 0, 16, 16],
     #                                              [0, 0, 64, 64],
     #                                              [0, 2, 8, 4]], "All right"
-
     assert move2048([[4, 4, 0, 0],
                      [0, 4, 1024, 0],
                      [0, 256, 0, 256],
@@ -145,10 +158,18 @@ if __name__ == '__main__':
                                                       ['U', 'W', 'I', 'N'],
                                                       ['U', 'W', 'I', 'N']], "We are the champions!"
 
-    # assert move2048([[2, 4, 8, 16],
-    #                  [32, 64, 128, 256],
-    #                  [512, 1024, 2, 4],
-    #                  [8, 16, 32, 64]], 'left') == [['G', 'A', 'M', 'E'],
-    #                                                ['O', 'V', 'E', 'R'],
-    #                                                ['G', 'A', 'M', 'E'],
-    #                                                ['O', 'V', 'E', 'R']], "Nobody moves!"
+    assert move2048([[2, 4, 8, 16],
+                     [32, 64, 128, 256],
+                     [512, 1024, 2, 4],
+                     [8, 16, 32, 64]], 'left') == [['G', 'A', 'M', 'E'],
+                                                   ['O', 'V', 'E', 'R'],
+                                                   ['G', 'A', 'M', 'E'],
+                                                   ['O', 'V', 'E', 'R']], "Nobody moves!"
+
+    assert move2048([[2, 16, 32, 128],
+                     [2, 16, 32, 128],
+                     [4, 8, 64, 256],
+                     [4, 8, 64, 256]], "down") == [[0, 0, 0, 0],
+                                                   [0, 0, 0, 2],
+                                                   [4, 32, 64, 256],
+                                                   [8, 16, 128, 512]]
