@@ -1,12 +1,12 @@
 from itertools import tee, zip_longest
 
-FIELD_WIDTH = 4
-NEW_TILE_PRIORITIES = list(reversed(range(FIELD_WIDTH ** 2)))
-NEW_TILE = 2
 EMPTY = 0
 GOAL = 2048
+NEW_TILE = 2
+FIELD_WIDTH = 4
 VICTORY_BANNER = 'UWIN'
 LOSE_BANNER = 'GAMEOVER'
+NEW_TILE_PRIORITIES = list(reversed(range(FIELD_WIDTH ** 2)))
 
 
 def shift_line(line):
@@ -18,16 +18,18 @@ def shift_line(line):
     a_iter, b_iter = tee(filtered_line)
     next(b_iter, None)
 
-    shifted_line = []
-    for a, b in zip_longest(a_iter, b_iter, fillvalue=EMPTY):
-        print('         A, B:', (a, b))
+    # shifted_line = []
+    # for a, b in zip_longest(a_iter, b_iter, fillvalue=EMPTY):
+    #     if a == b:
+    #         shifted_line.append(a + b)
+    #         next(a_iter, None)
+    #         next(b_iter, None)
+    #     else:
+    #         shifted_line.append(a)
 
-        if a == b:
-            shifted_line.append(a + b)
-            next(a_iter, None)
-            next(b_iter, None)
-        else:
-            shifted_line.append(a)
+    shifted_line = [a if a != b else
+                    a + b + (0 if next(a_iter, None) and next(b_iter, None) else 0)
+                    for a, b in zip_longest(a_iter, b_iter, fillvalue=EMPTY)]
 
     shifted_line += [EMPTY] * (FIELD_WIDTH - len(shifted_line))
 
@@ -46,36 +48,40 @@ def move2048(state, move):
     if move == 'left':
         lines = state
     elif move == 'up':
-        lines = [line for line in zip(*state)]
+        lines = zip(*state)
     elif move == 'right':
-        lines = [line[::-1] for line in state]
+        lines = map(reversed, state)
     elif move == 'down':
-        lines = [line[::-1] for line in zip(*state)]
+        lines = map(reversed, zip(*state))
+
+    line_list = list(lines)
 
     print('Lines:')
-    [print(line) for line in lines]
+    [print(line) for line in line_list]
     print()
 
-    shifted_lines = [shift_line(line) for line in lines]
+    shifted_lines = list(map(shift_line, line_list))
     print('Shifted lines:')
     [print(line) for line in shifted_lines]
     print()
 
     shifted_field = []
     if move == 'left':
-        shifted_field = [list(line) for line in shifted_lines]
+        shifted_field = shifted_lines
     elif move == 'up':
-        shifted_field = [list(line) for line in zip(*shifted_lines)]
+        shifted_field = zip(*shifted_lines)
     elif move == 'right':
-        shifted_field = [list(line[::-1]) for line in shifted_lines]
+        shifted_field = map(reversed, shifted_lines)
     elif move == 'down':
-        shifted_field = [list(line) for line in zip(*(row[::-1] for row in shifted_lines))]
+        shifted_field = zip(*map(reversed, shifted_lines))
 
-    print('Shifted field:')
-    [print(line) for line in shifted_field]
+    shifted_list = list(map(list, shifted_field))
+
+    print('Shifted list:')
+    [print(line) for line in shifted_list]
     print()
 
-    resulting_field = shifted_field.copy()
+    resulting_field = shifted_list.copy()
     for priority in NEW_TILE_PRIORITIES:
         print('Priority:', priority)
 
@@ -100,12 +106,10 @@ def move2048(state, move):
 
     output_field = resulting_field.copy()
 
-    if all(cell != EMPTY for row in shifted_field for cell in row):
-        print('No moves left')
+    if all(cell != EMPTY for row in shifted_list for cell in row):
         output_field = get_banner(LOSE_BANNER)
 
     if any(cell == GOAL for row in resulting_field for cell in row):
-        print('Goal reached')
         output_field = get_banner(VICTORY_BANNER)
 
     print('Output field:')
@@ -116,40 +120,41 @@ def move2048(state, move):
 
 def get_banner(banner_string):
     repetitions_count = FIELD_WIDTH ** 2 // len(banner_string)
-    banner_lines = [iter(banner_string * repetitions_count)] * FIELD_WIDTH
-    banner = [list(line) for line in zip_longest(*banner_lines)]
+    banner_iter = iter(banner_string * repetitions_count)
+    banner_lines = [banner_iter] * FIELD_WIDTH
+    banner = list(map(list, zip_longest(*banner_lines)))
     return banner
 
 
 if __name__ == '__main__':
-    # assert move2048([[0, 2, 0, 0],
-    #                  [0, 0, 0, 0],
-    #                  [0, 0, 0, 0],
-    #                  [0, 2, 0, 0]], 'up') == [[0, 4, 0, 0],
-    #                                           [0, 0, 0, 0],
-    #                                           [0, 0, 0, 0],
-    #                                           [0, 0, 0, 2]], "Start. Move Up!"
-    # assert move2048([[4, 0, 0, 0],
-    #                  [0, 4, 0, 0],
-    #                  [0, 0, 0, 0],
-    #                  [0, 0, 8, 8]], 'right') == [[0, 0, 0, 4],
-    #                                              [0, 0, 0, 4],
-    #                                              [0, 0, 0, 0],
-    #                                              [0, 0, 2, 16]], "Simple right"
-    # assert move2048([[2, 0, 2, 2],
-    #                  [0, 4, 4, 4],
-    #                  [8, 8, 8, 16],
-    #                  [0, 0, 0, 0]], 'right') == [[0, 0, 2, 4],
-    #                                              [0, 0, 4, 8],
-    #                                              [0, 8, 16, 16],
-    #                                              [0, 0, 0, 2]], "Three merging"
-    # assert move2048([[256, 0, 256, 4],
-    #                  [16, 8, 8, 0],
-    #                  [32, 32, 32, 32],
-    #                  [4, 4, 2, 2]], 'right') == [[0, 0, 512, 4],
-    #                                              [0, 0, 16, 16],
-    #                                              [0, 0, 64, 64],
-    #                                              [0, 2, 8, 4]], "All right"
+    assert move2048([[0, 2, 0, 0],
+                     [0, 0, 0, 0],
+                     [0, 0, 0, 0],
+                     [0, 2, 0, 0]], 'up') == [[0, 4, 0, 0],
+                                              [0, 0, 0, 0],
+                                              [0, 0, 0, 0],
+                                              [0, 0, 0, 2]], "Start. Move Up!"
+    assert move2048([[4, 0, 0, 0],
+                     [0, 4, 0, 0],
+                     [0, 0, 0, 0],
+                     [0, 0, 8, 8]], 'right') == [[0, 0, 0, 4],
+                                                 [0, 0, 0, 4],
+                                                 [0, 0, 0, 0],
+                                                 [0, 0, 2, 16]], "Simple right"
+    assert move2048([[2, 0, 2, 2],
+                     [0, 4, 4, 4],
+                     [8, 8, 8, 16],
+                     [0, 0, 0, 0]], 'right') == [[0, 0, 2, 4],
+                                                 [0, 0, 4, 8],
+                                                 [0, 8, 16, 16],
+                                                 [0, 0, 0, 2]], "Three merging"
+    assert move2048([[256, 0, 256, 4],
+                     [16, 8, 8, 0],
+                     [32, 32, 32, 32],
+                     [4, 4, 2, 2]], 'right') == [[0, 0, 512, 4],
+                                                 [0, 0, 16, 16],
+                                                 [0, 0, 64, 64],
+                                                 [0, 2, 8, 4]], "All right"
     assert move2048([[4, 4, 0, 0],
                      [0, 4, 1024, 0],
                      [0, 256, 0, 256],
