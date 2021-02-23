@@ -6,6 +6,7 @@
       <w>checkio</w>
       <w>circumradius</w>
       <w>egcd</w>
+      <w>gameover</w>
       <w>minimax</w>
       <w>nonogram</w>
       <w>powerset</w>
@@ -13,6 +14,7 @@
       <w>subhand</w>
       <w>subhands</w>
       <w>unpowered</w>
+      <w>uwin</w>
       <w>vertice</w>
     </words>
   </dictionary>
