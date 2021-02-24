@@ -1,4 +1,26 @@
+def get_fitting_permutations(dice_count, side_count, target):
+
+    dice_sides = list(range(1, side_count + 1))
+    print('Dice sides:', dice_sides)
+
+    fitting_permutations = []
+    q = []
+
+
 def probability(dice_number, sides, target):
+    print('Dice number:', dice_number)
+    print('Sides:      ', sides)
+    print('Target:     ', target)
+
+    permutations_count = sides ** dice_number
+    print('Permutations count:', permutations_count)
+
+    fitting_permutations = get_fitting_permutations(dice_number, sides, target)
+    print('Fitting permutations:', fitting_permutations)
+
+
+
+
     return 0.0556
 
 
