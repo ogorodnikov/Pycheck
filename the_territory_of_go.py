@@ -8,67 +8,48 @@ DELTAS = (1, 1j, -1, -1j)
 
 def board_to_field(board):
     field = defaultdict(set)
+
     for y, row in enumerate(board):
         for x, cell in enumerate(row):
             field[cell] |= {complex(x, y)}
-
-    # field = {key: {complex(x, y)
-    #                for y, row in enumerate(board)
-    #                for x, cell in enumerate(row)
-    #                if cell == key}
-    #          for key in {cell for row in board for cell in row}}
 
     return field
 
 
 def get_empty_cell_groups(field):
-    new_field = {key: set(value) for key, value in field.items()}
-
-    empty_cell_groups = []
-
-    def get_group(color):
+    while field[EMPTY]:
         group = set()
-        q = [new_field[color].pop()]
+        q = [field[EMPTY].pop()]
         while q:
-            a = q.pop()
-            group |= {a}
-            for b in (a + delta for delta in DELTAS):
-                if b in new_field[color]:
-                    new_field[color] -= {b}
-                    group |= {b}
-                    q.append(b)
-        empty_cell_groups.append(group)
-
-    while True:
-        if new_field[EMPTY]:
-            get_group(EMPTY)
-        else:
-            return empty_cell_groups
+            cell_a = q.pop()
+            group |= {cell_a}
+            for cell_b in (cell_a + delta for delta in DELTAS):
+                if cell_b in field[EMPTY]:
+                    field[EMPTY] -= {cell_b}
+                    group |= {cell_b}
+                    q.append(cell_b)
+        yield group
 
 
 def get_territory_counter(empty_cell_groups, field):
     all_cells = {cell for key in field for cell in field[key]}
-    eaten_counter = {}
-
-    # for color in stone_groups:
-    #     # print('Color:', color)
-    #
-    #     territory_counter[color] = 0
-    #     opposite_color = WHITE if color == BLACK else BLACK
+    territory_counter = {BLACK: 0, WHITE: 0}
 
     for empty_cell_group in empty_cell_groups:
         print('Empty cell group:', empty_cell_group)
 
-        surrounding_cells = {stone + delta for delta in DELTAS for stone in empty_cell_group} - stone_group & all_cells
-        # print('    Liberties:', liberties)
+        surrounding_cells = {cell + delta for delta in DELTAS for cell in
+                             empty_cell_group} - empty_cell_group & all_cells
+        print('Surrounding cells:', surrounding_cells)
 
-        is_group_surrounded = liberties <= field[opposite_color]
-        # print('    Is group surrounded:', is_group_surrounded)
+        if surrounding_cells <= field[WHITE]:
+            print('Surrounded by white +', len(empty_cell_group))
+            territory_counter[WHITE] += len(empty_cell_group)
+        elif surrounding_cells <= field[BLACK]:
+            print('Surrounded by black +', len(empty_cell_group))
+            territory_counter[BLACK] += len(empty_cell_group)
 
-        if is_group_surrounded:
-            eaten_counter[color] += len(stone_group)
-
-    return eaten_counter
+    return territory_counter
 
 
 def territory(board):
@@ -82,14 +63,12 @@ def territory(board):
     print('Empty cell groups:', empty_cell_groups)
 
     territory_counter = get_territory_counter(empty_cell_groups, field)
-    territory_counter = {'B': 3, 'W': 1}
     print('Territory counter:', territory_counter)
     print()
     return territory_counter
 
 
 if __name__ == '__main__':
-
     assert territory(['++B++++++',
                       '+BB++++++',
                       'BB+++++++',
