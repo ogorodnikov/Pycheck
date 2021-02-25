@@ -4,50 +4,30 @@ from operator import itemgetter
 from typing import List, Optional, Union, Tuple
 
 
-def print_iter(elements):
-    for element in elements:
-        print(element)
-
-
 def sum_light(els: List[Union[datetime, Tuple[datetime, int]]],
               start_watching: Optional[datetime] = None,
               end_watching: Optional[datetime] = None,
-              operating: Optional[timedelta] = None) -> int:
+              operating: Optional[timedelta] = timedelta.max) -> int:
 
     sorted_elements = sorted((1, e) if isinstance(e, datetime) else tuple(reversed(e)) for e in els)
 
     grouped_elements = groupby(sorted_elements, key=itemgetter(0))
 
     intervals = []
-    resources_left = {}
     for button_index, button_pushes in grouped_elements:
-        resources_left[button_index] = operating
-        print('Button index:', button_index)
-        print('Resources left:', resources_left)
+
+        duration_left = operating
         pushes = [button_push for _, button_push in button_pushes]
         pushes_iter = iter(pushes)
 
-        for interval in zip_longest(pushes_iter, pushes_iter, fillvalue=datetime.max):
-            start, end = interval
-            delta = end - start
+        for start, end in zip_longest(pushes_iter, pushes_iter, fillvalue=datetime.max):
+            duration = end - start
 
-            print('Interval:', interval)
-            print('Delta:', delta.seconds)
-            print('Resources left:', resources_left[button_index])
+            limited_duration = min(duration, duration_left)
+            duration_left -= limited_duration
 
-            if delta > resources_left[button_index]:
-                end = start + resources_left[button_index]
-                resources_left[button_index] = timedelta(0)
-            else:
-                resources_left[button_index] -= delta
-
-            print('Resources left button index :', resources_left[button_index])
-            print('New end:', end)
-
-            interval = (start, end)
-            intervals.append(interval)
-
-    print('Resources left:', resources_left)
+            limited_interval = (start, start + limited_duration)
+            intervals.append(limited_interval)
 
     if start_watching is None:
         start_watching = datetime.min
@@ -59,10 +39,8 @@ def sum_light(els: List[Union[datetime, Tuple[datetime, int]]],
     print('Operating:', operating)
     print('Sorted:')
     print_iter(sorted_elements)
-    print()
     print('Intervals:')
     print_iter(intervals)
-    print()
     print('Start watching:', start_watching)
     print('End watching:', end_watching)
 
@@ -109,9 +87,14 @@ def sum_light(els: List[Union[datetime, Tuple[datetime, int]]],
     return lit_time
 
 
+def print_iter(elements):
+    for element in elements:
+        print(element)
+
+
 if __name__ == '__main__':
 
-    is_old_asserts = False
+    is_old_asserts = True
     if is_old_asserts:
         assert sum_light([
             datetime(2015, 1, 12, 10, 0, 0),
@@ -288,90 +271,90 @@ if __name__ == '__main__':
             (datetime(2015, 1, 15, 0, 0, 0), 2),
         ], start_watching=datetime(2015, 1, 10, 0, 0, 0), end_watching=datetime(2015, 1, 16, 0, 0, 0)) == 345600
 
-    # assert sum_light([
-    #     datetime(2015, 1, 12, 10, 0, 0),
-    #     datetime(2015, 1, 12, 10, 0, 10),
-    # ], operating=timedelta(seconds=100)) == 10
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 0),
+        datetime(2015, 1, 12, 10, 0, 10),
+    ], operating=timedelta(seconds=100)) == 10
 
     assert sum_light([
         datetime(2015, 1, 12, 10, 0, 0),
         datetime(2015, 1, 12, 10, 0, 10),
     ], operating=timedelta(seconds=5)) == 5
 
-    # assert sum_light([
-    #     datetime(2015, 1, 12, 10, 0, 0),
-    #     datetime(2015, 1, 12, 10, 0, 10),
-    #     (datetime(2015, 1, 12, 10, 0, 0), 2),
-    #     (datetime(2015, 1, 12, 10, 1, 0), 2),
-    # ], operating=timedelta(seconds=100)) == 60
-    #
-    # assert sum_light([
-    #     datetime(2015, 1, 12, 10, 0, 0),
-    #     datetime(2015, 1, 12, 10, 0, 30),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     (datetime(2015, 1, 12, 10, 1, 0), 2),
-    # ], operating=timedelta(seconds=100)) == 60
-    #
-    # assert sum_light([
-    #     datetime(2015, 1, 12, 10, 0, 0),
-    #     datetime(2015, 1, 12, 10, 0, 30),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     (datetime(2015, 1, 12, 10, 1, 0), 2),
-    # ], operating=timedelta(seconds=20)) == 40
-    #
-    # assert sum_light([
-    #     (datetime(2015, 1, 12, 10, 0, 10), 3),
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 3),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     datetime(2015, 1, 12, 10, 0, 40),
-    #     (datetime(2015, 1, 12, 10, 0, 50), 2),
-    #     (datetime(2015, 1, 12, 10, 1, 0), 3),
-    #     (datetime(2015, 1, 12, 10, 1, 20), 3),
-    # ], operating=timedelta(seconds=10)) == 30
-    #
-    # assert sum_light([
-    #     (datetime(2015, 1, 12, 10, 0, 10), 3),
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 3),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     datetime(2015, 1, 12, 10, 0, 40),
-    #     (datetime(2015, 1, 12, 10, 0, 50), 2),
-    #     (datetime(2015, 1, 12, 10, 1, 20), 2),
-    #     (datetime(2015, 1, 12, 10, 1, 40), 2),
-    # ], start_watching=datetime(2015, 1, 12, 10, 0, 20), operating=timedelta(seconds=100)) == 50
-    #
-    # assert sum_light([
-    #     (datetime(2015, 1, 12, 10, 0, 10), 3),
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 3),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    #     datetime(2015, 1, 12, 10, 0, 40),
-    #     (datetime(2015, 1, 12, 10, 0, 50), 2),
-    #     (datetime(2015, 1, 12, 10, 1, 20), 2),
-    #     (datetime(2015, 1, 12, 10, 1, 40), 2),
-    # ], start_watching=datetime(2015, 1, 12, 10, 0, 20), operating=timedelta(seconds=10)) == 20
-    #
-    # assert sum_light([
-    #     (datetime(2015, 1, 12, 10, 0, 10), 3),
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 3),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    # ], start_watching=datetime(2015, 1, 12, 10, 0, 10), end_watching=datetime(2015, 1, 12, 10, 0, 30),
-    #     operating=timedelta(seconds=20)) == 20
-    #
-    # assert sum_light([
-    #     (datetime(2015, 1, 12, 10, 0, 10), 3),
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 3),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    # ], start_watching=datetime(2015, 1, 12, 10, 0, 10), end_watching=datetime(2015, 1, 12, 10, 0, 30),
-    #     operating=timedelta(seconds=10)) == 20
-    #
-    # assert sum_light([
-    #     (datetime(2015, 1, 12, 10, 0, 10), 3),
-    #     datetime(2015, 1, 12, 10, 0, 20),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 3),
-    #     (datetime(2015, 1, 12, 10, 0, 30), 2),
-    # ], start_watching=datetime(2015, 1, 12, 10, 0, 10), end_watching=datetime(2015, 1, 12, 10, 0, 30),
-    #     operating=timedelta(seconds=5)) == 10
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 0),
+        datetime(2015, 1, 12, 10, 0, 10),
+        (datetime(2015, 1, 12, 10, 0, 0), 2),
+        (datetime(2015, 1, 12, 10, 1, 0), 2),
+    ], operating=timedelta(seconds=100)) == 60
+
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 0),
+        datetime(2015, 1, 12, 10, 0, 30),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        (datetime(2015, 1, 12, 10, 1, 0), 2),
+    ], operating=timedelta(seconds=100)) == 60
+
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 0),
+        datetime(2015, 1, 12, 10, 0, 30),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        (datetime(2015, 1, 12, 10, 1, 0), 2),
+    ], operating=timedelta(seconds=20)) == 40
+
+    assert sum_light([
+        (datetime(2015, 1, 12, 10, 0, 10), 3),
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 3),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        datetime(2015, 1, 12, 10, 0, 40),
+        (datetime(2015, 1, 12, 10, 0, 50), 2),
+        (datetime(2015, 1, 12, 10, 1, 0), 3),
+        (datetime(2015, 1, 12, 10, 1, 20), 3),
+    ], operating=timedelta(seconds=10)) == 30
+
+    assert sum_light([
+        (datetime(2015, 1, 12, 10, 0, 10), 3),
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 3),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        datetime(2015, 1, 12, 10, 0, 40),
+        (datetime(2015, 1, 12, 10, 0, 50), 2),
+        (datetime(2015, 1, 12, 10, 1, 20), 2),
+        (datetime(2015, 1, 12, 10, 1, 40), 2),
+    ], start_watching=datetime(2015, 1, 12, 10, 0, 20), operating=timedelta(seconds=100)) == 50
+
+    assert sum_light([
+        (datetime(2015, 1, 12, 10, 0, 10), 3),
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 3),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+        datetime(2015, 1, 12, 10, 0, 40),
+        (datetime(2015, 1, 12, 10, 0, 50), 2),
+        (datetime(2015, 1, 12, 10, 1, 20), 2),
+        (datetime(2015, 1, 12, 10, 1, 40), 2),
+    ], start_watching=datetime(2015, 1, 12, 10, 0, 20), operating=timedelta(seconds=10)) == 20
+
+    assert sum_light([
+        (datetime(2015, 1, 12, 10, 0, 10), 3),
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 3),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+    ], start_watching=datetime(2015, 1, 12, 10, 0, 10), end_watching=datetime(2015, 1, 12, 10, 0, 30),
+        operating=timedelta(seconds=20)) == 20
+
+    assert sum_light([
+        (datetime(2015, 1, 12, 10, 0, 10), 3),
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 3),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+    ], start_watching=datetime(2015, 1, 12, 10, 0, 10), end_watching=datetime(2015, 1, 12, 10, 0, 30),
+        operating=timedelta(seconds=10)) == 20
+
+    assert sum_light([
+        (datetime(2015, 1, 12, 10, 0, 10), 3),
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 3),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+    ], start_watching=datetime(2015, 1, 12, 10, 0, 10), end_watching=datetime(2015, 1, 12, 10, 0, 30),
+        operating=timedelta(seconds=5)) == 10
