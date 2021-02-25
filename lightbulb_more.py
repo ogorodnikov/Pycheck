@@ -8,7 +8,7 @@ def sum_light(els: List[Union[datetime, Tuple[datetime, int]]],
               start_watching: Optional[datetime] = datetime.min,
               end_watching: Optional[datetime] = datetime.max,
               operating: Optional[timedelta] = timedelta.max,
-              req: Optional[int] = None) -> int:
+              req: Optional[int] = 1) -> int:
     sorted_elements = sorted((1, e) if isinstance(e, datetime) else tuple(reversed(e)) for e in els)
 
     grouped_elements = groupby(sorted_elements, key=itemgetter(0))
@@ -24,25 +24,20 @@ def sum_light(els: List[Union[datetime, Tuple[datetime, int]]],
             interval_start, interval_end = interval
 
             duration = interval_end - interval_start
-
-            # print('Interval:', interval)
-            # print('Duration:', duration)
-            # print('Duration left:', duration_left)
-
             limited_duration = min(duration, duration_left)
             duration_left -= limited_duration
 
             limited_interval = (interval_start, interval_start + limited_duration)
-            intervals.append(limited_interval)
+            intervals.append((limited_interval, button_index))
 
-    filtered_intervals = [(max(start, start_watching), min(end, end_watching))
-                          for start, end in intervals
-                          if end > start_watching and start < end_watching]
+    watched_intervals = [((max(start, start_watching), min(end, end_watching)), button_index)
+                         for (start, end), button_index in intervals
+                         if end > start_watching and start < end_watching]
 
-    if not filtered_intervals:
+    if not watched_intervals:
         return 0
 
-    sorted_intervals = sorted(filtered_intervals)
+    sorted_intervals = sorted(watched_intervals)
 
     print('Sorted elements:')
     [print(e) for e in sorted_elements]
@@ -50,17 +45,14 @@ def sum_light(els: List[Union[datetime, Tuple[datetime, int]]],
     print('Intervals:')
     [print(e) for e in intervals]
     print()
-    print('Filtered intervals:')
-    [print(e) for e in filtered_intervals]
-    print()
-    print('Sorted intervals:')
-    [print(e) for e in sorted_intervals]
+    print('Watched intervals:')
+    [print(e) for e in watched_intervals]
     print()
 
     lit_start = datetime.max
     lit_end = datetime.min
     lit_intervals = []
-    for start, end in sorted_intervals:
+    for (start, end), button_index in sorted_intervals:
         if lit_start <= start <= lit_end:
             lit_end = max(lit_end, end)
         else:
@@ -71,15 +63,57 @@ def sum_light(els: List[Union[datetime, Tuple[datetime, int]]],
 
     lit_time = sum((end - start).total_seconds() for start, end in lit_intervals)
     print('Lit time:', lit_time)
+    print()
+    print('============================')
 
+    events = [(button_index, event) for interval, button_index in watched_intervals for event in interval]
+    sorted_events = sorted(events, key=itemgetter(1))
 
+    print('Events:')
+    [print(e) for e in events]
+    print()
+    print('Sorted events:')
+    [print(e) for e in sorted_events]
+    print()
 
-    return lit_time
+    req_start = None
+    req_intervals = []
+
+    lit_bulbs = set()
+    for button_index, event in sorted_events:
+        print()
+        print('Button index:', button_index)
+        print('Event:', event)
+
+        if button_index not in lit_bulbs:
+            lit_bulbs |= {button_index}
+        else:
+            lit_bulbs -= {button_index}
+
+        print('Lit bulbs:', lit_bulbs)
+
+        if len(lit_bulbs) >= req and req_start == None:
+            print('Starting')
+            req_start = event
+        if len(lit_bulbs) < req and req_start != None:
+            print('Ending')
+            req_intervals.append((req_start, event))
+            req_start = None
+
+    print('Req intervals:')
+    [print(e) for e in req_intervals]
+    print()
+
+    req_time = sum((end - start).total_seconds() for start, end in req_intervals)
+    print('Req time:', req_time)
+
+    return req_time
 
 
 if __name__ == '__main__':
 
     is_old_asserts = False
+
     if is_old_asserts:
         assert sum_light([
             datetime(2015, 1, 12, 10, 0, 0),
@@ -336,13 +370,13 @@ if __name__ == '__main__':
         ], start_watching=datetime(2015, 1, 12, 10, 0, 10), end_watching=datetime(2015, 1, 12, 10, 0, 30),
             operating=timedelta(seconds=10)) == 20
 
-        assert sum_light([
-            (datetime(2015, 1, 12, 10, 0, 10), 3),
-            datetime(2015, 1, 12, 10, 0, 20),
-            (datetime(2015, 1, 12, 10, 0, 30), 3),
-            (datetime(2015, 1, 12, 10, 0, 30), 2),
-        ], start_watching=datetime(2015, 1, 12, 10, 0, 10), end_watching=datetime(2015, 1, 12, 10, 0, 30),
-            operating=timedelta(seconds=5)) == 10
+    assert sum_light([
+        (datetime(2015, 1, 12, 10, 0, 10), 3),
+        datetime(2015, 1, 12, 10, 0, 20),
+        (datetime(2015, 1, 12, 10, 0, 30), 3),
+        (datetime(2015, 1, 12, 10, 0, 30), 2),
+    ], start_watching=datetime(2015, 1, 12, 10, 0, 10), end_watching=datetime(2015, 1, 12, 10, 0, 30),
+        operating=timedelta(seconds=5)) == 100
 
     # assert sum_light([
     #     datetime(2015, 1, 12, 10, 0, 0),
@@ -350,13 +384,13 @@ if __name__ == '__main__':
     #     datetime(2015, 1, 12, 10, 0, 10),
     #     (datetime(2015, 1, 12, 10, 1, 0), 2),
     # ], req=1) == 60
-
-    assert sum_light([
-        datetime(2015, 1, 12, 10, 0, 0),
-        (datetime(2015, 1, 12, 10, 0, 0), 2),
-        datetime(2015, 1, 12, 10, 0, 10),
-        (datetime(2015, 1, 12, 10, 1, 0), 2),
-    ], req=2) == 10
+    #
+    # assert sum_light([
+    #     datetime(2015, 1, 12, 10, 0, 0),
+    #     (datetime(2015, 1, 12, 10, 0, 0), 2),
+    #     datetime(2015, 1, 12, 10, 0, 10),
+    #     (datetime(2015, 1, 12, 10, 1, 0), 2),
+    # ], req=2) == 10
 
     # assert sum_light([
     #     (datetime(2015, 1, 12, 10, 0, 10), 3),
