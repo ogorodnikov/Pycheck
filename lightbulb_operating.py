@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from itertools import groupby, zip_longest
 from operator import itemgetter
 from typing import List, Optional, Union, Tuple
@@ -11,33 +11,58 @@ def print_iter(elements):
 
 def sum_light(els: List[Union[datetime, Tuple[datetime, int]]],
               start_watching: Optional[datetime] = None,
-              end_watching: Optional[datetime] = None) -> int:
-    print('====================')
-    print('Elements:')
-    print_iter(els)
-    print()
+              end_watching: Optional[datetime] = None,
+              operating: Optional[timedelta] = None) -> int:
 
     sorted_elements = sorted((1, e) if isinstance(e, datetime) else tuple(reversed(e)) for e in els)
-    print('Sorted:')
-    print_iter(sorted_elements)
-    print()
 
     grouped_elements = groupby(sorted_elements, key=itemgetter(0))
 
     intervals = []
+    resources_left = {}
     for button_index, button_pushes in grouped_elements:
+        resources_left[button_index] = operating
+        print('Button index:', button_index)
+        print('Resources left:', resources_left)
         pushes = [button_push for _, button_push in button_pushes]
         pushes_iter = iter(pushes)
-        for pair in zip_longest(pushes_iter, pushes_iter, fillvalue=datetime.max):
-            intervals.append(pair)
-    print('Intervals:')
-    print_iter(intervals)
-    print()
+
+        for interval in zip_longest(pushes_iter, pushes_iter, fillvalue=datetime.max):
+            start, end = interval
+            delta = end - start
+
+            print('Interval:', interval)
+            print('Delta:', delta.seconds)
+            print('Resources left:', resources_left[button_index])
+
+            if delta > resources_left[button_index]:
+                end = start + resources_left[button_index]
+                resources_left[button_index] = timedelta(0)
+            else:
+                resources_left[button_index] -= delta
+
+            print('Resources left button index :', resources_left[button_index])
+            print('New end:', end)
+
+            interval = (start, end)
+            intervals.append(interval)
+
+    print('Resources left:', resources_left)
 
     if start_watching is None:
         start_watching = datetime.min
     if end_watching is None:
         end_watching = datetime.max
+
+    print('Elements:')
+    print_iter(els)
+    print('Operating:', operating)
+    print('Sorted:')
+    print_iter(sorted_elements)
+    print()
+    print('Intervals:')
+    print_iter(intervals)
+    print()
     print('Start watching:', start_watching)
     print('End watching:', end_watching)
 
@@ -86,7 +111,7 @@ def sum_light(els: List[Union[datetime, Tuple[datetime, int]]],
 
 if __name__ == '__main__':
 
-    is_old_asserts = True
+    is_old_asserts = False
     if is_old_asserts:
         assert sum_light([
             datetime(2015, 1, 12, 10, 0, 0),
@@ -263,16 +288,16 @@ if __name__ == '__main__':
             (datetime(2015, 1, 15, 0, 0, 0), 2),
         ], start_watching=datetime(2015, 1, 10, 0, 0, 0), end_watching=datetime(2015, 1, 16, 0, 0, 0)) == 345600
 
-    assert sum_light([
-        datetime(2015, 1, 12, 10, 0, 0),
-        datetime(2015, 1, 12, 10, 0, 10),
-    ], operating=timedelta(seconds=100)) == 10
-
     # assert sum_light([
     #     datetime(2015, 1, 12, 10, 0, 0),
     #     datetime(2015, 1, 12, 10, 0, 10),
-    # ], operating=timedelta(seconds=5)) == 5
-    #
+    # ], operating=timedelta(seconds=100)) == 10
+
+    assert sum_light([
+        datetime(2015, 1, 12, 10, 0, 0),
+        datetime(2015, 1, 12, 10, 0, 10),
+    ], operating=timedelta(seconds=5)) == 5
+
     # assert sum_light([
     #     datetime(2015, 1, 12, 10, 0, 0),
     #     datetime(2015, 1, 12, 10, 0, 10),
