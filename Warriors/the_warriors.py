@@ -19,7 +19,7 @@ class Knight(Warrior):
 
 
 def fight(unit_1, unit_2):
-    while True:
+    while ...:
         for attacker, defender in (unit_1, unit_2), (unit_2, unit_1):
             defender.health -= attacker.attack
             if not defender.is_alive:
