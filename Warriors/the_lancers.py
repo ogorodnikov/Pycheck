@@ -1,8 +1,9 @@
 class Warrior:
     warriors_count = 0
+    max_health = 50
 
     def __init__(self):
-        self.health = 50
+        self.health = self.__class__.max_health
         self.attack = 5
         self.defense = 0
         self.vampirism = 0
@@ -20,13 +21,13 @@ class Warrior:
 
     def hit(self, defender):
         damage_dealt = defender.receive_hit(self)
-        self.health += damage_dealt * self.vampirism / 100
+        vampirism_dealt = damage_dealt * self.vampirism / 100
+        self.health = min(self.__class__.max_health, self.health + vampirism_dealt)
 
     def splash_hit(self, defender):
         damage_dealt = defender.receive_splash_hit(self)
-        self.health += damage_dealt * self.vampirism / 100
-        # vampirism_dealt = damage_dealt * self.vampirism / 100
-        # self.health += min(self.health, self.health + vampirism_dealt)
+        vampirism_dealt = damage_dealt * self.vampirism / 100
+        self.health = min(self.__class__.max_health, self.health + vampirism_dealt)
 
     def receive_hit(self, attacker):
         damage = max(attacker.attack - self.defense, 0)
@@ -56,9 +57,10 @@ class Defender(Warrior):
 
 
 class Vampire(Warrior):
+    max_health = 40
+
     def __init__(self):
         super().__init__()
-        self.health = 40
         self.attack = 4
         self.vampirism = 50
 
@@ -122,7 +124,7 @@ class Battle:
         level = 0
 
         while True:
-        # for i in range(100):
+            # for i in range(100):
             print()
             print('Level:', level)
             level += 1
@@ -138,8 +140,6 @@ class Battle:
                 if not defending_army.units:
                     print('=== Winner:', attacking_army)
                     return defending_army == army_b
-
-
 
 
 def fight(unit_a, unit_b):
