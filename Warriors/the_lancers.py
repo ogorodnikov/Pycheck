@@ -14,8 +14,18 @@ class Warrior:
         damage_dealt = defender.receive_hit(self)
         self.health += damage_dealt * self.vampirism / 100
 
+    def splash_hit(self, defender):
+        damage_dealt = defender.receive_splash_hit(self)
+        self.health += damage_dealt * self.vampirism / 100
+
     def receive_hit(self, attacker):
         damage = max(attacker.attack - self.defense, 0)
+        damage_received = min(damage, self.health)
+        self.health -= damage_received
+        return damage_received
+
+    def receive_splash_hit(self, attacker):
+        damage = max(attacker.splash - self.defense, 0)
         damage_received = min(damage, self.health)
         self.health -= damage_received
         return damage_received
@@ -59,28 +69,55 @@ class Army:
         for _ in range(unit_count):
             self.units.append(unit())
 
+    def attack(self, defending_army):
+        defending_army.receive_attack(self)
+
+    def receive_attack(self, attacking_army):
+        first_defending_unit = self.units[-1]
+        first_attacking_unit = attacking_army.units[-1]
+
+        first_attacking_unit.hit(first_defending_unit)
+
+        try:
+            second_defending_unit = self.units[-2]
+            first_attacking_unit.splash_hit(second_defending_unit)
+
+            if not second_defending_unit.is_alive:
+                self.units.remove(second_defending_unit)
+        except IndexError:
+            pass
+
+        if not first_defending_unit.is_alive:
+            self.units.remove(first_defending_unit)
+
 
 class Battle:
     @staticmethod
     def fight(army_a, army_b):
 
-        current_warrior_a = army_a.units.pop()
-        current_warrior_b = army_b.units.pop()
-
         while True:
+            for attacking_army, defending_army in (army_a, army_b), (army_b, army_a):
+                attacking_army.attack(defending_army)
+                if not defending_army.units:
+                    return defending_army == army_b
 
-            is_winner_a = fight(current_warrior_a, current_warrior_b)
-
-            if is_winner_a:
-                if army_b.units:
-                    current_warrior_b = army_b.units.pop()
-                else:
-                    return True
-            else:
-                if army_a.units:
-                    current_warrior_a = army_a.units.pop()
-                else:
-                    return False
+        # current_warrior_a = army_a.units.pop()
+        # current_warrior_b = army_b.units.pop()
+        #
+        # while True:
+        #
+        #     is_winner_a = fight(current_warrior_a, current_warrior_b)
+        #
+        #     if is_winner_a:
+        #         if army_b.units:
+        #             current_warrior_b = army_b.units.pop()
+        #         else:
+        #             return True
+        #     else:
+        #         if army_a.units:
+        #             current_warrior_a = army_a.units.pop()
+        #         else:
+        #             return False
 
 
 def fight(unit_a, unit_b):
@@ -92,7 +129,6 @@ def fight(unit_a, unit_b):
 
 
 if __name__ == '__main__':
-
     # fight tests
     chuck = Warrior()
     bruce = Warrior()
