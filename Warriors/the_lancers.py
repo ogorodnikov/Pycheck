@@ -13,7 +13,7 @@ class Warrior:
         Warrior.warriors_count += 1
 
     def __repr__(self):
-        return f'{self.__class__.__name__:8} #{self.warrior_id:2} HP: {self.health}'
+        return f'{self.__class__.__name__:8} #{self.warrior_id:2} HP: {self.health:4}'
 
     @property
     def is_alive(self):
@@ -52,9 +52,10 @@ class Knight(Warrior):
 
 
 class Defender(Warrior):
+    max_health = 60
+
     def __init__(self):
         super().__init__()
-        self.health = 60
         self.attack = 3
         self.defense = 2
 
@@ -71,7 +72,6 @@ class Vampire(Warrior):
 class Lancer(Warrior):
     def __init__(self):
         super().__init__()
-        self.health = 50
         self.attack = 6
         self.splash = 0.5
 
@@ -100,14 +100,13 @@ class Army:
         first_defending_unit = self.units[-1]
         first_attacking_unit = attacking_army.units[-1]
 
-        print('        1 attacker:', first_attacking_unit)
-        print('        1 defender:', first_defending_unit)
+        print(f'{first_attacking_unit} VS {first_defending_unit}')
 
         first_attacking_unit.hit(first_defending_unit, hit_mode='attack')
 
         try:
             second_defending_unit = self.units[-2]
-            print('        2 defender:', first_defending_unit)
+            print(f'                      FT {second_defending_unit}')
 
             first_attacking_unit.hit(second_defending_unit, hit_mode='splash')
 
@@ -138,6 +137,7 @@ class Battle:
                 # print_army(attacking_army)
                 # print('Defending:')
                 # print_army(defending_army)
+                print()
 
                 attacking_army.attack(defending_army)
 
@@ -163,7 +163,6 @@ def print_army(army):
 
 
 if __name__ == '__main__':
-
     # # fight tests
     # chuck = Warrior()
     # bruce = Warrior()
