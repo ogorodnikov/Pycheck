@@ -19,13 +19,15 @@ class Warrior:
     def is_alive(self):
         return self.health > 0
 
-    def hit(self, defender, predicate):
-        damage_dealt = defender.receive_hit(self, predicate)
-        vampirism_dealt = damage_dealt * self.vampirism / 100
-        self.health = min(self.__class__.max_health, self.health + vampirism_dealt)
+    def hit(self, defender, hit_mode):
+        damage_dealt = defender.receive_hit(self, hit_mode)
+        vampirism_hp_received = damage_dealt * self.vampirism / 100
+        hp_to_maximum = self.__class__.max_health - self.health
+        vampirism_hp_used = min(vampirism_hp_received, hp_to_maximum)
+        self.health += vampirism_hp_used
 
-    def receive_hit(self, attacker, predicate):
-        damage = max(attacker.__getattribute__(predicate) - self.defense, 0)
+    def receive_hit(self, attacker, hit_mode):
+        damage = max(attacker.__getattribute__(hit_mode) - self.defense, 0)
         damage_received = min(damage, self.health)
         self.health -= damage_received
         return damage_received
@@ -88,11 +90,11 @@ class Army:
         print('        First attacking unit:', first_attacking_unit)
         print('        First defending unit:', first_defending_unit)
 
-        first_attacking_unit.hit(first_defending_unit, predicate='attack')
+        first_attacking_unit.hit(first_defending_unit, hit_mode='attack')
 
         try:
             second_defending_unit = self.units[-2]
-            first_attacking_unit.hit(second_defending_unit, predicate='splash')
+            first_attacking_unit.hit(second_defending_unit, hit_mode='splash')
 
             if not second_defending_unit.is_alive:
                 self.units.remove(second_defending_unit)
