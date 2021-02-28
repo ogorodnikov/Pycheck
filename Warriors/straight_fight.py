@@ -152,25 +152,25 @@ class Battle:
     @staticmethod
     def straight_fight(army_a, army_b):
 
-        # level = 0
+        level = 0
         while True:
-            # level += 1
-            # print('Level:', level)
+            level += 1
+            print('Level:', level)
 
-            # print('Army A:', len(army_a.units))
-            # for unit in army_a.units:
-            #     print('    ', unit)
-            # print('Army B:', len(army_b.units))
-            # for unit in army_b.units:
-            #     print('    ', unit)
+            print('Army A:', len(army_a.units))
+            for unit in army_a.units:
+                print('    ', unit)
+            print('Army B:', len(army_b.units))
+            for unit in army_b.units:
+                print('    ', unit)
 
             for i, (unit_a, unit_b) in enumerate(zip(army_a.units.copy(), army_b.units.copy())):
-                # print('I:', i)
-                # print('Before:', unit_a, unit_b)
+                print('I:', i)
+                print('Before:', unit_a, unit_b)
 
                 is_defender_perished = fight(unit_a, unit_b)
-                # print('After: ', unit_a, unit_b)
-                # print()
+                print('After: ', unit_a, unit_b)
+                print()
 
                 if is_defender_perished:
                     army_b.units.remove(unit_b)
@@ -178,13 +178,13 @@ class Battle:
                     army_a.units.remove(unit_a)
 
             if not army_b.units:
-                # print('Army A won')
+                print('Army A won')
                 # print('Army A units:', army_a.units)
                 # print('Army B units:', army_b.units)
                 return True
 
             if not army_a.units:
-                # print('Army B won')
+                print('Army B won')
                 # print('Army A units:', army_a.units)
                 # print('Army B units:', army_b.units)
                 return False
@@ -276,17 +276,35 @@ if __name__ == '__main__':
 
     # mission check tests
 
+    # army_1 = Army()
+    # army_2 = Army()
+    # army_1.add_units(Lancer, 7)
+    # army_1.add_units(Vampire, 3)
+    # army_1.add_units(Warrior, 4)
+    # army_1.add_units(Defender, 2)
+    # army_2.add_units(Warrior, 4)
+    # army_2.add_units(Defender, 4)
+    # army_2.add_units(Vampire, 6)
+    # army_2.add_units(Lancer, 4)
+    #
+    # battle = Battle()
+    #
+    # assert battle.straight_fight(army_1, army_2) == True
+
     army_1 = Army()
     army_2 = Army()
     army_1.add_units(Lancer, 7)
     army_1.add_units(Vampire, 3)
+    army_1.add_units(Healer, 1)
     army_1.add_units(Warrior, 4)
+    army_1.add_units(Healer, 1)
     army_1.add_units(Defender, 2)
     army_2.add_units(Warrior, 4)
     army_2.add_units(Defender, 4)
+    army_2.add_units(Healer, 1)
     army_2.add_units(Vampire, 6)
     army_2.add_units(Lancer, 4)
 
     battle = Battle()
 
-    assert battle.straight_fight(army_1, army_2) == True
+    assert battle.straight_fight(army_1, army_2) == False
