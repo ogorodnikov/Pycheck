@@ -145,17 +145,7 @@ class Battle:
     @staticmethod
     def straight_fight(army_a, army_b):
 
-        level = 0
         while True:
-            level += 1
-            # print('Level:', level)
-
-            # print('Army A:', len(army_a.units))
-            # for unit in army_a.units:
-            #     print('    ', unit)
-            # print('Army B:', len(army_b.units))
-            # for unit in army_b.units:
-            #     print('    ', unit)
 
             for i, (unit_a, unit_b) in enumerate(zip(army_a.units.copy()[::-1], army_b.units.copy()[::-1])):
                 # print('I:', i)
