@@ -90,7 +90,8 @@ class Army:
 
     def add_units(self, unit, unit_count):
         for _ in range(unit_count):
-            self.units.append(unit())
+            # self.units.append(unit())
+            self.units.insert(0, unit())
 
     def attack(self, defending_army):
         defending_army.receive_attack(self)
@@ -122,19 +123,21 @@ class Army:
 class Battle:
     @staticmethod
     def fight(army_a, army_b):
+        army_a_initial_len = len(army_a.units)
+        army_b_initial_len = len(army_b.units)
 
         level = 0
         while True:
-            print()
             print('Level:', level)
             level += 1
+            print('_' * (army_a_initial_len - len(army_a.units)) + '+' * len(army_a.units))
+            print('_' * (army_b_initial_len - len(army_b.units)) + '+' * len(army_b.units))
 
             for attacking_army, defending_army in (army_a, army_b), (army_b, army_a):
                 # print('Attacking:')
                 # print_army(attacking_army)
                 # print('Defending:')
                 # print_army(defending_army)
-                print()
 
                 attacking_army.attack(defending_army)
 
