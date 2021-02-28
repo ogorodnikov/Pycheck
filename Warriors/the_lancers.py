@@ -8,7 +8,6 @@ class Warrior:
         self.defense = 0
         self.vampirism = 0
         self.splash = 0
-
         self.warrior_id = Warrior.warriors_count
         Warrior.warriors_count += 1
 
@@ -81,7 +80,6 @@ class Army:
 
     def __init__(self, units=[]):
         self.units = units.copy()
-
         self.army_id = Army.armies_count
         Army.armies_count += 1
 
@@ -90,11 +88,10 @@ class Army:
 
     def add_units(self, unit, unit_count):
         for _ in range(unit_count):
-            # self.units.append(unit())
             self.units.insert(0, unit())
 
     def attack(self, defending_army):
-        defending_army.receive_attack(self)
+        return defending_army.receive_attack(self)
 
     def receive_attack(self, attacking_army):
         first_defending_unit = self.units[-1]
@@ -117,6 +114,7 @@ class Army:
 
         if not first_defending_unit.is_alive:
             self.units.remove(first_defending_unit)
+            return True
 
 
 class Battle:
@@ -133,17 +131,16 @@ class Battle:
             print('_' * (army_b_initial_len - len(army_b.units)) + '+' * len(army_b.units))
 
             for attacking_army, defending_army in (army_a, army_b), (army_b, army_a):
-                # print('Attacking:')
-                # print_army(attacking_army)
-                # print('Defending:')
-                # print_army(defending_army)
                 print()
 
-                attacking_army.attack(defending_army)
+                is_defender_perished = attacking_army.attack(defending_army)
 
                 if not defending_army.units:
                     print('=== Winner:', attacking_army)
                     return defending_army == army_b
+
+                if is_defender_perished:
+                    break
 
 
 def fight(unit_a, unit_b):
@@ -163,65 +160,65 @@ def print_army(army):
 
 
 if __name__ == '__main__':
-    # # fight tests
-    # chuck = Warrior()
-    # bruce = Warrior()
-    # carl = Knight()
-    # dave = Warrior()
-    # mark = Warrior()
-    # bob = Defender()
-    # mike = Knight()
-    # rog = Warrior()
-    # lancelot = Defender()
-    # eric = Vampire()
-    # adam = Vampire()
-    # richard = Defender()
-    # ogre = Warrior()
-    # freelancer = Lancer()
-    # vampire = Vampire()
-    #
-    # assert fight(chuck, bruce) == True
-    # assert fight(dave, carl) == False
-    # assert chuck.is_alive == True
-    # assert bruce.is_alive == False
-    # assert carl.is_alive == True
-    # assert dave.is_alive == False
-    # assert fight(carl, mark) == False
-    # assert carl.is_alive == False
-    # assert fight(bob, mike) == False
-    # assert fight(lancelot, rog) == True
-    # assert fight(eric, richard) == False
-    # assert fight(ogre, adam) == True
-    # assert fight(freelancer, vampire) == True
-    # assert freelancer.is_alive == True
-    #
-    # # battle tests
-    # my_army = Army()
-    # my_army.add_units(Defender, 2)
-    # my_army.add_units(Vampire, 2)
-    # my_army.add_units(Lancer, 4)
-    # my_army.add_units(Warrior, 1)
-    #
-    # enemy_army = Army()
-    # enemy_army.add_units(Warrior, 2)
-    # enemy_army.add_units(Lancer, 2)
-    # enemy_army.add_units(Defender, 2)
-    # enemy_army.add_units(Vampire, 3)
-    #
-    # army_3 = Army()
-    # army_3.add_units(Warrior, 1)
-    # army_3.add_units(Lancer, 1)
-    # army_3.add_units(Defender, 2)
-    #
-    # army_4 = Army()
-    # army_4.add_units(Vampire, 3)
-    # army_4.add_units(Warrior, 1)
-    # army_4.add_units(Lancer, 2)
-    #
-    # battle = Battle()
-    #
-    # assert battle.fight(my_army, enemy_army) == True
-    # assert battle.fight(army_3, army_4) == False
+    # fight tests
+    chuck = Warrior()
+    bruce = Warrior()
+    carl = Knight()
+    dave = Warrior()
+    mark = Warrior()
+    bob = Defender()
+    mike = Knight()
+    rog = Warrior()
+    lancelot = Defender()
+    eric = Vampire()
+    adam = Vampire()
+    richard = Defender()
+    ogre = Warrior()
+    freelancer = Lancer()
+    vampire = Vampire()
+
+    assert fight(chuck, bruce) == True
+    assert fight(dave, carl) == False
+    assert chuck.is_alive == True
+    assert bruce.is_alive == False
+    assert carl.is_alive == True
+    assert dave.is_alive == False
+    assert fight(carl, mark) == False
+    assert carl.is_alive == False
+    assert fight(bob, mike) == False
+    assert fight(lancelot, rog) == True
+    assert fight(eric, richard) == False
+    assert fight(ogre, adam) == True
+    assert fight(freelancer, vampire) == True
+    assert freelancer.is_alive == True
+
+    # battle tests
+    my_army = Army()
+    my_army.add_units(Defender, 2)
+    my_army.add_units(Vampire, 2)
+    my_army.add_units(Lancer, 4)
+    my_army.add_units(Warrior, 1)
+
+    enemy_army = Army()
+    enemy_army.add_units(Warrior, 2)
+    enemy_army.add_units(Lancer, 2)
+    enemy_army.add_units(Defender, 2)
+    enemy_army.add_units(Vampire, 3)
+
+    army_3 = Army()
+    army_3.add_units(Warrior, 1)
+    army_3.add_units(Lancer, 1)
+    army_3.add_units(Defender, 2)
+
+    army_4 = Army()
+    army_4.add_units(Vampire, 3)
+    army_4.add_units(Warrior, 1)
+    army_4.add_units(Lancer, 2)
+
+    battle = Battle()
+
+    assert battle.fight(my_army, enemy_army) == True
+    assert battle.fight(army_3, army_4) == False
 
     # mission check tests
 
