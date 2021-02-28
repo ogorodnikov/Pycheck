@@ -8,6 +8,7 @@ class Warrior:
         self.defense = 0
         self.vampirism = 0
         self.splash = 0
+        self.healing = 0
         self.warrior_id = Warrior.warriors_count
         Warrior.warriors_count += 1
 
@@ -42,6 +43,11 @@ class Warrior:
 
         vampirism_hp_used = min(vampirism_hp_received, hp_to_maximum)
         self.health += vampirism_hp_used
+
+    def heal(self, heal_target):
+        hp_to_maximum = heal_target.__class__.max_health - heal_target.health
+        heal_hp = min(self.healing, hp_to_maximum)
+        heal_target.health += heal_hp
 
 
 class Knight(Warrior):
@@ -81,6 +87,7 @@ class Healer(Warrior):
     def __init__(self):
         super().__init__()
         self.attack = 0
+        self.healing = 2
 
 
 class Army:
@@ -129,7 +136,7 @@ class Battle:
                 is_defender_perished = attacking_army.attack(defending_army)
 
                 if not defending_army.units:
-                    print('Winner:', attacking_army)
+                    # print('Winner:', attacking_army)
                     return defending_army == army_b
 
                 if is_defender_perished:
@@ -224,6 +231,3 @@ if __name__ == '__main__':
 
     assert battle.fight(my_army, enemy_army) == False
     assert battle.fight(army_3, army_4) == True
-
-
-
