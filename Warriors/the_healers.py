@@ -59,7 +59,7 @@ class Warrior:
         # print('Heal hp:', heal_hp)
         # print('Heal target health:', heal_target.health)
         if healed_hp > 0:
-            print('                      +++ Healed HP:', healed_hp)
+            # print('                      +++ Healed HP:', healed_hp)
         heal_target.health += healed_hp
         # print('Heal target health:', heal_target.health)
 
@@ -127,17 +127,17 @@ class Army:
         first_defending_unit = self.units[-1]
         first_attacking_unit = attacking_army.units[-1]
 
-        print(f'{first_attacking_unit} VS {first_defending_unit}')
+        # print(f'{first_attacking_unit} VS {first_defending_unit}')
         first_attacking_unit.hit(first_defending_unit, hit_mode='attack')
-        print(f'{first_attacking_unit} VS {first_defending_unit}')
+        # print(f'{first_attacking_unit} VS {first_defending_unit}')
 
         try:
             second_defending_unit = self.units[-2]
             first_attacking_unit.hit(second_defending_unit, hit_mode='splash')
 
-            print(f'                      F2 {second_defending_unit}')
+            # print(f'                      F2 {second_defending_unit}')
             second_defending_unit.heal(first_defending_unit)
-            print(f'                      H2 {first_defending_unit}')
+            # print(f'                      H2 {first_defending_unit}')
 
             # try:
             #     third_defending_unit = self.units[-3]
@@ -168,10 +168,10 @@ class Battle:
 
         level = 0
         while True:
-            print('Level:', level)
+            # print('Level:', level)
             level += 1
-            print('_' * (army_a_initial_len - len(army_a.units)) + '+' * len(army_a.units))
-            print('_' * (army_b_initial_len - len(army_b.units)) + '+' * len(army_b.units))
+            # print('_' * (army_a_initial_len - len(army_a.units)) + '+' * len(army_a.units))
+            # print('_' * (army_b_initial_len - len(army_b.units)) + '+' * len(army_b.units))
 
             for attacking_army, defending_army in (army_a, army_b), (army_b, army_a):
 
