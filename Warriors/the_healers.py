@@ -55,10 +55,12 @@ class Warrior:
             return
         hp_to_maximum = heal_target.__class__.max_health - heal_target.health
         # print('Hp to maximum:', hp_to_maximum)
-        heal_hp = min(self.healing, hp_to_maximum)
+        healed_hp = min(self.healing, hp_to_maximum)
         # print('Heal hp:', heal_hp)
         # print('Heal target health:', heal_target.health)
-        heal_target.health += heal_hp
+        if healed_hp > 0:
+            print('                      +++ Healed HP:', healed_hp)
+        heal_target.health += healed_hp
         # print('Heal target health:', heal_target.health)
 
 
@@ -126,8 +128,8 @@ class Army:
         first_attacking_unit = attacking_army.units[-1]
 
         print(f'{first_attacking_unit} VS {first_defending_unit}')
-
         first_attacking_unit.hit(first_defending_unit, hit_mode='attack')
+        print(f'{first_attacking_unit} VS {first_defending_unit}')
 
         try:
             second_defending_unit = self.units[-2]
@@ -137,15 +139,15 @@ class Army:
             second_defending_unit.heal(first_defending_unit)
             print(f'                      H2 {first_defending_unit}')
 
-            try:
-                third_defending_unit = self.units[-3]
-
-                print(f'                      F3 {third_defending_unit}')
-                third_defending_unit.heal(second_defending_unit)
-                print(f'                      H3 {second_defending_unit}')
-
-            except IndexError:
-                pass
+            # try:
+            #     third_defending_unit = self.units[-3]
+            #
+            #     print(f'                      F3 {third_defending_unit}')
+            #     third_defending_unit.heal(second_defending_unit)
+            #     print(f'                      H3 {second_defending_unit}')
+            #
+            # except IndexError:
+            #     pass
 
             if not second_defending_unit.is_alive:
                 self.units.remove(second_defending_unit)
