@@ -75,6 +75,14 @@ class Lancer(Warrior):
         self.splash = 0.5
 
 
+class Healer(Warrior):
+    max_health = 60
+
+    def __init__(self):
+        super().__init__()
+        self.attack = 0
+
+
 class Army:
     armies_count = 0
 
@@ -145,6 +153,8 @@ def print_army(army):
 
 
 if __name__ == '__main__':
+    # These "asserts" using only for self-checking and not necessary for auto-testing
+
     # fight tests
     chuck = Warrior()
     bruce = Warrior()
@@ -161,6 +171,7 @@ if __name__ == '__main__':
     ogre = Warrior()
     freelancer = Lancer()
     vampire = Vampire()
+    priest = Healer()
 
     assert fight(chuck, bruce) == True
     assert fight(dave, carl) == False
@@ -176,45 +187,43 @@ if __name__ == '__main__':
     assert fight(ogre, adam) == True
     assert fight(freelancer, vampire) == True
     assert freelancer.is_alive == True
+    assert freelancer.health == 14
+    priest.heal(freelancer)
+    assert freelancer.health == 16
 
     # battle tests
     my_army = Army()
     my_army.add_units(Defender, 2)
+    my_army.add_units(Healer, 1)
     my_army.add_units(Vampire, 2)
-    my_army.add_units(Lancer, 4)
+    my_army.add_units(Lancer, 2)
+    my_army.add_units(Healer, 1)
     my_army.add_units(Warrior, 1)
 
     enemy_army = Army()
     enemy_army.add_units(Warrior, 2)
-    enemy_army.add_units(Lancer, 2)
+    enemy_army.add_units(Lancer, 4)
+    enemy_army.add_units(Healer, 1)
     enemy_army.add_units(Defender, 2)
     enemy_army.add_units(Vampire, 3)
+    enemy_army.add_units(Healer, 1)
 
     army_3 = Army()
     army_3.add_units(Warrior, 1)
     army_3.add_units(Lancer, 1)
+    army_3.add_units(Healer, 1)
     army_3.add_units(Defender, 2)
 
     army_4 = Army()
     army_4.add_units(Vampire, 3)
     army_4.add_units(Warrior, 1)
+    army_4.add_units(Healer, 1)
     army_4.add_units(Lancer, 2)
 
     battle = Battle()
 
-    assert battle.fight(my_army, enemy_army) == True
-    assert battle.fight(army_3, army_4) == False
+    assert battle.fight(my_army, enemy_army) == False
+    assert battle.fight(army_3, army_4) == True
 
-    # mission check tests
 
-    army_1 = Army()
-    army_2 = Army()
-    army_1.add_units(Defender, 11)
-    army_1.add_units(Vampire, 3)
-    army_1.add_units(Warrior, 4)
-    army_2.add_units(Warrior, 4)
-    army_2.add_units(Defender, 4)
-    army_2.add_units(Vampire, 13)
-    battle = Battle()
 
-    assert battle.fight(army_1, army_2) == True
