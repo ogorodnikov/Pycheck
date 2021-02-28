@@ -24,7 +24,8 @@ class Warrior:
 
     def hit(self, defender, hit_mode):
         damage_dealt = defender.receive_hit(self, hit_mode)
-        self.vampirate(damage_dealt)
+        self.health += damage_dealt * self.vampirism / 100
+
 
     def receive_hit(self, attacker, hit_mode):
         if hit_mode == 'attack':
@@ -40,12 +41,13 @@ class Warrior:
         self.health -= damage_received
         return damage_received
 
-    def vampirate(self, damage_dealt):
-        vampirism_hp_received = damage_dealt * self.vampirism / 100
-        hp_to_maximum = self.__class__.max_health - self.health
-
-        vampirism_hp_used = min(vampirism_hp_received, hp_to_maximum)
-        self.health += vampirism_hp_used
+    # def vampirate(self, damage_dealt):
+    #     vampirism_hp_received = damage_dealt * self.vampirism / 100
+    #     # hp_to_maximum = self.__class__.max_health - self.health
+    #
+    #     # vampirism_hp_used = min(vampirism_hp_received, hp_to_maximum)
+    #     # self.health += vampirism_hp_used
+    #     self.health += vampirism_hp_received
 
     def heal(self, heal_target):
         if not heal_target.is_alive or not self.is_alive:
@@ -273,9 +275,9 @@ if __name__ == '__main__':
     # assert battle.fight(my_army, enemy_army) == False
     # assert battle.fight(army_3, army_4) == True
     # assert battle.straight_fight(army_5, army_6) == False
-
-    # mission check tests
-
+    #
+    # # mission check tests
+    #
     # army_1 = Army()
     # army_2 = Army()
     # army_1.add_units(Lancer, 7)
