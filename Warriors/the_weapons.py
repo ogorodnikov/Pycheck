@@ -23,27 +23,19 @@ class Warrior:
 
     @property
     def health(self):
-        health_by_equipment = sum(e.health for e in self.equipment)
-        return self._health + health_by_equipment
+        return self._health
 
     @property
     def max_health(self):
-        max_health_by_equipment = sum(e.health for e in self.equipment)
-        return type(self)._max_health + max_health_by_equipment
+        return self.get_parameter('_max_health')
 
     @property
     def attack(self):
-        if type(self)._attack == 0:
-            return 0
-        attack_by_equipment = sum(e.attack for e in self.equipment)
-        return type(self)._attack + attack_by_equipment
+        return self.get_parameter('_attack')
 
     @property
     def defense(self):
-        if type(self)._defense == 0:
-            return 0
-        defense_by_equipment = sum(e.defense for e in self.equipment)
-        return type(self)._defense + defense_by_equipment
+        return self.get_parameter('_defense')
 
     @property
     def vampirism(self):
@@ -51,23 +43,21 @@ class Warrior:
 
     @property
     def splash(self):
-        splash_by_equipment = sum(e.splash for e in self.equipment)
-        return self._splash + splash_by_equipment
+        return self.get_parameter('_splash')
 
     @property
     def heal_power(self):
-        heal_power_by_equipment = sum(e.heal_power for e in self.equipment)
-        return self._heal_power + heal_power_by_equipment
-
-    def get_parameter(self, parameter):
-        # if getattr(type(self), parameter) == 0:
-        #     return 0
-        parameter_by_equipment = sum(getattr(e, parameter[1:]) for e in self.equipment)
-        return getattr(type(self), parameter) + parameter_by_equipment
+        return self.get_parameter('_heal_power')
 
     @property
     def is_alive(self):
         return self.health > 0
+
+    def get_parameter(self, parameter):
+        if getattr(type(self), parameter) == 0:
+            return 0
+        parameter_by_equipment = sum(getattr(e, parameter) for e in self.equipment)
+        return getattr(type(self), parameter) + parameter_by_equipment
 
     def hit(self, defender, hit_mode):
         damage_dealt = defender.receive_hit(self, hit_mode)
@@ -104,6 +94,7 @@ class Warrior:
     def equip_weapon(self, weapon_name):
         print('Self:', self)
         self.equipment.append(weapon_name)
+        self._health += weapon_name._health
         print('Self after:', self)
         print()
 
@@ -126,35 +117,30 @@ class Vampire(Warrior):
 
 class Lancer(Warrior):
     _attack = 6
-
-    def __init__(self):
-        super().__init__()
-        self._splash = 0.5
+    _splash = 0.5
 
 
 class Healer(Warrior):
     _max_health = 60
     _attack = 0
-
-    def __init__(self):
-        super().__init__()
-        self._heal_power = 2
+    _heal_power = 2
 
 
 class Weapon:
     weapons_count = 0
-    health = 0
-    attack = 0
-    defense = 0
-    vampirism = 0
-    heal_power = 0
+    _health = 0
+    _attack = 0
+    _defense = 0
+    _vampirism = 0
+    _heal_power = 0
 
     def __init__(self, health=0, attack=0, defense=0, vampirism=0, heal_power=0):
-        self.health = health
-        self.attack = attack
-        self.defense = defense
-        self.vampirism = vampirism
-        self.heal_power = heal_power
+        self._health = health
+        self._max_health = health
+        self._attack = attack
+        self._defense = defense
+        self._vampirism = vampirism
+        self._heal_power = heal_power
         self.weapon_id = Weapon.weapons_count
         Weapon.weapons_count += 1
 
