@@ -7,7 +7,8 @@ class Warrior:
     equipment = []
 
     def __init__(self):
-        self.health = self.__class__.max_health
+        self.max_health = type(self).max_health
+        self._health = self.max_health
         self.attack = 5
         self.defense = 0
         self.vampirism = 0
@@ -15,6 +16,11 @@ class Warrior:
         self.heal_power = 0
         self.warrior_id = Warrior.warriors_count
         Warrior.warriors_count += 1
+
+    @property
+    def health(self):
+        health_by_equipment = sum(e.health for e in self.equipment)
+        return self._health + health_by_equipment
 
     def __repr__(self):
         return f'{self.__class__.__name__:8} #{self.warrior_id:2} HP: {self.health:4}'
@@ -57,6 +63,9 @@ class Warrior:
 
     def equip_weapon(self, weapon_name):
         self.equipment.append(weapon_name)
+
+        print('Equipping:', weapon_name)
+        print('Equipment:', self.equipment)
 
 
 class Knight(Warrior):
@@ -252,7 +261,7 @@ if __name__ == '__main__':
     priest.equip_weapon(wand)
     priest.equip_weapon(shield)
 
-    ogre.health == 125
+    assert ogre.health == 125
     lancelot.attack == 17
     richard.defense == 4
     eric.vampirism == 200
