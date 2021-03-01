@@ -4,6 +4,7 @@ from contextlib import suppress
 class Warrior:
     warriors_count = 0
     max_health = 50
+    equipment = []
 
     def __init__(self):
         self.health = self.__class__.max_health
@@ -11,7 +12,7 @@ class Warrior:
         self.defense = 0
         self.vampirism = 0
         self.splash = 0
-        self.healing = 0
+        self.heal_power = 0
         self.warrior_id = Warrior.warriors_count
         Warrior.warriors_count += 1
 
@@ -24,7 +25,7 @@ class Warrior:
 
     def hit(self, defender, hit_mode):
         damage_dealt = defender.receive_hit(self, hit_mode)
-        self.health += damage_dealt * self.vampirism / 100
+        self.vampirate(damage_dealt)
 
     def receive_hit(self, attacker, hit_mode):
         if hit_mode == 'attack':
@@ -40,12 +41,22 @@ class Warrior:
         self.health -= damage_received
         return damage_received
 
+    def vampirate(self, damage_dealt):
+        vampirism_hp_received = int(damage_dealt * self.vampirism / 100)
+        hp_to_maximum = self.__class__.max_health - self.health
+
+        vampirism_hp_used = min(vampirism_hp_received, hp_to_maximum)
+        self.health += vampirism_hp_used
+
     def heal(self, heal_target):
         if not heal_target.is_alive or not self.is_alive:
             return
         hp_to_maximum = heal_target.__class__.max_health - heal_target.health
-        healed_hp = min(self.healing, hp_to_maximum)
+        healed_hp = min(self.heal_power, hp_to_maximum)
         heal_target.health += healed_hp
+
+    def equip_weapon(self, weapon_name):
+        self.equipment.append(weapon_name)
 
 
 class Knight(Warrior):
@@ -85,7 +96,53 @@ class Healer(Warrior):
     def __init__(self):
         super().__init__()
         self.attack = 0
-        self.healing = 2
+        self.heal_power = 2
+
+
+class Weapon:
+    health = 0
+    attack = 0
+    defense = 0
+    vampirism = 0
+    heal_power = 0
+
+    def __init__(self, health=0, attack=0, defense=0, vampirism=0, heal_power=0):
+        self.health = health
+        self.attack = attack
+        self.defense = defense
+        self.vampirism = vampirism
+        self.heal_power = heal_power
+
+
+class Sword(Weapon):
+    health = 5
+    attack = 2
+
+
+class Shield(Weapon):
+    health = 20
+    attack = -1
+    defense = 2
+
+
+class GreatAxe(Weapon):
+    health = -15
+    attack = 5
+    defense = -2
+    vampirism = 10
+
+
+class Katana(Weapon):
+    health = -20
+    attack = 6
+    defense = -5
+    vampirism = 50
+
+
+class MagicWand(Weapon):
+    health = 30
+    attack = 3
+    heal_power = 3
 
 
 class Army:
@@ -170,7 +227,6 @@ def fight(unit_a, unit_b):
 
 
 if __name__ == '__main__':
-
     ogre = Warrior()
     lancelot = Knight()
     richard = Defender()
