@@ -4,10 +4,10 @@ from contextlib import suppress
 class Warrior:
     warriors_count = 0
     _max_health = 50
+    _attack = 5
 
     def __init__(self):
         self._health = type(self)._max_health
-        self._attack = 5
         self._defense = 0
         self._vampirism = 0
         self._splash = 0
@@ -17,7 +17,9 @@ class Warrior:
         Warrior.warriors_count += 1
 
     def __repr__(self):
-        return f'{self.__class__.__name__} #{self.warrior_id} HP: {self.health}/{self.max_health} {self.__dict__}'
+        return (f'{self.__class__.__name__} ({self.warrior_id}) HP: {self.health}/{self.max_health}\n' +
+                f'{self.__dict__}\n' +
+                f'{self.attack}')
 
     @property
     def health(self):
@@ -31,11 +33,15 @@ class Warrior:
 
     @property
     def attack(self):
+        if type(self)._attack == 0:
+            return 0
         attack_by_equipment = sum(e.attack for e in self.equipment)
-        return self._attack + attack_by_equipment
+        return type(self)._attack + attack_by_equipment
 
     @property
     def defense(self):
+        if type(self)._defense == 0:
+            return 0
         defense_by_equipment = sum(e.defense for e in self.equipment)
         return self._defense + defense_by_equipment
 
@@ -78,7 +84,7 @@ class Warrior:
 
     def vampirate(self, damage_dealt):
         vampirism_hp_received = int(damage_dealt * self.vampirism / 100)
-        hp_to_maximum = self.__class__.max_health - self.health
+        hp_to_maximum = self.max_health - self.health
 
         vampirism_hp_used = min(vampirism_hp_received, hp_to_maximum)
         self._health += vampirism_hp_used
@@ -86,7 +92,7 @@ class Warrior:
     def heal(self, heal_target):
         if not heal_target.is_alive or not self.is_alive:
             return
-        hp_to_maximum = heal_target.__class__.max_health - heal_target.health
+        hp_to_maximum = heal_target.max_health - heal_target.health
         healed_hp = min(self.heal_power, hp_to_maximum)
         heal_target.health += healed_hp
 
@@ -98,42 +104,41 @@ class Warrior:
 
 
 class Knight(Warrior):
-    def __init__(self):
-        super().__init__()
-        self._attack = 7
+    _attack = 7
 
 
 class Defender(Warrior):
     _max_health = 60
+    _attack = 3
 
     def __init__(self):
         super().__init__()
-        self._attack = 3
         self._defense = 2
 
 
 class Vampire(Warrior):
     _max_health = 40
+    _attack = 4
 
     def __init__(self):
         super().__init__()
-        self._attack = 4
         self._vampirism = 50
 
 
 class Lancer(Warrior):
+    _attack = 6
+
     def __init__(self):
         super().__init__()
-        self._attack = 6
         self._splash = 0.5
 
 
 class Healer(Warrior):
     _max_health = 60
+    _attack = 0
 
     def __init__(self):
         super().__init__()
-        self._attack = 0
         self._heal_power = 2
 
 
@@ -298,7 +303,7 @@ if __name__ == '__main__':
     ogre.equip_weapon(sword)
     ogre.equip_weapon(shield)
     ogre.equip_weapon(super_weapon)
-    # lancelot.equip_weapon(super_weapon)
+    lancelot.equip_weapon(super_weapon)
     # richard.equip_weapon(shield)
     # eric.equip_weapon(super_weapon)
     # freelancer.equip_weapon(axe)
