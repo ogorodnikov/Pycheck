@@ -5,11 +5,11 @@ class Warrior:
     warriors_count = 0
     _max_health = 50
     _attack = 5
+    _defense = 0
+    _vampirism = 0
 
     def __init__(self):
         self._health = type(self)._max_health
-        self._defense = 0
-        self._vampirism = 0
         self._splash = 0
         self._heal_power = 0
         self.equipment = []
@@ -19,7 +19,7 @@ class Warrior:
     def __repr__(self):
         return (f'{self.__class__.__name__} ({self.warrior_id}) HP: {self.health}/{self.max_health}\n' +
                 f'{self.__dict__}\n' +
-                f'{self.attack}')
+                f'{self.vampirism}')
 
     @property
     def health(self):
@@ -43,12 +43,11 @@ class Warrior:
         if type(self)._defense == 0:
             return 0
         defense_by_equipment = sum(e.defense for e in self.equipment)
-        return self._defense + defense_by_equipment
+        return type(self)._defense + defense_by_equipment
 
     @property
     def vampirism(self):
-        vampirism_by_equipment = sum(e.vampirism for e in self.equipment)
-        return self._vampirism + vampirism_by_equipment
+        return self.get_parameter('_vampirism')
 
     @property
     def splash(self):
@@ -59,6 +58,12 @@ class Warrior:
     def heal_power(self):
         heal_power_by_equipment = sum(e.heal_power for e in self.equipment)
         return self._heal_power + heal_power_by_equipment
+
+    def get_parameter(self, parameter):
+        # if getattr(type(self), parameter) == 0:
+        #     return 0
+        parameter_by_equipment = sum(getattr(e, parameter[1:]) for e in self.equipment)
+        return getattr(type(self), parameter) + parameter_by_equipment
 
     @property
     def is_alive(self):
@@ -110,19 +115,13 @@ class Knight(Warrior):
 class Defender(Warrior):
     _max_health = 60
     _attack = 3
-
-    def __init__(self):
-        super().__init__()
-        self._defense = 2
+    _defense = 2
 
 
 class Vampire(Warrior):
     _max_health = 40
     _attack = 4
-
-    def __init__(self):
-        super().__init__()
-        self._vampirism = 50
+    _vampirism = 50
 
 
 class Lancer(Warrior):
