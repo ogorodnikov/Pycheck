@@ -3,11 +3,10 @@ from contextlib import suppress
 
 class Warrior:
     warriors_count = 0
-    max_health = 50
+    _max_health = 50
 
     def __init__(self):
-        self._max_health = type(self).max_health
-        self._health = self._max_health
+        self._health = type(self)._max_health
         self._attack = 5
         self._defense = 0
         self._vampirism = 0
@@ -17,12 +16,18 @@ class Warrior:
         self.warrior_id = Warrior.warriors_count
         Warrior.warriors_count += 1
 
+    def __repr__(self):
+        return f'{self.__class__.__name__} #{self.warrior_id} HP: {self.health}/{self.max_health} {self.__dict__}'
+
     @property
     def health(self):
-        print('Self equipment:', self.equipment)
         health_by_equipment = sum(e.health for e in self.equipment)
-        print('Health by equipment:', health_by_equipment)
         return self._health + health_by_equipment
+
+    @property
+    def max_health(self):
+        max_health_by_equipment = sum(e.health for e in self.equipment)
+        return type(self)._max_health + max_health_by_equipment
 
     @property
     def attack(self):
@@ -48,9 +53,6 @@ class Warrior:
     def heal_power(self):
         heal_power_by_equipment = sum(e.heal_power for e in self.equipment)
         return self._heal_power + heal_power_by_equipment
-
-    def __repr__(self):
-        return f'{self.__class__.__name__:8} #{self.warrior_id:2} HP: {self.health:4}'
 
     @property
     def is_alive(self):
@@ -89,11 +91,10 @@ class Warrior:
         heal_target.health += healed_hp
 
     def equip_weapon(self, weapon_name):
-        self.equipment.append(weapon_name)
-
         print('Self:', self)
-        print('Equipping:', weapon_name)
-        print('Equipment:', self.equipment)
+        self.equipment.append(weapon_name)
+        print('Self after:', self)
+        print()
 
 
 class Knight(Warrior):
@@ -103,7 +104,7 @@ class Knight(Warrior):
 
 
 class Defender(Warrior):
-    max_health = 60
+    _max_health = 60
 
     def __init__(self):
         super().__init__()
@@ -112,7 +113,7 @@ class Defender(Warrior):
 
 
 class Vampire(Warrior):
-    max_health = 40
+    _max_health = 40
 
     def __init__(self):
         super().__init__()
@@ -128,7 +129,7 @@ class Lancer(Warrior):
 
 
 class Healer(Warrior):
-    max_health = 60
+    _max_health = 60
 
     def __init__(self):
         super().__init__()
@@ -137,6 +138,7 @@ class Healer(Warrior):
 
 
 class Weapon:
+    weapons_count = 0
     health = 0
     attack = 0
     defense = 0
@@ -149,6 +151,11 @@ class Weapon:
         self.defense = defense
         self.vampirism = vampirism
         self.heal_power = heal_power
+        self.weapon_id = Weapon.weapons_count
+        Weapon.weapons_count += 1
+
+    def __repr__(self):
+        return f'{self.__class__.__name__} ({self.weapon_id}) {self.__dict__}'
 
 
 class Sword(Weapon):
@@ -291,39 +298,39 @@ if __name__ == '__main__':
     ogre.equip_weapon(sword)
     ogre.equip_weapon(shield)
     ogre.equip_weapon(super_weapon)
-    lancelot.equip_weapon(super_weapon)
-    richard.equip_weapon(shield)
-    eric.equip_weapon(super_weapon)
-    freelancer.equip_weapon(axe)
-    freelancer.equip_weapon(katana)
-    priest.equip_weapon(wand)
-    priest.equip_weapon(shield)
-
-    assert ogre.health == 125
-    lancelot.attack == 17
-    richard.defense == 4
-    eric.vampirism == 200
-    freelancer.health == 15
-    priest.heal_power == 5
-
-    fight(ogre, eric) == False
-    fight(priest, richard) == False
-    fight(lancelot, freelancer) == True
-
-    my_army = Army()
-    my_army.add_units(Knight, 1)
-    my_army.add_units(Lancer, 1)
-
-    enemy_army = Army()
-    enemy_army.add_units(Vampire, 1)
-    enemy_army.add_units(Healer, 1)
-
-    my_army.units[0].equip_weapon(axe)
-    my_army.units[1].equip_weapon(super_weapon)
-
-    enemy_army.units[0].equip_weapon(katana)
-    enemy_army.units[1].equip_weapon(wand)
-
-    battle = Battle()
-
-    battle.fight(my_army, enemy_army) == True
+    # lancelot.equip_weapon(super_weapon)
+    # richard.equip_weapon(shield)
+    # eric.equip_weapon(super_weapon)
+    # freelancer.equip_weapon(axe)
+    # freelancer.equip_weapon(katana)
+    # priest.equip_weapon(wand)
+    # priest.equip_weapon(shield)
+    #
+    # assert ogre.health == 125
+    # lancelot.attack == 17
+    # richard.defense == 4
+    # eric.vampirism == 200
+    # freelancer.health == 15
+    # priest.heal_power == 5
+    #
+    # fight(ogre, eric) == False
+    # fight(priest, richard) == False
+    # fight(lancelot, freelancer) == True
+    #
+    # my_army = Army()
+    # my_army.add_units(Knight, 1)
+    # my_army.add_units(Lancer, 1)
+    #
+    # enemy_army = Army()
+    # enemy_army.add_units(Vampire, 1)
+    # enemy_army.add_units(Healer, 1)
+    #
+    # my_army.units[0].equip_weapon(axe)
+    # my_army.units[1].equip_weapon(super_weapon)
+    #
+    # enemy_army.units[0].equip_weapon(katana)
+    # enemy_army.units[1].equip_weapon(wand)
+    #
+    # battle = Battle()
+    #
+    # battle.fight(my_army, enemy_army) == True
