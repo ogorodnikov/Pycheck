@@ -17,9 +17,16 @@ class Warrior:
         Warrior.warriors_count += 1
 
     def __repr__(self):
-        return (f'{self.__class__.__name__} ({self.warrior_id}) HP: {self.health}/{self.max_health}\n' +
-                f'{self.__dict__}\n' +
-                f'{self.vampirism}')
+        repr_string = ''
+        repr_string += f'{self.__class__.__name__} ({self.warrior_id}) '
+        repr_string += f'HP: {self.health}/{self.max_health}({type(self)._max_health})\n'
+        for element in self.equipment:
+            repr_string += f'{element}\n'
+        repr_string += f'Basic:    A:{type(self)._attack} D:{type(self)._defense} '
+        repr_string += f'V:{type(self)._vampirism} S:{type(self)._splash} H:{type(self)._heal_power}\n'
+        repr_string += f'Modified: A:{self.attack} D:{self.defense} '
+        repr_string += f'V:{self.vampirism} S:{self.splash} H:{self.heal_power}'
+        return repr_string
 
     @property
     def health(self):
@@ -43,7 +50,7 @@ class Warrior:
 
     @property
     def splash(self):
-        return self.get_parameter('_splash')
+        return self._splash
 
     @property
     def heal_power(self):
@@ -95,10 +102,10 @@ class Warrior:
         heal_target.add_health(healed_hp)
 
     def equip_weapon(self, weapon_name):
-        print('Self:', self)
+        print('Equipping:')
         self.equipment.append(weapon_name)
         self.add_health(weapon_name.health)
-        print('Self after:', self)
+        print(self)
         print()
 
 
@@ -290,13 +297,13 @@ if __name__ == '__main__':
     ogre.equip_weapon(shield)
     ogre.equip_weapon(super_weapon)
     lancelot.equip_weapon(super_weapon)
-    # richard.equip_weapon(shield)
-    # eric.equip_weapon(super_weapon)
-    # freelancer.equip_weapon(axe)
-    # freelancer.equip_weapon(katana)
-    # priest.equip_weapon(wand)
-    # priest.equip_weapon(shield)
-    #
+    richard.equip_weapon(shield)
+    eric.equip_weapon(super_weapon)
+    freelancer.equip_weapon(axe)
+    freelancer.equip_weapon(katana)
+    priest.equip_weapon(wand)
+    priest.equip_weapon(shield)
+
     # assert ogre.health == 125
     # lancelot.attack == 17
     # richard.defense == 4
