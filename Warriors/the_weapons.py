@@ -3,7 +3,6 @@ from contextlib import suppress
 
 class Warrior:
     warriors_count = 0
-    _health = 50
     _max_health = 50
     _attack = 5
     _defense = 0
@@ -12,6 +11,7 @@ class Warrior:
     _heal_power = 0
 
     def __init__(self):
+        self._health = type(self)._max_health
         self.equipment = []
         self.warrior_id = Warrior.warriors_count
         Warrior.warriors_count += 1
@@ -56,8 +56,11 @@ class Warrior:
     def get_parameter(self, parameter):
         if getattr(type(self), parameter) == 0:
             return 0
-        parameter_by_equipment = sum(getattr(e, parameter) for e in self.equipment)
+        parameter_by_equipment = sum(getattr(e, parameter[1:]) for e in self.equipment)
         return getattr(type(self), parameter) + parameter_by_equipment
+
+    def add_health(self, health_delta):
+        self._health += health_delta
 
     def hit(self, defender, hit_mode):
         damage_dealt = defender.receive_hit(self, hit_mode)
@@ -74,7 +77,7 @@ class Warrior:
         damage_limited = max(damage - self.defense, 0)
         damage_received = min(damage_limited, self.health)
 
-        self._health -= damage_received
+        self.add_health(-damage_received)
         return damage_received
 
     def vampirate(self, damage_dealt):
@@ -82,19 +85,19 @@ class Warrior:
         hp_to_maximum = self.max_health - self.health
 
         vampirism_hp_used = min(vampirism_hp_received, hp_to_maximum)
-        self._health += vampirism_hp_used
+        self.add_health(vampirism_hp_used)
 
     def heal(self, heal_target):
         if not heal_target.is_alive or not self.is_alive:
             return
         hp_to_maximum = heal_target.max_health - heal_target.health
         healed_hp = min(self.heal_power, hp_to_maximum)
-        heal_target.health += healed_hp
+        heal_target.add_health(healed_hp)
 
     def equip_weapon(self, weapon_name):
         print('Self:', self)
         self.equipment.append(weapon_name)
-        self._health += weapon_name.health
+        self.add_health(weapon_name.health)
         print('Self after:', self)
         print()
 
@@ -129,7 +132,6 @@ class Healer(Warrior):
 class Weapon:
     weapons_count = 0
     _health = 0
-    _max_health = 0
     _attack = 0
     _defense = 0
     _vampirism = 0
@@ -145,7 +147,7 @@ class Weapon:
             self.heal_power = args[4]
         else:
             self.health = type(self)._health
-            self.max_health = type(self)._max_health
+            self.max_health = type(self)._health
             self.attack = type(self)._attack
             self.defense = type(self)._defense
             self.vampirism = type(self)._vampirism
