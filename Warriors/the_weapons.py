@@ -10,7 +10,7 @@ class Warrior:
     _splash = 0
     _heal_power = 0
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self._health = type(self)._max_health
         self.equipment = []
         self.warrior_id = Warrior.warriors_count
@@ -136,9 +136,15 @@ class Healer(Warrior):
     _heal_power = 2
 
 
+# class Rookie(Warrior):
+#     _max_health = 50
+#     _attack = 1
+
 class Rookie(Warrior):
-    _max_health = 50
-    _attack = 1
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.health = 50
+        self.attack = 1
 
 
 class Weapon:
