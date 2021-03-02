@@ -292,3 +292,21 @@ if __name__ == '__main__':
     battle = Battle()
 
     assert battle.straight_fight(army_1, army_2) == False
+
+    army_1 = Army()
+    army_2 = Army()
+    army_1.add_units(Lancer, 7)
+    army_1.add_units(Vampire, 3)
+    army_1.add_units(Healer, 1)
+    army_1.add_units(Warrior, 4)
+    army_1.add_units(Healer, 1)
+    army_1.add_units(Defender, 2)
+    army_2.add_units(Warrior, 4)
+    army_2.add_units(Defender, 4)
+    army_2.add_units(Healer, 1)
+    army_2.add_units(Vampire, 6)
+    army_2.add_units(Lancer, 4)
+
+    battle = Battle()
+
+    assert battle.straight_fight(army_1, army_2) == False

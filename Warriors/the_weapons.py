@@ -1,7 +1,5 @@
 from contextlib import suppress
 
-PARAMETERS = 'attack defense vampirism splash heal_power'
-
 
 class Warrior:
     warriors_count = 0
@@ -34,7 +32,7 @@ class Warrior:
         # basic += f'V:{type(self)._vampirism} S:{type(self)._splash} H:{type(self)._heal_power}'
 
         if any(getattr(self, '_' + parameter) != getattr(type(self), '_' + parameter)
-               for parameter in PARAMETERS.split()):
+               for parameter in 'attack defense vampirism splash heal_power'.split()):
             modified = f'Modified: A:{self.attack} D:{self.defense} '
             modified += f'V:{self.vampirism} S:{self.splash} H:{self.heal_power}'
         else:
@@ -86,6 +84,7 @@ class Warrior:
 
     def hit(self, defender, hit_mode):
         damage_dealt = defender.receive_hit(self, hit_mode)
+        # self.add_health(damage_dealt * self.vampirism / 100)
         self.vampirate(damage_dealt)
 
     def receive_hit(self, attacker, hit_mode):
@@ -155,11 +154,11 @@ class RookieGhost(Warrior):
     _attack = 1
 
 
-# class Rookie(Warrior):
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.health = 50
-#         self.attack = 1
+class Rookie(Warrior):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.health = 50
+        self.attack = 1
 
 
 class Weapon:
@@ -235,7 +234,7 @@ class Army:
 
     def __repr__(self):
         return f'{self.__class__.__name__} {self.army_id} ({len(self.units)}):\n' + \
-               ''.join(str(unit) for unit in self.units)
+               '\n'.join(str(unit) for unit in self.units)
 
     def add_units(self, unit, unit_count):
         for _ in range(unit_count):
@@ -259,6 +258,8 @@ class Army:
 
             if not second_defending_unit.is_alive:
                 self.units.remove(second_defending_unit)
+
+        print()
 
         if not first_defending_unit.is_alive:
             self.units.remove(first_defending_unit)
@@ -290,7 +291,9 @@ class Battle:
             level += 1
 
             print(army_a)
+            print()
             print(army_b)
+            print()
 
             for unit_a, unit_b in zip(reversed(army_a.units.copy()),
                                       reversed(army_b.units.copy())):
