@@ -3,15 +3,15 @@ from contextlib import suppress
 
 class Warrior:
     warriors_count = 0
+    _health = 50
     _max_health = 50
     _attack = 5
     _defense = 0
     _vampirism = 0
+    _splash = 0
+    _heal_power = 0
 
     def __init__(self):
-        self._health = type(self)._max_health
-        self._splash = 0
-        self._heal_power = 0
         self.equipment = []
         self.warrior_id = Warrior.warriors_count
         Warrior.warriors_count += 1
@@ -94,7 +94,7 @@ class Warrior:
     def equip_weapon(self, weapon_name):
         print('Self:', self)
         self.equipment.append(weapon_name)
-        self._health += weapon_name._health
+        self._health += weapon_name.health
         print('Self after:', self)
         print()
 
@@ -129,18 +129,27 @@ class Healer(Warrior):
 class Weapon:
     weapons_count = 0
     _health = 0
+    _max_health = 0
     _attack = 0
     _defense = 0
     _vampirism = 0
     _heal_power = 0
 
-    def __init__(self, health=0, attack=0, defense=0, vampirism=0, heal_power=0):
-        self._health = health
-        self._max_health = health
-        self._attack = attack
-        self._defense = defense
-        self._vampirism = vampirism
-        self._heal_power = heal_power
+    def __init__(self, *args):
+        if args:
+            self.health = args[0]
+            self.max_health = args[0]
+            self.attack = args[1]
+            self.defense = args[2]
+            self.vampirism = args[3]
+            self.heal_power = args[4]
+        else:
+            self.health = type(self)._health
+            self.max_health = type(self)._max_health
+            self.attack = type(self)._attack
+            self.defense = type(self)._defense
+            self.vampirism = type(self)._vampirism
+            self.heal_power = type(self)._heal_power
         self.weapon_id = Weapon.weapons_count
         Weapon.weapons_count += 1
 
@@ -149,44 +158,34 @@ class Weapon:
 
 
 class Sword(Weapon):
-    def __init__(self):
-        super().__init__()
-        self.health = 5
-        self.attack = 2
+    _health = 5
+    _attack = 2
 
 
 class Shield(Weapon):
-    def __init__(self):
-        super().__init__()
-        self.health = 20
-        self.attack = -1
-        self.defense = 2
+    _health = 20
+    _attack = -1
+    _defense = 2
 
 
 class GreatAxe(Weapon):
-    def __init__(self):
-        super().__init__()
-        self.health = -15
-        self.attack = 5
-        self.defense = -2
-        self.vampirism = 10
+    _health = -15
+    _attack = 5
+    _defense = -2
+    _vampirism = 10
 
 
 class Katana(Weapon):
-    def __init__(self):
-        super().__init__()
-        self.health = -20
-        self.attack = 6
-        self.defense = -5
-        self.vampirism = 50
+    _health = -20
+    _attack = 6
+    _defense = -5
+    _vampirism = 50
 
 
 class MagicWand(Weapon):
-    def __init__(self):
-        super().__init__()
-        self.health = 30
-        self.attack = 3
-        self.heal_power = 3
+    _health = 30
+    _attack = 3
+    _heal_power = 3
 
 
 class Army:
