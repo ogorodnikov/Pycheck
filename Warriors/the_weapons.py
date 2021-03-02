@@ -212,7 +212,8 @@ class Army:
 
     def add_units(self, unit, unit_count):
         for _ in range(unit_count):
-            self.units.insert(0, unit())
+            # self.units.insert(0, unit())
+            self.units.append(unit())
 
     def attack(self, defending_army):
         return defending_army.receive_attack(self)
@@ -315,20 +316,20 @@ if __name__ == '__main__':
     assert fight(priest, richard) == False
     assert fight(lancelot, freelancer) == True
 
-    # my_army = Army()
-    # my_army.add_units(Knight, 1)
-    # my_army.add_units(Lancer, 1)
-    #
-    # enemy_army = Army()
-    # enemy_army.add_units(Vampire, 1)
-    # enemy_army.add_units(Healer, 1)
-    #
-    # my_army.units[0].equip_weapon(axe)
-    # my_army.units[1].equip_weapon(super_weapon)
-    #
-    # enemy_army.units[0].equip_weapon(katana)
-    # enemy_army.units[1].equip_weapon(wand)
-    #
-    # battle = Battle()
-    #
-    # battle.fight(my_army, enemy_army) == True
+    my_army = Army()
+    my_army.add_units(Knight, 1)
+    my_army.add_units(Lancer, 1)
+
+    enemy_army = Army()
+    enemy_army.add_units(Vampire, 1)
+    enemy_army.add_units(Healer, 1)
+
+    my_army.units[0].equip_weapon(axe)
+    my_army.units[1].equip_weapon(super_weapon)
+
+    enemy_army.units[0].equip_weapon(katana)
+    enemy_army.units[1].equip_weapon(wand)
+
+    battle = Battle()
+
+    assert battle.fight(my_army, enemy_army) == True
