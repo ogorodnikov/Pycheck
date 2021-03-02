@@ -92,8 +92,8 @@ class Warrior:
         hp_to_maximum = self.max_health - self.health
 
         vampirism_hp_used = min(vampirism_hp_received, hp_to_maximum)
-        if vampirism_hp_used:
-            print('>>> Vampirism hp used:', vampirism_hp_used)
+        # if vampirism_hp_used:
+        #     print('>>> Vampirism hp used:', vampirism_hp_used)
         self.add_health(vampirism_hp_used)
 
     def receive_hit(self, attacker, hit_mode):
@@ -118,10 +118,10 @@ class Warrior:
         heal_target.add_health(healed_hp)
 
     def equip_weapon(self, weapon_name):
-        print('Equipping:')
+        # print('Equipping:')
         self.equipment.append(weapon_name)
         self.add_health(weapon_name.health)
-        print(self)
+        # print(self)
 
 
 class Knight(Warrior):
@@ -250,7 +250,7 @@ class Army:
         first_defending_unit = self.units[-1]
         first_attacking_unit = attacking_army.units[-1]
 
-        print(f'{first_attacking_unit}    VS    {first_defending_unit}')
+        # print(f'{first_attacking_unit}    VS    {first_defending_unit}')
         first_attacking_unit.hit(first_defending_unit, hit_mode='attack')
 
         with suppress(IndexError):
@@ -287,15 +287,15 @@ class Battle:
 
         level = 0
         while True:
-            print()
-            print('=== Level:', level)
-            print()
+            # print()
+            # print('=== Level:', level)
+            # print()
             level += 1
 
-            print(army_a)
-            print()
-            print(army_b)
-            print()
+            # print(army_a)
+            # print()
+            # print(army_b)
+            # print()
 
             for unit_a, unit_b in zip(army_a.units.copy(),
                                       army_b.units.copy()):
@@ -304,10 +304,10 @@ class Battle:
 
                 if is_defender_perished:
                     army_b.units.remove(unit_b)
-                    print(unit_a, 'won')
+                    # print(unit_a, 'won')
                 else:
                     army_a.units.remove(unit_a)
-                    print(unit_b, 'won')
+                    # print(unit_b, 'won')
 
 
             if not army_b.units:
