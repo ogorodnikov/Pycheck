@@ -24,7 +24,6 @@ class Warrior:
         Warrior.warriors_count += 1
 
     def __repr__(self):
-
         header = f'{self.__class__.__name__} ({self.warrior_id}) '
         header += f'HP: {self.health}/{self.max_health}({type(self)._max_health})'
         equipment = ''.join(str(f'{element}\n') for element in self.equipment)
@@ -83,17 +82,14 @@ class Warrior:
         self._health += health_delta
 
     def hit(self, defender, hit_mode):
-        damage_limited = defender.receive_hit(self, hit_mode)
-        # self.add_health(damage_dealt * self.vampirism / 100)
-        self.vampirate(damage_limited)
+        hp_for_vampirism = defender.receive_hit(self, hit_mode)
+        self.vampirate(hp_for_vampirism)
 
     def vampirate(self, damage_dealt):
         vampirism_hp_received = int(damage_dealt * self.vampirism / 100)
         hp_to_maximum = self.max_health - self.health
 
         vampirism_hp_used = min(vampirism_hp_received, hp_to_maximum)
-        # if vampirism_hp_used:
-        #     print('>>> Vampirism hp used:', vampirism_hp_used)
         self.add_health(vampirism_hp_used)
 
     def receive_hit(self, attacker, hit_mode):
@@ -118,10 +114,8 @@ class Warrior:
         heal_target.add_health(healed_hp)
 
     def equip_weapon(self, weapon_name):
-        # print('Equipping:')
         self.equipment.append(weapon_name)
         self.add_health(weapon_name.health)
-        # print(self)
 
 
 class Knight(Warrior):
@@ -156,11 +150,11 @@ class RookieGhost(Warrior):
     _attack = 1
 
 
-class Rookie(Warrior):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.health = 50
-        self.attack = 1
+# class Rookie(Warrior):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.health = 50
+#         self.attack = 1
 
 
 class Weapon:
@@ -240,7 +234,6 @@ class Army:
 
     def add_units(self, unit, unit_count):
         for _ in range(unit_count):
-            # self.units.insert(0, unit())
             self.units.append(unit())
 
     def attack(self, defending_army):
@@ -249,8 +242,6 @@ class Army:
     def receive_attack(self, attacking_army):
         first_defending_unit = self.units[-1]
         first_attacking_unit = attacking_army.units[-1]
-
-        # print(f'{first_attacking_unit}    VS    {first_defending_unit}')
         first_attacking_unit.hit(first_defending_unit, hit_mode='attack')
 
         with suppress(IndexError):
@@ -285,18 +276,7 @@ class Battle:
     @staticmethod
     def straight_fight(army_a, army_b):
 
-        level = 0
         while True:
-            # print()
-            # print('=== Level:', level)
-            # print()
-            level += 1
-
-            # print(army_a)
-            # print()
-            # print(army_b)
-            # print()
-
             for unit_a, unit_b in zip(army_a.units.copy(),
                                       army_b.units.copy()):
 
@@ -304,11 +284,8 @@ class Battle:
 
                 if is_defender_perished:
                     army_b.units.remove(unit_b)
-                    # print(unit_a, 'won')
                 else:
                     army_a.units.remove(unit_a)
-                    # print(unit_b, 'won')
-
 
             if not army_b.units:
                 # print('Army A won')
