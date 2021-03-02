@@ -1,5 +1,7 @@
 from contextlib import suppress
 
+PARAMETERS = 'attack defense vampirism splash heal_power'
+
 
 class Warrior:
     warriors_count = 0
@@ -10,14 +12,14 @@ class Warrior:
     _splash = 0
     _heal_power = 0
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls):
         if cls.__name__ == 'Rookie':
-            substituting_rookie_ghost = super().__new__(RookieGhost, *args, **kwargs)
-            substituting_rookie_ghost.__init__(*args, **kwargs)
+            substituting_rookie_ghost = super().__new__(RookieGhost)
+            substituting_rookie_ghost.__init__()
             return substituting_rookie_ghost
-        return super().__new__(cls, *args, **kwargs)
+        return super().__new__(cls)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         self._health = type(self)._max_health
         self.equipment = []
         self.warrior_id = Warrior.warriors_count
@@ -26,14 +28,19 @@ class Warrior:
     def __repr__(self):
 
         header = f'{self.__class__.__name__} ({self.warrior_id}) '
-        health = f'HP: {self.health}/{self.max_health}({type(self)._max_health})\n'
+        header += f'HP: {self.health}/{self.max_health}({type(self)._max_health})'
         equipment = ''.join(str(f'{element}\n') for element in self.equipment)
-        basic = f'Basic:    A:{type(self)._attack} D:{type(self)._defense} '
-        basic += f'V:{type(self)._vampirism} S:{type(self)._splash} H:{type(self)._heal_power}\n'
-        modified = f'Modified: A:{self.attack} D:{self.defense} '
-        modified += f'V:{self.vampirism} S:{self.splash} H:{self.heal_power}\n'
+        # basic = f'Basic:    A:{type(self)._attack} D:{type(self)._defense} '
+        # basic += f'V:{type(self)._vampirism} S:{type(self)._splash} H:{type(self)._heal_power}'
 
-        repr_string = header + health + equipment + basic + modified * (modified != basic)
+        if any(getattr(self, '_' + parameter) != getattr(type(self), '_' + parameter)
+               for parameter in PARAMETERS.split()):
+            modified = f'Modified: A:{self.attack} D:{self.defense} '
+            modified += f'V:{self.vampirism} S:{self.splash} H:{self.heal_power}'
+        else:
+            modified = ''
+
+        repr_string = header + equipment + modified
         return repr_string
 
     @property
@@ -227,7 +234,8 @@ class Army:
         Army.armies_count += 1
 
     def __repr__(self):
-        return f'{self.__class__.__name__} {self.army_id}'
+        return f'{self.__class__.__name__} {self.army_id} ({len(self.units)}):\n' + \
+               ''.join(str(unit) for unit in self.units)
 
     def add_units(self, unit, unit_count):
         for _ in range(unit_count):
@@ -240,6 +248,8 @@ class Army:
     def receive_attack(self, attacking_army):
         first_defending_unit = self.units[-1]
         first_attacking_unit = attacking_army.units[-1]
+
+        print(f'{first_attacking_unit} VS {first_defending_unit}')
         first_attacking_unit.hit(first_defending_unit, hit_mode='attack')
 
         with suppress(IndexError):
@@ -274,10 +284,14 @@ class Battle:
     @staticmethod
     def straight_fight(army_a, army_b):
 
-        print('Army a:', army_a.units)
-        print('Army b:', army_b.units)
-
+        level = 0
         while True:
+            print('Level:', level)
+            level += 1
+
+            print(army_a)
+            print(army_b)
+
             for unit_a, unit_b in zip(reversed(army_a.units.copy()),
                                       reversed(army_b.units.copy())):
 
