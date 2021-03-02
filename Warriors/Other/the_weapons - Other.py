@@ -142,6 +142,7 @@ class Healer(Warrior):
 def fight(unit_1, unit_2):
     attacker, defender = unit_1, unit_2
     while True:
+        print(f'{attacker}    VS    {defender}')
         attacker.strike(defender)
         with suppress(AttributeError):
             attacker.next_unit.heal(attacker)
@@ -194,19 +195,20 @@ class Battle:
         while True:
             print('Level:', level)
             level += 1
+            print('Army 0:')
+            [print(unit) for unit in army1 if unit.is_alive]
+            print()
             print('Army 1:')
-            [print(unit) for unit in army1]
-            print('Army 2:')
-            [print(unit) for unit in army2]
-
+            [print(unit) for unit in army2 if unit.is_alive]
+            print()
 
             for unit1, unit2 in zip(army1.alive(), army2.alive()):
-                print('Before Unit 1:', unit1)
-                print('Before Unit 2:', unit2)
                 is_defender_perished = fight(unit1, unit2)
-                print('Is defender perished:', is_defender_perished)
-                print('After Unit 1:', unit1)
-                print('After Unit 2:', unit2)
+                if is_defender_perished:
+                    victor = unit1
+                else:
+                    victor = unit2
+                print(victor, 'won')
                 print()
             if not army1.has_alive:
                 return False

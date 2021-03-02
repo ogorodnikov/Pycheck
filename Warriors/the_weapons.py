@@ -248,7 +248,7 @@ class Army:
         first_defending_unit = self.units[-1]
         first_attacking_unit = attacking_army.units[-1]
 
-        # print(f'{first_attacking_unit}     VS     {first_defending_unit}')
+        print(f'{first_attacking_unit}    VS    {first_defending_unit}')
         first_attacking_unit.hit(first_defending_unit, hit_mode='attack')
 
         with suppress(IndexError):
@@ -260,7 +260,6 @@ class Army:
                 self.units.remove(second_defending_unit)
 
         if not first_defending_unit.is_alive:
-            print('----', first_defending_unit)
             self.units.remove(first_defending_unit)
             return True
 
@@ -301,8 +300,11 @@ class Battle:
 
                 if is_defender_perished:
                     army_b.units.remove(unit_b)
+                    print(unit_a, 'won')
                 else:
                     army_a.units.remove(unit_a)
+                    print(unit_b, 'won')
+
 
             if not army_b.units:
                 # print('Army A won')
