@@ -304,17 +304,17 @@ if __name__ == '__main__':
     priest.equip_weapon(wand)
     priest.equip_weapon(shield)
 
-    # assert ogre.health == 125
-    # lancelot.attack == 17
-    # richard.defense == 4
-    # eric.vampirism == 200
-    # freelancer.health == 15
-    # priest.heal_power == 5
-    #
-    # fight(ogre, eric) == False
-    # fight(priest, richard) == False
-    # fight(lancelot, freelancer) == True
-    #
+    assert ogre.health == 125
+    assert lancelot.attack == 17
+    assert richard.defense == 4
+    assert eric.vampirism == 200
+    assert freelancer.health == 15
+    assert priest.heal_power == 5
+
+    assert fight(ogre, eric) == False
+    assert fight(priest, richard) == False
+    assert fight(lancelot, freelancer) == True
+
     # my_army = Army()
     # my_army.add_units(Knight, 1)
     # my_army.add_units(Lancer, 1)
