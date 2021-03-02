@@ -117,6 +117,14 @@ class Vampire(Warrior):
 
     def strike(self, enemy):
         damage = enemy.hit_by(self.attack)
+
+        vampirism_hp_received = int(damage * self.vampirism / 100)
+        hp_to_maximum = self.max_health - self.health
+
+        vampirism_hp_used = min(vampirism_hp_received, hp_to_maximum)
+        if vampirism_hp_used:
+            print('>>> Vampirism hp used:', vampirism_hp_used)
+
         self.health = min(self.health + int(damage * self.vampirism / 100), self.max_health)
 
 
@@ -193,7 +201,9 @@ class Battle:
     def straight_fight(self, army1, army2):
         level = 0
         while True:
-            print('Level:', level)
+            print()
+            print('=== Level:', level)
+            print()
             level += 1
             print('Army 0:')
             [print(unit) for unit in army1 if unit.is_alive]
