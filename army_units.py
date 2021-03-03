@@ -1,29 +1,76 @@
+class Warrior:
+
+    def __init__(self, unit_type, name, army_type, specialization):
+        self.unit_type = unit_type
+        self.name = name
+        self.army_type = army_type
+        self.specialization = specialization
+
+    def introduce(self):
+        introduction = f'{self.unit_type} {self.name}, {self.army_type} {self.specialization}'
+        print(introduction)
+        return introduction
+
+
+# "Knight Jaks, European swordsman"
+
+class Swordsman(Warrior):
+    pass
+
+
+class Lancer(Warrior):
+    pass
+
+
+class Archer(Warrior):
+    pass
+
+
 class Army:
-    pass
 
+    def train_swordsman_(self, unit_type, name, army_type):
+        return Swordsman(unit_type, name, army_type, 'swordsman')
 
-class Swordsman:
-    pass
+    def train_lancer_(self, unit_type, name, army_type):
+        return Lancer(unit_type, name, army_type, 'lancer')
 
-
-class Lancer:
-    pass
-
-
-class Archer:
-    pass
+    def train_archer_(self, unit_type, name, army_type):
+        return Archer(unit_type, name, army_type, 'archer')
 
 
 class AsianArmy(Army):
-    pass
+    army_type = 'Asian'
+
+    def train_swordsman(self, name):
+        unit_type = 'Samurai'
+        return super().train_swordsman_(unit_type, name, type(self).army_type)
+
+    def train_lancer(self, name):
+        unit_type = 'Ronin'
+        return super().train_lancer_(unit_type, name, type(self).army_type)
+
+    def train_archer(self, name):
+        unit_type = 'Shinobi'
+        return super().train_archer_(unit_type, name, type(self).army_type)
 
 
 class EuropeanArmy(Army):
-    pass
+    army_type = 'European'
+
+    def train_swordsman(self, name):
+        unit_type = 'Knight'
+        return super().train_swordsman_(unit_type, name, type(self).army_type)
+
+    def train_lancer(self, name):
+        unit_type = 'Raubritter'
+        return super().train_lancer_(unit_type, name, type(self).army_type)
+
+    def train_archer(self, name):
+        unit_type = 'Ranger'
+        return super().train_archer_(unit_type, name, type(self).army_type)
 
 
 if __name__ == '__main__':
-
     my_army = EuropeanArmy()
     enemy_army = AsianArmy()
 
