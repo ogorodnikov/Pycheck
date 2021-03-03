@@ -12,8 +12,6 @@ class Warrior:
         return introduction
 
 
-# "Knight Jaks, European swordsman"
-
 class Swordsman(Warrior):
     pass
 
