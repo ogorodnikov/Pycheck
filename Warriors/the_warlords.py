@@ -23,23 +23,6 @@ class Warrior:
         self.warrior_id = Warrior.warriors_count
         Warrior.warriors_count += 1
 
-    def __repr__(self):
-        header = f'{self.__class__.__name__} ({self.warrior_id}) '
-        header += f'HP: {self.health}/{self.max_health}({type(self)._max_health}) '
-        equipment = '\n'.join(str(f'{element}') for element in self.equipment)
-        # basic = f'Basic:    A:{type(self)._attack} D:{type(self)._defense} '
-        # basic += f'V:{type(self)._vampirism} S:{type(self)._splash} H:{type(self)._heal_power}'
-
-        if any(getattr(self, '_' + parameter) != getattr(type(self), '_' + parameter)
-               for parameter in 'attack defense vampirism splash heal_power'.split()):
-            modified = f'Modified: A:{self.attack} D:{self.defense} '
-            modified += f'V:{self.vampirism} S:{self.splash} H:{self.heal_power}'
-        else:
-            modified = ''
-
-        repr_string = header + equipment + modified
-        return repr_string
-
     @property
     def health(self):
         return self._health
@@ -117,6 +100,23 @@ class Warrior:
         self.equipment.append(weapon_name)
         self.add_health(weapon_name.health)
 
+    # def __repr__(self):
+    #     header = f'{self.__class__.__name__} ({self.warrior_id}) '
+    #     header += f'HP: {self.health}/{self.max_health}({type(self)._max_health}) '
+    #     equipment = '\n'.join(str(f'{element}') for element in self.equipment)
+    #     # basic = f'Basic:    A:{type(self)._attack} D:{type(self)._defense} '
+    #     # basic += f'V:{type(self)._vampirism} S:{type(self)._splash} H:{type(self)._heal_power}'
+    #
+    #     if any(getattr(self, '_' + parameter) != getattr(type(self), '_' + parameter)
+    #            for parameter in 'attack defense vampirism splash heal_power'.split()):
+    #         modified = f'Modified: A:{self.attack} D:{self.defense} '
+    #         modified += f'V:{self.vampirism} S:{self.splash} H:{self.heal_power}'
+    #     else:
+    #         modified = ''
+    #
+    #     repr_string = header + equipment + modified
+    #     return repr_string
+
 
 class Knight(Warrior):
     _attack = 7
@@ -150,17 +150,17 @@ class RookieGhost(Warrior):
     _attack = 1
 
 
+class Warlord(Warrior):
+    _max_health = 100
+    _attack = 4
+    _defense = 2
+
+
 class Rookie(Warrior):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.health = 50
         self.attack = 1
-
-
-class Warlord(Warrior):
-    _max_health = 100
-    _attack = 4
-    _defense = 2
 
 
 class Weapon:
@@ -256,10 +256,6 @@ class Army:
     def receive_attack(self, attacking_army):
         first_defending_unit = self.units[0]
         first_attacking_unit = attacking_army.units[0]
-
-        attacker_str = f'{first_attacking_unit}'[:50]
-        defender_str = f'{first_defending_unit}'[:50]
-        print(f'{attacker_str:50}    VS    {defender_str:50}')
         first_attacking_unit.hit(first_defending_unit, hit_mode='attack')
 
         with suppress(IndexError):
@@ -277,11 +273,7 @@ class Army:
     def move_units(self):
 
         if not self.has_unit_type(Warlord):
-            print('No Warlord')
             return
-
-        print('<<< Before:\n', self)
-        print()
 
         attacking_units = [unit for unit in self.units
                            if unit.attack > 0
@@ -307,9 +299,6 @@ class Army:
         self.units.remove(warlord)
         self.units.append(warlord)
 
-        print('>>> After:\n', self)
-        print()
-
 
 class Battle:
     @staticmethod
@@ -328,23 +317,13 @@ class Battle:
                     return defending_army == army_b
 
                 if is_defender_perished:
-                    print('Defender perished')
                     defending_army.move_units()
                     break
 
     @staticmethod
     def straight_fight(army_a, army_b):
 
-        level = 0
         while True:
-            print()
-            print('=== Level:', level)
-            print()
-            level += 1
-            print(army_a)
-            print()
-            print(army_b)
-
             for unit_a, unit_b in zip(army_a.units.copy(),
                                       army_b.units.copy()):
 
@@ -356,11 +335,9 @@ class Battle:
                     army_a.units.remove(unit_a)
 
             if not army_b.units:
-                # print('Army A won')
                 return True
 
             if not army_a.units:
-                # print('Army B won')
                 return False
 
 
@@ -502,7 +479,6 @@ if __name__ == '__main__':
         battle = Battle()
 
         assert battle.fight(my_army, enemy_army) == True
-
 
     # mission tests
 
