@@ -288,9 +288,9 @@ class Army:
                            and not isinstance(unit, Warlord)]
 
         if self.has_unit_type(Lancer):
-            first_lancer = next(self.get_units_by_type(Lancer))
-            self.units.remove(first_lancer)
-            self.units.insert(0, first_lancer)
+            for lancer in self.get_units_by_type(Lancer):
+                self.units.remove(lancer)
+                self.units.insert(0, lancer)
 
         elif attacking_units:
             first_attacking_unit = attacking_units[0]
@@ -370,7 +370,7 @@ def fight(unit_a, unit_b):
 
 if __name__ == '__main__':
 
-    is_old_testing = False
+    is_old_testing = True
 
     if is_old_testing:
         ogre = Warrior()
