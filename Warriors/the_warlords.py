@@ -241,6 +241,9 @@ class Army:
     def has_unit_type(self, unit_type):
         return any(isinstance(unit, unit_type) for unit in self.units)
 
+    def get_units_by_type(self, unit_type):
+        return (unit for unit in self.units if isinstance(unit, unit_type))
+
     def add_units(self, unit_type, unit_count):
         for _ in range(unit_count):
             if unit_type == Warlord and self.has_unit_type(Warlord):
@@ -268,11 +271,32 @@ class Army:
             return True
 
     def move_units(self):
-        print('Self:', self)
+        print('Before:', self)
+        print()
+
         if not self.has_unit_type(Warlord):
             print('Warlord is not there')
             return
 
+        if self.has_unit_type(Lancer):
+            print('Lancer is there')
+            first_lancer = next(self.get_units_by_type(Lancer))
+            print('First lancer:', first_lancer)
+            self.units.remove(first_lancer)
+            self.units.insert(0, first_lancer)
+
+        if self.has_unit_type(Healer):
+            healers = self.get_units_by_type(Healer)
+            for healer in reversed(list(healers)):
+                self.units.remove(healer)
+                self.units.insert(1, healer)
+
+        warlord = next(self.get_units_by_type(Warlord))
+        self.units.remove(warlord)
+        self.units.append(warlord)
+
+        print('After:', self)
+        print()
 
 
 
