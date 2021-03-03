@@ -254,21 +254,19 @@ class Army:
         return defending_army.receive_attack(self)
 
     def receive_attack(self, attacking_army):
-        first_defending_unit = self.units[-1]
-        first_attacking_unit = attacking_army.units[-1]
+        first_defending_unit = self.units[0]
+        first_attacking_unit = attacking_army.units[0]
 
-        print(f'{first_attacking_unit}    VS    {first_defending_unit}')
+        # print(f'{first_attacking_unit}    VS    {first_defending_unit}')
         first_attacking_unit.hit(first_defending_unit, hit_mode='attack')
 
         with suppress(IndexError):
-            second_defending_unit = self.units[-2]
+            second_defending_unit = self.units[1]
             first_attacking_unit.hit(second_defending_unit, hit_mode='splash')
             second_defending_unit.heal(first_defending_unit)
 
             if not second_defending_unit.is_alive:
                 self.units.remove(second_defending_unit)
-
-        print()
 
         if not first_defending_unit.is_alive:
             self.units.remove(first_defending_unit)
@@ -280,7 +278,7 @@ class Army:
             print('No Warlord')
             return
 
-        print('Before:', self)
+        print('<<< Before:\n', self)
         print()
 
         attacking_units = [unit for unit in self.units
@@ -307,7 +305,7 @@ class Army:
         self.units.remove(warlord)
         self.units.append(warlord)
 
-        print('After:', self)
+        print('>>> After:\n', self)
         print()
 
 
