@@ -335,7 +335,16 @@ class Battle:
     @staticmethod
     def straight_fight(army_a, army_b):
 
+        level = 0
         while True:
+            print()
+            print('=== Level:', level)
+            print()
+            level += 1
+            print(army_a)
+            print()
+            print(army_b)
+
             for unit_a, unit_b in zip(army_a.units.copy(),
                                       army_b.units.copy()):
 
@@ -343,10 +352,8 @@ class Battle:
 
                 if is_defender_perished:
                     army_b.units.remove(unit_b)
-                    army_b.move_units()
                 else:
                     army_a.units.remove(unit_a)
-                    army_a.move_units()
 
             if not army_b.units:
                 # print('Army A won')
