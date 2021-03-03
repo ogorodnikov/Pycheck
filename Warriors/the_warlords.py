@@ -256,6 +256,8 @@ class Army:
     def receive_attack(self, attacking_army):
         first_defending_unit = self.units[-1]
         first_attacking_unit = attacking_army.units[-1]
+
+        print(f'{first_attacking_unit}    VS    {first_defending_unit}')
         first_attacking_unit.hit(first_defending_unit, hit_mode='attack')
 
         with suppress(IndexError):
@@ -266,24 +268,34 @@ class Army:
             if not second_defending_unit.is_alive:
                 self.units.remove(second_defending_unit)
 
+        print()
+
         if not first_defending_unit.is_alive:
             self.units.remove(first_defending_unit)
             return True
 
     def move_units(self):
+
+        if not self.has_unit_type(Warlord):
+            print('No Warlord')
+            return
+
         print('Before:', self)
         print()
 
-        if not self.has_unit_type(Warlord):
-            print('Warlord is not there')
-            return
+        attacking_units = [unit for unit in self.units
+                           if unit.attack > 0
+                           and not isinstance(unit, Warlord)]
 
         if self.has_unit_type(Lancer):
-            print('Lancer is there')
             first_lancer = next(self.get_units_by_type(Lancer))
-            print('First lancer:', first_lancer)
             self.units.remove(first_lancer)
             self.units.insert(0, first_lancer)
+
+        elif attacking_units:
+            first_attacking_unit = attacking_units[0]
+            self.units.remove(first_attacking_unit)
+            self.units.insert(0, first_attacking_unit)
 
         if self.has_unit_type(Healer):
             healers = self.get_units_by_type(Healer)
@@ -299,10 +311,12 @@ class Army:
         print()
 
 
-
 class Battle:
     @staticmethod
     def fight(army_a, army_b):
+
+        army_a.move_units()
+        army_b.move_units()
 
         while True:
             for attacking_army, defending_army in (army_a, army_b), (army_b, army_a):
@@ -310,10 +324,11 @@ class Battle:
                 is_defender_perished = attacking_army.attack(defending_army)
 
                 if not defending_army.units:
-                    # print('Winner:', attacking_army)
                     return defending_army == army_b
 
                 if is_defender_perished:
+                    print('Defender perished')
+                    defending_army.move_units()
                     break
 
     @staticmethod
@@ -344,107 +359,107 @@ def fight(unit_a, unit_b):
 
 
 if __name__ == '__main__':
-    ogre = Warrior()
-    lancelot = Knight()
-    richard = Defender()
-    eric = Vampire()
-    freelancer = Lancer()
-    priest = Healer()
-
-    sword = Sword()
-    shield = Shield()
-    axe = GreatAxe()
-    katana = Katana()
-    wand = MagicWand()
-    super_weapon = Weapon(50, 10, 5, 150, 8)
-
-    ogre.equip_weapon(sword)
-    ogre.equip_weapon(shield)
-    ogre.equip_weapon(super_weapon)
-    lancelot.equip_weapon(super_weapon)
-    richard.equip_weapon(shield)
-    eric.equip_weapon(super_weapon)
-    freelancer.equip_weapon(axe)
-    freelancer.equip_weapon(katana)
-    priest.equip_weapon(wand)
-    priest.equip_weapon(shield)
-
-    assert ogre.health == 125
-    assert lancelot.attack == 17
-    assert richard.defense == 4
-    assert eric.vampirism == 200
-    assert freelancer.health == 15
-    assert priest.heal_power == 5
-
-    assert fight(ogre, eric) == False
-    assert fight(priest, richard) == False
-    assert fight(lancelot, freelancer) == True
-
-    my_army = Army()
-    my_army.add_units(Knight, 1)
-    my_army.add_units(Lancer, 1)
-
-    enemy_army = Army()
-    enemy_army.add_units(Vampire, 1)
-    enemy_army.add_units(Healer, 1)
-
-    my_army.units[0].equip_weapon(axe)
-    my_army.units[1].equip_weapon(super_weapon)
-
-    enemy_army.units[0].equip_weapon(katana)
-    enemy_army.units[1].equip_weapon(wand)
-
-    battle = Battle()
-
-    assert battle.fight(my_army, enemy_army) == True
-
-    # mission tests
-
-    weapon_1 = Katana()
-    weapon_2 = Shield()
-
-    my_army = Army()
-    my_army.add_units(Vampire, 2)
-    my_army.add_units(Rookie, 2)
-
-    enemy_army = Army()
-    enemy_army.add_units(Warrior, 1)
-    enemy_army.add_units(Defender, 2)
-
-    my_army.units[0].equip_weapon(weapon_1)
-    my_army.units[1].equip_weapon(weapon_1)
-    my_army.units[2].equip_weapon(weapon_2)
-
-    enemy_army.units[0].equip_weapon(weapon_1)
-    enemy_army.units[1].equip_weapon(weapon_2)
-    enemy_army.units[2].equip_weapon(weapon_2)
-
-    battle = Battle()
-
-    assert battle.straight_fight(my_army, enemy_army) == True
-
-    army_1 = Army()
-    army_2 = Army()
-    army_1.add_units(Lancer, 7)
-    army_1.add_units(Vampire, 3)
-    army_1.add_units(Healer, 1)
-    army_1.add_units(Warrior, 4)
-    army_1.add_units(Healer, 1)
-    army_1.add_units(Defender, 2)
-    army_2.add_units(Warrior, 4)
-    army_2.add_units(Defender, 4)
-    army_2.add_units(Healer, 1)
-    army_2.add_units(Vampire, 6)
-    army_2.add_units(Lancer, 4)
-
-    battle = Battle()
-
-    assert battle.straight_fight(army_1, army_2) == False
-
-    ronald = Warlord()
-    heimdall = Knight()
-
-    assert fight(heimdall, ronald) == False
+    # ogre = Warrior()
+    # lancelot = Knight()
+    # richard = Defender()
+    # eric = Vampire()
+    # freelancer = Lancer()
+    # priest = Healer()
+    #
+    # sword = Sword()
+    # shield = Shield()
+    # axe = GreatAxe()
+    # katana = Katana()
+    # wand = MagicWand()
+    # super_weapon = Weapon(50, 10, 5, 150, 8)
+    #
+    # ogre.equip_weapon(sword)
+    # ogre.equip_weapon(shield)
+    # ogre.equip_weapon(super_weapon)
+    # lancelot.equip_weapon(super_weapon)
+    # richard.equip_weapon(shield)
+    # eric.equip_weapon(super_weapon)
+    # freelancer.equip_weapon(axe)
+    # freelancer.equip_weapon(katana)
+    # priest.equip_weapon(wand)
+    # priest.equip_weapon(shield)
+    #
+    # assert ogre.health == 125
+    # assert lancelot.attack == 17
+    # assert richard.defense == 4
+    # assert eric.vampirism == 200
+    # assert freelancer.health == 15
+    # assert priest.heal_power == 5
+    #
+    # assert fight(ogre, eric) == False
+    # assert fight(priest, richard) == False
+    # assert fight(lancelot, freelancer) == True
+    #
+    # my_army = Army()
+    # my_army.add_units(Knight, 1)
+    # my_army.add_units(Lancer, 1)
+    #
+    # enemy_army = Army()
+    # enemy_army.add_units(Vampire, 1)
+    # enemy_army.add_units(Healer, 1)
+    #
+    # my_army.units[0].equip_weapon(axe)
+    # my_army.units[1].equip_weapon(super_weapon)
+    #
+    # enemy_army.units[0].equip_weapon(katana)
+    # enemy_army.units[1].equip_weapon(wand)
+    #
+    # battle = Battle()
+    #
+    # assert battle.fight(my_army, enemy_army) == True
+    #
+    # # mission tests
+    #
+    # weapon_1 = Katana()
+    # weapon_2 = Shield()
+    #
+    # my_army = Army()
+    # my_army.add_units(Vampire, 2)
+    # my_army.add_units(Rookie, 2)
+    #
+    # enemy_army = Army()
+    # enemy_army.add_units(Warrior, 1)
+    # enemy_army.add_units(Defender, 2)
+    #
+    # my_army.units[0].equip_weapon(weapon_1)
+    # my_army.units[1].equip_weapon(weapon_1)
+    # my_army.units[2].equip_weapon(weapon_2)
+    #
+    # enemy_army.units[0].equip_weapon(weapon_1)
+    # enemy_army.units[1].equip_weapon(weapon_2)
+    # enemy_army.units[2].equip_weapon(weapon_2)
+    #
+    # battle = Battle()
+    #
+    # assert battle.straight_fight(my_army, enemy_army) == True
+    #
+    # army_1 = Army()
+    # army_2 = Army()
+    # army_1.add_units(Lancer, 7)
+    # army_1.add_units(Vampire, 3)
+    # army_1.add_units(Healer, 1)
+    # army_1.add_units(Warrior, 4)
+    # army_1.add_units(Healer, 1)
+    # army_1.add_units(Defender, 2)
+    # army_2.add_units(Warrior, 4)
+    # army_2.add_units(Defender, 4)
+    # army_2.add_units(Healer, 1)
+    # army_2.add_units(Vampire, 6)
+    # army_2.add_units(Lancer, 4)
+    #
+    # battle = Battle()
+    #
+    # assert battle.straight_fight(army_1, army_2) == False
+    #
+    # ronald = Warlord()
+    # heimdall = Knight()
+    #
+    # assert fight(heimdall, ronald) == False
 
     my_army = Army()
     my_army.add_units(Warlord, 1)
@@ -458,16 +473,16 @@ if __name__ == '__main__':
     enemy_army.add_units(Healer, 2)
     enemy_army.add_units(Knight, 2)
 
-    my_army.move_units()
-    enemy_army.move_units()
+    # my_army.move_units()
+    # enemy_army.move_units()
 
-    assert type(my_army.units[0]) == Lancer
-    assert type(my_army.units[1]) == Healer
-    assert type(my_army.units[-1]) == Warlord
-
-    assert type(enemy_army.units[0]) == Vampire
-    assert type(enemy_army.units[-1]) == Warlord
-    assert type(enemy_army.units[-2]) == Knight
+    # assert type(my_army.units[0]) == Lancer
+    # assert type(my_army.units[1]) == Healer
+    # assert type(my_army.units[-1]) == Warlord
+    #
+    # assert type(enemy_army.units[0]) == Vampire
+    # assert type(enemy_army.units[-1]) == Warlord
+    # assert type(enemy_army.units[-2]) == Knight
 
     # 6, not 8, because only 1 Warlord per army could be
     assert len(enemy_army.units) == 6
