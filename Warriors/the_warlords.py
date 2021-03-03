@@ -1,5 +1,3 @@
-# Taken from mission The Weapons
-
 from contextlib import suppress
 
 
@@ -159,6 +157,12 @@ class Rookie(Warrior):
         self.attack = 1
 
 
+class Warlord(Warrior):
+    _max_health = 100
+    _attack = 4
+    _defense = 2
+
+
 class Weapon:
     weapons_count = 0
     _health = 0
@@ -234,9 +238,14 @@ class Army:
         return f'{self.__class__.__name__} {self.army_id} ({len(self.units)}):\n' + \
                '\n'.join(str(unit) for unit in self.units)
 
-    def add_units(self, unit, unit_count):
+    def has_unit_type(self, unit_type):
+        return any(isinstance(unit, unit_type) for unit in self.units)
+
+    def add_units(self, unit_type, unit_count):
         for _ in range(unit_count):
-            self.units.append(unit())
+            if unit_type == Warlord and self.has_unit_type(Warlord):
+                continue
+            self.units.append(unit_type())
 
     def attack(self, defending_army):
         return defending_army.receive_attack(self)
@@ -257,6 +266,14 @@ class Army:
         if not first_defending_unit.is_alive:
             self.units.remove(first_defending_unit)
             return True
+
+    def move_units(self):
+        print('Self:', self)
+        if not self.has_unit_type(Warlord):
+            print('Warlord is not there')
+            return
+
+
 
 
 class Battle:
@@ -400,9 +417,6 @@ if __name__ == '__main__':
 
     assert battle.straight_fight(army_1, army_2) == False
 
-if __name__ == '__main__':
-    # These "asserts" using only for self-checking and not necessary for auto-testing
-
     ronald = Warlord()
     heimdall = Knight()
 
@@ -437,4 +451,3 @@ if __name__ == '__main__':
     battle = Battle()
 
     assert battle.fight(my_army, enemy_army) == True
-print("Coding complete? Let's try tests!")
