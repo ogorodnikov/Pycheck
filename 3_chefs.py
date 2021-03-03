@@ -1,4 +1,7 @@
 class AbstractCook:
+    food_name = ''
+    drink_name = ''
+
     food_total = 0
     drink_total = 0
 
@@ -47,3 +50,5 @@ if __name__ == '__main__':
     assert client_1.total() == "Sushi: 105, Tea: 20, Total: 125"
     assert client_2.total() == "Dumplings: 90, Compote: 100, Total: 190"
     assert client_3.total() == "Pizza: 100, Juice: 20, Total: 120"
+
+
