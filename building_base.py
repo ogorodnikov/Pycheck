@@ -9,9 +9,19 @@ class Building:
         self.width_NS = width_NS
         self.height = height
 
-
     def corners(self):
-        raise NotImplementedError
+        corners_coordinates = (self.south + self.width_NS, self.west), \
+                              (self.south + self.width_NS, self.west + self.width_WE), \
+                              (self.south, self.west), \
+                              (self.south, self.west + self.width_WE)
+
+        print('Corners coordinates:', corners_coordinates)
+
+        corners_dict = {key: value for key, value in zip(CORNER_KEYS.split(), corners_coordinates)}
+
+        print('Corners dict:', corners_dict)
+
+        return corners_dict
 
     def area(self):
         raise NotImplementedError
@@ -31,8 +41,8 @@ if __name__ == '__main__':
 
     b = Building(1, 2, 2, 3)
     # b2 = Building(1, 2, 2, 3, 5)
-    # assert json_dict(b.corners()) == {'north-east': [4, 4], 'south-east': [1, 4],
-    #                                   'south-west': [1, 2], 'north-west': [4, 2]}, "Corners"
+    assert json_dict(b.corners()) == {'north-east': [4, 4], 'south-east': [1, 4],
+                                      'south-west': [1, 2], 'north-west': [4, 2]}, "Corners"
     # assert b.area() == 6, "Area"
     # assert b.volume() == 60, "Volume"
     # assert b2.volume() == 30, "Volume2"
