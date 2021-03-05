@@ -15,12 +15,7 @@ class Building:
                               (self.south, self.west), \
                               (self.south, self.west + self.width_WE)
 
-        print('Corners coordinates:', corners_coordinates)
-
         corners_dict = {key: value for key, value in zip(CORNER_KEYS.split(), corners_coordinates)}
-
-        print('Corners dict:', corners_dict)
-
         return corners_dict
 
     def area(self):
@@ -30,8 +25,7 @@ class Building:
         return self.area() * self.height
 
     def __repr__(self):
-        raise NotImplementedError
-#     "Building({south}, {west}, {width_we}, {width_ns}, {height})"
+        return f'Building({self.south}, {self.west}, {self.width_WE}, {self.width_NS}, {self.height})'
 
 
 if __name__ == '__main__':
@@ -46,4 +40,4 @@ if __name__ == '__main__':
     assert b.area() == 6, "Area"
     assert b.volume() == 60, "Volume"
     assert b2.volume() == 30, "Volume2"
-    # assert str(b) == "Building(1, 2, 2, 3, 10)", "String"
+    assert str(b) == "Building(1, 2, 2, 3, 10)", "String"
