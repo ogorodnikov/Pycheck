@@ -1,6 +1,7 @@
 NOW = '01.01.2018'
 WORK_PREFIXES = {'female': 'She is a', 'male': 'He is a', 'other': 'Is a'}
 
+
 class Person:
     def __init__(self, first_name, last_name, birth_date, job, working_years, salary, country, city, gender='other'):
         self.first_name = first_name
@@ -31,11 +32,11 @@ class Person:
     def money(self):
         return f'{self.salary * self.working_years * 12:,}'.replace(',', ' ')
 
-
+    def home(self):
+        return f'Lives in {self.city}, {self.country}'
 
 
 if __name__ == '__main__':
-
     p1 = Person("John", "Smith", "19.09.1979", "welder", 15, 3600, "Canada", "Vancouver", "male")
     p2 = Person("Hanna Rose", "May", "05.12.1995", "designer", 2.2, 2150, "Austria", "Vienna")
     assert p1.name() == "John Smith", "Name"
