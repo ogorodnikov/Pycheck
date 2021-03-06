@@ -28,6 +28,9 @@ class Person:
     def work(self):
         return WORK_PREFIXES[self.gender] + ' ' + self.job
 
+    def money(self):
+        return f'{self.salary * self.working_years * 12:,}'.replace(',', ' ')
+
 
 
 
