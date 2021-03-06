@@ -15,7 +15,8 @@ class Chat:
 
     @staticmethod
     def translate_to_robotic(human_phrase):
-        robotic_phrase = ''.join(letter for letter in human_phrase)
+        robotic_phrase = ''.join('0' if letter in VOWELS + VOWELS.upper() else '1'
+                                 for letter in human_phrase)
         return robotic_phrase
 
     def show_human_dialogue(self):
