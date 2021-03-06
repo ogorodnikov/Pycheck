@@ -9,6 +9,7 @@ class Chat:
 
     def connect_human(self, human):
         self.participants.add(human)
+        human.current_chat = self
 
     connect_robot = connect_human
 
@@ -18,26 +19,34 @@ class Chat:
         return robotic_phrase
 
     def show_human_dialogue(self):
-        dialogue_text = '\n'.join(f'{author} said: {phrase}'
+        dialogue_text = '\n'.join(f'{author.name} said: {phrase}'
                                   for author, phrase in self.dialogue)
         return dialogue_text
 
     def show_robot_dialogue(self):
-        dialogue_text = '\n'.join(f'{author} said: {self.translate_to_robotic(phrase)}'
+        dialogue_text = '\n'.join(f'{author.name} said: {self.translate_to_robotic(phrase)}'
                                   for author, phrase in self.dialogue)
         return dialogue_text
 
 
-class Human:
+class Author:
+    def __init__(self, name):
+        self.name = name
+        self.current_chat = None
+
+    def send(self, phrase):
+        self.current_chat.dialogue.append((self, phrase))
+
+
+class Human(Author):
     pass
 
 
-class Robot:
+class Robot(Author):
     pass
 
 
 if __name__ == '__main__':
-
     chat = Chat()
 
     karl = Human("Karl")
