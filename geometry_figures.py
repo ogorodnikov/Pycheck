@@ -59,15 +59,31 @@ class Pentagon:
 
     @staticmethod
     def area(parameter):
-        return parameter * (25 + 10 * 5 ** 0.5) ** 0.5 / 4
+        return parameter ** 2 * (25 + 10 * 5 ** 0.5) ** 0.5 / 4
 
 
 class Hexagon:
-    pass
+    @staticmethod
+    def perimeter(parameter):
+        return 6 * parameter
+
+    @staticmethod
+    def area(parameter):
+        return parameter ** 2 * 3 * 3 ** 0.5 / 2
 
 
 class Cube:
-    pass
+    @staticmethod
+    def perimeter(parameter):
+        return 12 * parameter
+
+    @staticmethod
+    def area(parameter):
+        return parameter ** 2 * 6
+
+    @staticmethod
+    def volume(parameter):
+        return parameter ** 3
 
 
 if __name__ == '__main__':
@@ -86,8 +102,8 @@ if __name__ == '__main__':
     figure.choose_figure(Pentagon())
     assert figure.perimeter() == 50
 
-    # figure.choose_figure(Hexagon())
-    # assert figure.perimeter() == 60
-    #
-    # figure.choose_figure(Cube())
-    # assert figure.volume() == 1000
+    figure.choose_figure(Hexagon())
+    assert figure.perimeter() == 60
+
+    figure.choose_figure(Cube())
+    assert figure.volume() == 1000
