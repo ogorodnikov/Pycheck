@@ -53,7 +53,13 @@ class Square:
 
 
 class Pentagon:
-    pass
+    @staticmethod
+    def perimeter(parameter):
+        return 5 * parameter
+
+    @staticmethod
+    def area(parameter):
+        return parameter * (25 + 10 * 5 ** 0.5) ** 0.5 / 4
 
 
 class Hexagon:
@@ -77,9 +83,9 @@ if __name__ == '__main__':
     figure.choose_figure(Square())
     assert figure.area() == 100
 
-    # figure.choose_figure(Pentagon())
-    # assert figure.perimeter() == 50
-    #
+    figure.choose_figure(Pentagon())
+    assert figure.perimeter() == 50
+
     # figure.choose_figure(Hexagon())
     # assert figure.perimeter() == 60
     #
