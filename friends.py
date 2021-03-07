@@ -24,6 +24,7 @@ class Friends:
 
 
 if __name__ == '__main__':
+
     letter_friends = Friends(({"a", "b"}, {"b", "c"}, {"c", "a"}, {"a", "c"}))
     digit_friends = Friends([{"1", "2"}, {"3", "1"}])
 
