@@ -15,8 +15,8 @@ class Friends:
         self._connections.discard(frozenset(connection))
         return is_existing_connection
 
-    def names(self):
-        raise NotImplementedError
+    def names(self) -> set:
+        return {friend for connection in self._connections for friend in connection}
 
     def connected(self, name):
         raise NotImplementedError
@@ -30,6 +30,6 @@ if __name__ == '__main__':
     assert letter_friends.add({"c", "d"}) is False, "Add again"
     assert letter_friends.remove({"c", "d"}) is True, "Remove"
     assert digit_friends.remove({"c", "d"}) is False, "Remove non exists"
-    # assert letter_friends.names() == {"a", "b", "c"}, "Names"
+    assert letter_friends.names() == {"a", "b", "c"}, "Names"
     # assert letter_friends.connected("d") == set(), "Non connected name"
     # assert letter_friends.connected("a") == {"b", "c"}, "Connected name"
