@@ -18,8 +18,9 @@ class Friends:
     def names(self) -> set:
         return {friend for connection in self._connections for friend in connection}
 
-    def connected(self, name):
-        raise NotImplementedError
+    def connected(self, name: str) -> set:
+        return {friend for connection in self._connections if name in connection
+                for friend in connection} - {name}
 
 
 if __name__ == '__main__':
@@ -31,5 +32,5 @@ if __name__ == '__main__':
     assert letter_friends.remove({"c", "d"}) is True, "Remove"
     assert digit_friends.remove({"c", "d"}) is False, "Remove non exists"
     assert letter_friends.names() == {"a", "b", "c"}, "Names"
-    # assert letter_friends.connected("d") == set(), "Non connected name"
-    # assert letter_friends.connected("a") == {"b", "c"}, "Connected name"
+    assert letter_friends.connected("d") == set(), "Non connected name"
+    assert letter_friends.connected("a") == {"b", "c"}, "Connected name"
