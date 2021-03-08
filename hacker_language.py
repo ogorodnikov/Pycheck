@@ -1,8 +1,5 @@
 import re
 
-WHITESPACE_BINARY = '1000000'
-
-
 class HackerLanguage:
     _message = ''
 
@@ -20,26 +17,19 @@ class HackerLanguage:
 
         tokens = []
 
-        def write_date(_, token):
-            tokens.append(token)
-
-        def write_time(_, token):
-            tokens.append(token)
-
         def write_ascii_code(_, token):
-            tokens.append(f'{ord(token):<07b}')
+            return f'{ord(token):<07b}'
 
-        def write_other(_, token):
-            tokens.append(token)
+        def write_transparently(_, token):
+            return token
 
-        scanner = re.Scanner([(r'\d{2}\.\d{2}\.\d{4}', write_date),
-                              (r'\d{2}\:\d{2}', write_time),
-                              (r'\d', write_other),
-                              (r'[^\w\s]', write_other),
+        scanner = re.Scanner([(r'\d|[^\w\s]', write_transparently),
                               (r'\w|\s', write_ascii_code)])
-        scanner.scan(message)
+
+        tokens, unrecognised = scanner.scan(message)
 
         print('Tokens:', tokens)
+        print('Unrecognised:', unrecognised)
 
     @staticmethod
     def encode(message):
