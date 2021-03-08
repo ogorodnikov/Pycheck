@@ -42,7 +42,7 @@ class HackerLanguage:
             return token
 
         def read_ascii_code(_, token):
-            return chr(int(token, 2))
+            return chr(int(token.replace('1000000', '100000'), 2))
 
         scanner = re.Scanner([(r'[0|1]{7}', read_ascii_code),
                               (r'.', read_transparently)])
@@ -83,3 +83,8 @@ if __name__ == '__main__':
 
     assert message_1.send() == "111001111001011100011111001011001011110100"
     assert message_2.read("11001011101101110000111010011101100") == "email"
+
+    # mission tests
+
+    message = HackerLanguage()
+    assert message.read('1001001100000011000011101101100000011101001101001111001011001011100100...') == "I am tired..."
