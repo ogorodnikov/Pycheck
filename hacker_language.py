@@ -16,7 +16,6 @@ class HackerLanguage:
 
     @staticmethod
     def encode(message):
-
         print('Encode message:', message)
 
         def write_transparently(_, token):
@@ -35,23 +34,25 @@ class HackerLanguage:
 
         return ''.join(tokens)
 
-    # @staticmethod
-    # def encode(message):
-    #     print('Encode message:', message)
-    #
-    #     encoded_message = ''
-    #     for symbol in message:
-    #         if symbol == ' ':
-    #             binary = WHITESPACE_BINARY
-    #         else:
-    #             binary = f'{ord(symbol):b}'
-    #         print('Binary:', binary)
-    #         encoded_message += binary
-    #     return encoded_message
-
     @staticmethod
     def decode(message):
-        return message
+        print('Decode message:', message)
+
+        def read_transparently(_, token):
+            return token
+
+        def read_ascii_code(_, token):
+            return chr(int(token, 2))
+
+        scanner = re.Scanner([(r'[0|1]{7}', read_ascii_code),
+                              (r'.', read_transparently)])
+
+        tokens, unrecognised = scanner.scan(message)
+
+        print('Tokens:', tokens)
+        print('Unrecognised:', unrecognised)
+
+        return ''.join(tokens)
 
     def write(self, text):
         self._message += text
@@ -81,4 +82,4 @@ if __name__ == '__main__':
     message_2 = HackerLanguage()
 
     assert message_1.send() == "111001111001011100011111001011001011110100"
-    # assert message_2.read("11001011101101110000111010011101100") == "email"
+    assert message_2.read("11001011101101110000111010011101100") == "email"
