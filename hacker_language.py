@@ -26,15 +26,17 @@ class HackerLanguage:
         def write_time(_, token):
             tokens.append(token)
 
-        def write_whitespace(_, token):
-            tokens.append('1000000')
+        def write_ascii_code(_, token):
+            tokens.append(f'{ord(token):<07b}')
 
         def write_other(_, token):
-            tokens.append(f'{ord(token):<07b}')
+            tokens.append(token)
 
         scanner = re.Scanner([(r'\d{2}\.\d{2}\.\d{4}', write_date),
                               (r'\d{2}\:\d{2}', write_time),
-                              (r'\w|\s', write_other)])
+                              (r'\d', write_other),
+                              (r'[^\w\s]', write_other),
+                              (r'\w|\s', write_ascii_code)])
         scanner.scan(message)
 
         print('Tokens:', tokens)
@@ -72,7 +74,7 @@ class HackerLanguage:
 
 if __name__ == '__main__':
     message_1 = HackerLanguage()
-    message_1.scan('te st')
+    message_1.scan('te st123 !@# 12:0')
 
     # message_1.write("secrit")
     # message_1.delete(2)
