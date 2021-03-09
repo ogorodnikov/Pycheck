@@ -1,39 +1,21 @@
 import re
 
+TRANSPARENT = lambda _, token: token
+CHAR_TO_BITS = lambda _, token: f'{ord(token):<07b}'
+BITS_TO_CHAR = lambda _, token: chr(int(token.replace('1000000', '100000'), 2))
+
+ENCODE = {r'\d|[^\w\s]': TRANSPARENT, r'.': CHAR_TO_BITS}
+DECODE = {r'[0|1]{7}': BITS_TO_CHAR, r'.': TRANSPARENT}
+
 
 class HackerLanguage:
     _message = ''
 
     @staticmethod
-    def encode(message):
+    def transcode(message, code_dictionary):
 
-        def write_transparently(_, token):
-            return token
-
-        def write_ascii_code(_, token):
-            return f'{ord(token):<07b}'
-
-        scanner = re.Scanner([(r'\d|[^\w\s]', lambda _, token: token),
-                              (r'.', write_ascii_code)])
-
+        scanner = re.Scanner(list(code_dictionary.items()))
         tokens, unrecognised = scanner.scan(message)
-
-        return ''.join(tokens)
-
-    @staticmethod
-    def decode(message):
-
-        def read_transparently(_, token):
-            return token
-
-        def read_ascii_code(_, token):
-            return chr(int(token.replace('1000000', '100000'), 2))
-
-        scanner = re.Scanner([(r'[0|1]{7}', read_ascii_code),
-                              (r'.', read_transparently)])
-
-        tokens, unrecognised = scanner.scan(message)
-
         return ''.join(tokens)
 
     def write(self, text):
@@ -43,10 +25,10 @@ class HackerLanguage:
         self._message = self._message[:-symbol_count]
 
     def send(self):
-        return self.encode(self._message)
+        return self.transcode(self._message, ENCODE)
 
     def read(self, text):
-        return self.decode(text)
+        return self.transcode(text, DECODE)
 
 
 if __name__ == '__main__':
@@ -63,4 +45,5 @@ if __name__ == '__main__':
     # mission tests
 
     message_3 = HackerLanguage()
-    assert message_3.read('1001001100000011000011101101100000011101001101001111001011001011100100...') == "I am tired..."
+    assert message_3.read(
+        '1001001100000011000011101101100000011101001101001111001011001011100100...') == "I am tired..."
