@@ -6,8 +6,18 @@ class MicrowaveTime(time):
         hour_sum = self.hour + other.hour
         minute_sum = self.minute + other.minute
         seconds_sum = self.second + other.second
-        return time(hour=hour_sum, minute=minute_sum, second=seconds_sum)
-    pass
+        return MicrowaveTime(hour=hour_sum, minute=minute_sum, second=seconds_sum)
+
+    def __sub__(self, other):
+        hour_sum = self.hour - other.hour
+        minute_sum = self.minute - other.minute
+        seconds_sum = self.second - other.second
+
+        hour_sum = max(0, hour_sum)
+        minute_sum = max(0, minute_sum)
+        seconds_sum = max(0, seconds_sum)
+
+        return MicrowaveTime(hour=hour_sum, minute=minute_sum, second=seconds_sum)
 
 
 class MicrowaveBase:
@@ -42,6 +52,26 @@ class MicrowaveBase:
         print('Time delta:', time_delta)
         print('Self time:', self._time)
 
+    def del_time(self, amount_of_time_string):
+
+        print('Self time:', self._time)
+        minutes = 0
+        seconds = 0
+        amount_of_time = int(amount_of_time_string[:-1])
+
+        if amount_of_time_string.endswith('s'):
+            minutes, seconds = divmod(amount_of_time, 60)
+        elif amount_of_time_string.endswith('m'):
+            minutes = amount_of_time
+        else:
+            raise ValueError
+
+        time_delta = MicrowaveTime(minute=minutes, second=seconds)
+
+        self._time -= time_delta
+        print('Time delta:', time_delta)
+        print('Self time:', self._time)
+
     def show_time(self):
         time_string = self._time.strftime('%M:%S')
         print('Time string:', time_string)
@@ -52,12 +82,13 @@ class MicrowaveBase:
         print('Faulty time string:', faulty_time_string)
         return faulty_time_string
 
+
 class Microwave1(MicrowaveBase):
     _faulty_segment = 0
 
 
 class Microwave2(MicrowaveBase):
-    _faulty_segment = -1
+    _faulty_segment = 4
 
 
 class Microwave3(MicrowaveBase):
@@ -76,6 +107,9 @@ class RemoteControl:
     def add_time(self, amount_of_time_string):
         self._microwave.add_time(amount_of_time_string)
 
+    def del_time(self, amount_of_time_string):
+        self._microwave.del_time(amount_of_time_string)
+
     def show_time(self):
         return self._microwave.show_time()
 
@@ -91,10 +125,10 @@ if __name__ == '__main__':
     remote_control_2 = RemoteControl(microwave_2)
     remote_control_2.add_time("90s")
 
-    # remote_control_3 = RemoteControl(microwave_3)
-    # remote_control_3.del_time("300s")
-    # remote_control_3.add_time("100s")
-    #
+    remote_control_3 = RemoteControl(microwave_3)
+    remote_control_3.del_time("300s")
+    remote_control_3.add_time("100s")
+
     assert remote_control_1.show_time() == "_1:00"
-    # assert remote_control_2.show_time() == "01:3_"
-    # assert remote_control_3.show_time() == "01:40"
+    assert remote_control_2.show_time() == "01:3_"
+    assert remote_control_3.show_time() == "01:40"
