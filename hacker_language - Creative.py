@@ -13,7 +13,7 @@ class HackerLanguage:
         def write_ascii_code(_, token):
             return f'{ord(token):<07b}'
 
-        scanner = re.Scanner([(r'\d|[^\w\s]', write_transparently),
+        scanner = re.Scanner([(r'\d|[^\w\s]', lambda _, token: token),
                               (r'.', write_ascii_code)])
 
         tokens, unrecognised = scanner.scan(message)
