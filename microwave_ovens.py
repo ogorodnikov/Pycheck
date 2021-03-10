@@ -66,14 +66,9 @@ class MicrowaveBase:
         minutes, seconds = divmod(self._time.total_seconds, 60)
         time_string = f'{minutes:02}:{seconds:02}'
 
-        print('Time string:', time_string)
-
         faulty_time_string = ''.join('_' if i == self._faulty_segment
                                      else letter
                                      for i, letter in enumerate(time_string))
-
-        print('Faulty time string:', faulty_time_string)
-        print()
 
         return faulty_time_string
 
