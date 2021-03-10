@@ -3,10 +3,16 @@ from datetime import time
 
 class MicrowaveTime(time):
     def __add__(self, other):
-        hour_sum = self.hour + other.hour
-        minute_sum = self.minute + other.minute
-        seconds_sum = self.second + other.second
-        return MicrowaveTime(hour=hour_sum, minute=minute_sum, second=seconds_sum)
+        seconds = self.second + other.second
+        seconds = min(90 * 60, seconds)
+
+        minutes, seconds = divmod(seconds, 60)
+        minutes = minutes + self.minute + other.minute
+
+        hours, minutes = divmod(minutes, 60)
+        hours = hours + self.hour + other.hour
+
+        return MicrowaveTime(hour=hours, minute=minutes, second=seconds)
 
     def __sub__(self, other):
         hour_sum = self.hour - other.hour
@@ -27,30 +33,31 @@ class MicrowaveBase:
     def __init__(self):
         self.set_time('00:00')
 
-    def set_time(self, time_string):
+    @staticmethod
+    def string_to_time(time_string):
 
-        print('Time string:', time_string)
+        hours = minutes = seconds = 0
 
-        minutes, seconds = map(int, time_string.split(':'))
-        hours, minutes = divmod(minutes, 60)
+        if time_string.find(':') > -1:
+            minutes, seconds = map(int, time_string.split(':'))
 
-        self._time = MicrowaveTime(hour=hours, minute=minutes, second=seconds)
-        print('Self time:', self._time)
+        elif time_string.endswith('s'):
+            time_value = int(time_string[:-1])
+            minutes, seconds = divmod(time_value, 60)
 
-    def string_to_time(self, time_string):
-
-        minutes = 0
-        seconds = 0
-        amount_of_time = int(time_string[:-1])
-        if time_string.endswith('s'):
-            minutes, seconds = divmod(amount_of_time, 60)
         elif time_string.endswith('m'):
-            minutes = amount_of_time
+            time_value = int(time_string[:-1])
+            minutes = time_value
+
         else:
             raise ValueError
-        time_delta = MicrowaveTime(minute=minutes, second=seconds)
 
-        return time_delta
+        hours, minutes = divmod(minutes, 60)
+
+        return MicrowaveTime(hour=hours, minute=minutes, second=seconds)
+
+    def set_time(self, time_string):
+        self._time = self.string_to_time(time_string)
 
     def add_time(self, time_string):
         self._time += self.string_to_time(time_string)
