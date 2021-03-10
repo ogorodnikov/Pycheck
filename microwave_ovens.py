@@ -1,9 +1,11 @@
+from contextlib import suppress
 from datetime import time
+from re import match
+
+TIME_PATTERNS = r'(\d{2}):(\d{2})', r'(\d+)m()', r'()(\d+)s'
 
 
 class MicrowaveTime(time):
-
-    # todo: switch off method capital letters ignoring
 
     def __add__(self, other):
         total_seconds = self.total_seconds + other.total_seconds
@@ -40,37 +42,22 @@ class MicrowaveBase:
     @staticmethod
     def string_to_time(time_string):
 
-        seconds = 0
+        minutes = seconds = 0
 
-        if time_string.find(':') > -1:
-            minutes, seconds = map(int, time_string.split(':'))
-
-        elif time_string.endswith('s'):
-            time_value = int(time_string[:-1])
-            minutes, seconds = divmod(time_value, 60)
-
-        elif time_string.endswith('m'):
-            time_value = int(time_string[:-1])
-            minutes = time_value
-
-        else:
-            raise ValueError
+        for pattern in TIME_PATTERNS:
+            with suppress(AttributeError):
+                minutes, seconds = (int(value) if value else 0
+                                    for value in match(pattern, time_string).groups())
 
         total_seconds = 60 * minutes + seconds
 
         return MicrowaveTime.from_seconds(total_seconds)
 
     def set_time(self, time_string):
-        print('Set time:', time_string)
         self._time = self.string_to_time(time_string)
-        print('Set time:', self._time)
-        print()
 
     def add_time(self, time_string):
-        print('Add time:', time_string)
         self._time += self.string_to_time(time_string)
-        print('Added time:', self._time)
-        print()
 
     def del_time(self, time_string):
         self._time -= self.string_to_time(time_string)
