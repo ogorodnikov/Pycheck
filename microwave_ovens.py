@@ -37,45 +37,26 @@ class MicrowaveBase:
         self._time = MicrowaveTime(hour=hours, minute=minutes, second=seconds)
         print('Self time:', self._time)
 
-    def add_time(self, amount_of_time_string):
+    def string_to_time(self, time_string):
 
-        print('Self time:', self._time)
         minutes = 0
         seconds = 0
-        amount_of_time = int(amount_of_time_string[:-1])
-
-        if amount_of_time_string.endswith('s'):
+        amount_of_time = int(time_string[:-1])
+        if time_string.endswith('s'):
             minutes, seconds = divmod(amount_of_time, 60)
-        elif amount_of_time_string.endswith('m'):
+        elif time_string.endswith('m'):
             minutes = amount_of_time
         else:
             raise ValueError
-
         time_delta = MicrowaveTime(minute=minutes, second=seconds)
 
-        self._time += time_delta
-        print('Time delta:', time_delta)
-        print('Self time:', self._time)
+        return time_delta
 
-    def del_time(self, amount_of_time_string):
+    def add_time(self, time_string):
+        self._time += self.string_to_time(time_string)
 
-        print('Self time:', self._time)
-        minutes = 0
-        seconds = 0
-        amount_of_time = int(amount_of_time_string[:-1])
-
-        if amount_of_time_string.endswith('s'):
-            minutes, seconds = divmod(amount_of_time, 60)
-        elif amount_of_time_string.endswith('m'):
-            minutes = amount_of_time
-        else:
-            raise ValueError
-
-        time_delta = MicrowaveTime(minute=minutes, second=seconds)
-
-        self._time -= time_delta
-        print('Time delta:', time_delta)
-        print('Self time:', self._time)
+    def del_time(self, time_string):
+        self._time -= self.string_to_time(time_string)
 
     def show_time(self):
         time_string = self._time.strftime('%M:%S')
