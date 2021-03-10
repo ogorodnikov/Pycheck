@@ -2,7 +2,9 @@ from datetime import time
 
 
 class MicrowaveTime(time):
+
     def __add__(self, other):
+
         seconds = self.second + other.second
         seconds = min(90 * 60, seconds)
 
@@ -15,15 +17,17 @@ class MicrowaveTime(time):
         return MicrowaveTime(hour=hours, minute=minutes, second=seconds)
 
     def __sub__(self, other):
-        hour_sum = self.hour - other.hour
-        minute_sum = self.minute - other.minute
-        seconds_sum = self.second - other.second
 
-        hour_sum = max(0, hour_sum)
-        minute_sum = max(0, minute_sum)
-        seconds_sum = max(0, seconds_sum)
+        self_total_seconds = self.hour * 3600 + self.minute * 60 + self.second
+        other_total_seconds = other.hour * 3600 + other.minute * 60 + other.second
 
-        return MicrowaveTime(hour=hour_sum, minute=minute_sum, second=seconds_sum)
+        total_seconds = self_total_seconds - other_total_seconds
+        total_seconds = max(0, total_seconds)
+
+        hours, seconds_remainder = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(seconds_remainder, 60)
+
+        return MicrowaveTime(hour=hours, minute=minutes, second=seconds)
 
 
 class MicrowaveBase:
