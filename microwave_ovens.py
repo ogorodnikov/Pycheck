@@ -28,8 +28,13 @@ class MicrowaveBase:
         self.set_time('00:00')
 
     def set_time(self, time_string):
+
+        print('Time string:', time_string)
+
         minutes, seconds = map(int, time_string.split(':'))
-        self._time = MicrowaveTime(minute=minutes, second=seconds)
+        hours, minutes = divmod(minutes, 60)
+
+        self._time = MicrowaveTime(hour=hours, minute=minutes, second=seconds)
         print('Self time:', self._time)
 
     def add_time(self, amount_of_time_string):
@@ -132,3 +137,12 @@ if __name__ == '__main__':
     assert remote_control_1.show_time() == "_1:00"
     assert remote_control_2.show_time() == "01:3_"
     assert remote_control_3.show_time() == "01:40"
+
+    # mision tests
+
+    microwave_2 = Microwave2()
+    rc_2 = RemoteControl(microwave_2)
+    rc_2.set_time("89:00")
+    rc_2.add_time("90s")
+    rc_2.add_time("20m")
+    rc_2.show_time()
