@@ -61,10 +61,17 @@ class MicrowaveBase:
         return MicrowaveTime(hour=hours, minute=minutes, second=seconds)
 
     def set_time(self, time_string):
+        print('Set time:', time_string)
         self._time = self.string_to_time(time_string)
+        print('Set time:', self._time)
+        print()
 
     def add_time(self, time_string):
+        print('Add time:', time_string)
         self._time += self.string_to_time(time_string)
+        print('Added time:', self._time)
+        print()
+
 
     def del_time(self, time_string):
         self._time -= self.string_to_time(time_string)
@@ -77,6 +84,8 @@ class MicrowaveBase:
                                      else letter for i, letter in enumerate(time_string))
 
         print('Faulty time string:', faulty_time_string)
+        print()
+
         return faulty_time_string
 
 
@@ -112,29 +121,29 @@ class RemoteControl:
 
 
 if __name__ == '__main__':
-    microwave_1 = Microwave1()
-    microwave_2 = Microwave2()
-    microwave_3 = Microwave3()
+    # microwave_1 = Microwave1()
+    # microwave_2 = Microwave2()
+    # microwave_3 = Microwave3()
+    #
+    # remote_control_1 = RemoteControl(microwave_1)
+    # remote_control_1.set_time("01:00")
+    #
+    # remote_control_2 = RemoteControl(microwave_2)
+    # remote_control_2.add_time("90s")
+    #
+    # remote_control_3 = RemoteControl(microwave_3)
+    # remote_control_3.del_time("300s")
+    # remote_control_3.add_time("100s")
+    #
+    # assert remote_control_1.show_time() == "_1:00"
+    # assert remote_control_2.show_time() == "01:3_"
+    # assert remote_control_3.show_time() == "01:40"
 
-    remote_control_1 = RemoteControl(microwave_1)
-    remote_control_1.set_time("01:00")
-
-    remote_control_2 = RemoteControl(microwave_2)
-    remote_control_2.add_time("90s")
-
-    remote_control_3 = RemoteControl(microwave_3)
-    remote_control_3.del_time("300s")
-    remote_control_3.add_time("100s")
-
-    assert remote_control_1.show_time() == "_1:00"
-    assert remote_control_2.show_time() == "01:3_"
-    assert remote_control_3.show_time() == "01:40"
-
-    # mision tests
+    # mission tests
 
     microwave_2 = Microwave2()
     rc_2 = RemoteControl(microwave_2)
     rc_2.set_time("89:00")
     rc_2.add_time("90s")
     rc_2.add_time("20m")
-    rc_2.show_time()
+    assert rc_2.show_time() == "90:0_"
