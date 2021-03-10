@@ -3,25 +3,23 @@ from datetime import time
 
 class MicrowaveTime(time):
 
+    @property
+    def total_seconds(self):
+        return self.hour * 3600 + self.minute * 60 + self.second
+
     def __add__(self, other):
 
-        seconds = self.second + other.second
-        seconds = min(90 * 60, seconds)
+        total_seconds = self.total_seconds + other.total_seconds
+        total_seconds = min(90 * 60, total_seconds)
 
-        minutes, seconds = divmod(seconds, 60)
-        minutes = minutes + self.minute + other.minute
-
-        hours, minutes = divmod(minutes, 60)
-        hours = hours + self.hour + other.hour
+        hours, seconds_remainder = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(seconds_remainder, 60)
 
         return MicrowaveTime(hour=hours, minute=minutes, second=seconds)
 
     def __sub__(self, other):
 
-        self_total_seconds = self.hour * 3600 + self.minute * 60 + self.second
-        other_total_seconds = other.hour * 3600 + other.minute * 60 + other.second
-
-        total_seconds = self_total_seconds - other_total_seconds
+        total_seconds = self.total_seconds - other.total_seconds
         total_seconds = max(0, total_seconds)
 
         hours, seconds_remainder = divmod(total_seconds, 3600)
