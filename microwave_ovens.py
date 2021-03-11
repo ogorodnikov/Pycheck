@@ -91,14 +91,8 @@ class RemoteControl:
     def __init__(self, microwave):
         self._microwave = microwave
 
-    def set_time(self, time_string):
-        self._microwave.set_time(time_string)
-
-    def add_time(self, amount_of_time_string):
-        self._microwave.add_time(amount_of_time_string)
-
-    def del_time(self, amount_of_time_string):
-        self._microwave.del_time(amount_of_time_string)
+    def __getattr__(self, item):
+        return getattr(self._microwave, item)
 
     def show_time(self):
         return self._microwave.show_time()
