@@ -1,63 +1,34 @@
 class Text:
-    text = ''
-    font = None
-
-    def __repr__(self):
-        return f'Text: {self.text} [{self.font}]'
+    text = font = ''
 
     def write(self, new_text):
         self.text += new_text
-        print('Setting text:', self.text)
-        print()
 
     def set_font(self, new_font):
         self.font = new_font
 
-        print('Setting font:', self.font)
-        print()
-
-    def show(self):
-        font_tag = f'[{self.font}]' if self.font else ''
-
-        print('Show text:', font_tag + self.text + font_tag)
-        print()
-
-        return font_tag + self.text + font_tag
-
     def restore(self, text_memento):
-
-        print('Before:', self)
-
-        print('Restoring form:', text_memento)
-
         self.text = text_memento.text
         self.font = text_memento.font
-
-        print('After:', self)
-        print()
 
     def copy(self):
         new_text = Text()
         new_text.text = self.text
         new_text.font = self.font
-
-        print('Copying:', self)
-        print('New text:', new_text)
-        print()
-
         return new_text
+
+    def show(self):
+        font_tag = self.font and f'[{self.font}]'
+        return font_tag + self.text + font_tag
 
 
 class SavedText:
-    text_version = 0
+    current_version = 0
     saved_texts = {}
 
-    def save_text(self, new_text: Text):
-        self.saved_texts[self.text_version] = new_text.copy()
-        self.text_version += 1
-
-        print('Self saved texts:', self.saved_texts)
-        print()
+    def save_text(self, text_to_save):
+        self.saved_texts[self.current_version] = text_to_save.copy()
+        self.current_version += 1
 
     def get_version(self, text_version):
         return self.saved_texts[text_version]
