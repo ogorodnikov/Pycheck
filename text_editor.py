@@ -1,5 +1,9 @@
 class Text:
-    pass
+    text = ''
+
+    def write(self, new_text):
+        self.text += new_text
+        print('Self text:', self.text)
 
 
 class SavedText:
@@ -7,8 +11,6 @@ class SavedText:
 
 
 if __name__ == '__main__':
-    # These "asserts" using only for self-checking and not necessary for auto-testing
-
     text = Text()
     saver = SavedText()
 
@@ -22,5 +24,3 @@ if __name__ == '__main__':
 
     text.restore(saver.get_version(0))
     assert text.show() == "At the very beginning "
-
-    print("Coding complete? Let's try tests!")
