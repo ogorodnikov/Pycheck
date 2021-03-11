@@ -9,10 +9,10 @@ class Friend:
 
 
 class Party:
-    friends = set()
 
     def __init__(self, place):
         self.place = place
+        self.friends = set()
 
     def add_friend(self, friend):
         self.friends.add(friend)
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     assert nick.show_invite() == "Midnight Pub: Friday, 9:00 PM"
     assert chuck.show_invite() == "No party..."
 
-    ### mission tests
+    # mission tests
 
     party_1 = Party("Celentano")
     party_2 = Party("Itaka")
@@ -59,4 +59,4 @@ if __name__ == '__main__':
     party_1.send_invites('Friday, 18:45')
     party_2.send_invites('Saturday, 12:30')
     party_3.send_invites('Sunday, 10:00')
-    rose.show_invite()
+    assert rose.show_invite() == "Itaka: Saturday, 12:30"
