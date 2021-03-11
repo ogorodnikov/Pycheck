@@ -17,9 +17,14 @@ class Text:
 
 
 class SavedText:
+    text_version = 0
+    saved_texts = {}
 
-    def save_text(self, text):
-        pass
+    def save_text(self, new_text: Text):
+        self.saved_texts[self.text_version] = new_text
+
+    def get_version(self, text_version):
+        return self.saved_texts_text[text_version]
 
 
 if __name__ == '__main__':
