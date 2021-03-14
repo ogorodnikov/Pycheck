@@ -49,18 +49,19 @@ class Cube:
 def roll_cube(dimensions, start, colored):
     height, width = dimensions
     all_cells = {complex(re, im) for im in range(width) for re in range(height)}
-    colored_cells = {complex(re, im) for re, im in colored}
+    map_colored = {complex(re, im) for re, im in colored}
 
-    print('All cells:   ', all_cells)
-    print('Colored cell:', colored_cells)
+    print('All cells:  ', all_cells)
+    print('Map colored:', map_colored)
     print()
 
     tick = 0
+    color_history = set()
     initial_cube = Cube()
-    q = [(0, tick, complex(*start), initial_cube, '')]
+    q = [(0, tick, complex(*start), initial_cube, map_colored, '')]
 
     while q:
-        priority, _, a, cube, path = heappop(q)
+        priority, _, a, cube, map_colored, path = heappop(q)
 
         print('Priority:', priority)
         print('Tick:', tick)
@@ -72,11 +73,32 @@ def roll_cube(dimensions, start, colored):
                              in zip(NEIGHBOURS, DIRECTIONS)
                              if a + neighbour in all_cells):
 
+            new_map_colored = map_colored.copy()
+
             new_cube = cube.copy()
             new_cube.turn(direction)
+
+            if new_cube.current_face not in new_cube.colored and b in map_colored:
+                new_map_colored.remove(b)
+                new_cube.colored.add(new_cube.current_face)
+
+            if new_cube.current_face in new_cube.colored and b not in map_colored:
+                new_cube.colored.remove(new_cube.current_face)
+                new_map_colored.add(b)
+
+            current_colors = (tuple(new_cube.colored), tuple(new_map_colored))
+
+            if current_colors in color_history:
+                print('---- In color history')
+                continue
+
             tick += 1
-            new_entry = (priority, tick, b, new_cube, path + direction)
+            new_entry = (priority, tick, b, new_cube, new_map_colored, path + direction)
             print('    New entry:', new_entry)
+
+            color_history.add(current_colors)
+            print('Color history:', color_history)
+
             # heappush(q, new_entry)
 
 
