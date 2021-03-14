@@ -1,7 +1,39 @@
 from heapq import heappop, heappush
 
 NEIGHBOURS = 1j, 1, -1j, -1
-MOVES = 'ESWN'
+DIRECTIONS = 'ESWN'
+
+
+class Cube:
+    def __init__(self):
+        self.equator = [1, 2, 6, 5]
+        self.meridian = [1, 4, 6, 3]
+        self.colored = set()
+
+    def turn(self, direction):
+        if direction == 'E':
+            self.equator = self.equator.append(self.equator.pop(0))
+            self.meridian[0] = self.equator[0]
+            self.meridian[2] = self.equator[2]
+        elif direction == 'W':
+            self.equator = self.equator.insert(0, self.equator.pop())
+            self.meridian[0] = self.equator[0]
+            self.meridian[2] = self.equator[2]
+        elif direction == 'S':
+            self.meridian = self.meridian.append(self.meridian.pop(0))
+            self.equator[0] = self.meridian[0]
+            self.equator[2] = self.meridian[2]
+        elif direction == 'N':
+            self.meridian = self.meridian.insert(0, self.meridian.pop())
+            self.equator[0] = self.meridian[0]
+            self.equator[2] = self.meridian[2]
+
+    @property
+    def current_face(self):
+        return self.equator[0]
+
+    def paint(self, face):
+        self.colored.add(face)
 
 
 def roll_cube(dimensions, start, colored):
@@ -24,12 +56,11 @@ def roll_cube(dimensions, start, colored):
         print('A:', a)
         print('Path:', path)
 
-        for b, move in ((a + neighbour, move) for neighbour, move
-                        in zip(NEIGHBOURS, MOVES)
-                        if a + neighbour in all_cells):
-            move = ''
+        for b, direction in ((a + neighbour, direction) for neighbour, direction
+                             in zip(NEIGHBOURS, DIRECTIONS)
+                             if a + neighbour in all_cells):
             tick += 1
-            new_entry = (priority, tick, b, path + move)
+            new_entry = (priority, tick, b, path + direction)
             print('    Q:', q)
             print('    New entry:', new_entry)
             heappush(q, new_entry)
