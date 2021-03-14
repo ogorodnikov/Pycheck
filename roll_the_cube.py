@@ -5,9 +5,13 @@ MOVES = 'ESWN'
 
 
 def roll_cube(dimensions, start, colored):
-    print('Dimensions:', dimensions)
-    print('Start:', start)
-    print('Colored:', colored)
+
+    height, width = dimensions
+    all_cells = {complex(re, im) for im in range(width) for re in range(height)}
+    colored_cells = {complex(re, im) for re, im in colored}
+
+    print('All cells:   ', all_cells)
+    print('Colored cell:', colored_cells)
 
     q = [(0, 0, complex(*start), '')]
 
