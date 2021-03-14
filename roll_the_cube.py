@@ -5,33 +5,35 @@ MOVES = 'ESWN'
 
 
 def roll_cube(dimensions, start, colored):
-
     height, width = dimensions
     all_cells = {complex(re, im) for im in range(width) for re in range(height)}
     colored_cells = {complex(re, im) for re, im in colored}
 
     print('All cells:   ', all_cells)
     print('Colored cell:', colored_cells)
+    print()
 
-    q = [(0, 0, complex(*start), '')]
+    tick = 0
+    q = [(0, tick, complex(*start), '')]
 
     while q:
-        priority, tick, a, path = heappop(q)
+        priority, _, a, path = heappop(q)
 
         print('Priority:', priority)
         print('Tick:', tick)
         print('A:', a)
         print('Path:', path)
 
-        for b, move in ((a + neighbour, move) for neighbour, move in zip(NEIGHBOURS, MOVES)):
-            print('    B:', b)
-            print('    Move:', move)
-
+        for b, move in ((a + neighbour, move) for neighbour, move
+                        in zip(NEIGHBOURS, MOVES)
+                        if a + neighbour in all_cells):
             move = ''
-
             tick += 1
             new_entry = (priority, tick, b, path + move)
+            print('    Q:', q)
+            print('    New entry:', new_entry)
             heappush(q, new_entry)
+            # quit()
 
 
 if __name__ == '__main__':
