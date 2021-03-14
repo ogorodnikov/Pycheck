@@ -10,21 +10,24 @@ class Cube:
         self.meridian = [1, 4, 6, 3]
         self.colored = set()
 
+    def __repr__(self):
+        return f'E: {self.equator} M: {self.meridian} C: {self.colored}'
+
     def turn(self, direction):
         if direction == 'E':
-            self.equator = self.equator.append(self.equator.pop(0))
+            self.equator.append(self.equator.pop(0))
             self.meridian[0] = self.equator[0]
             self.meridian[2] = self.equator[2]
         elif direction == 'W':
-            self.equator = self.equator.insert(0, self.equator.pop())
+            self.equator.insert(0, self.equator.pop())
             self.meridian[0] = self.equator[0]
             self.meridian[2] = self.equator[2]
         elif direction == 'S':
-            self.meridian = self.meridian.append(self.meridian.pop(0))
+            self.meridian.append(self.meridian.pop(0))
             self.equator[0] = self.meridian[0]
             self.equator[2] = self.meridian[2]
         elif direction == 'N':
-            self.meridian = self.meridian.insert(0, self.meridian.pop())
+            self.meridian.insert(0, self.meridian.pop())
             self.equator[0] = self.meridian[0]
             self.equator[2] = self.meridian[2]
 
@@ -34,6 +37,13 @@ class Cube:
 
     def paint(self, face):
         self.colored.add(face)
+
+    def copy(self):
+        new_cube = Cube()
+        new_cube.equator = self.equator.copy()
+        new_cube.meridian = self.meridian.copy()
+        new_cube.colored = self.colored.copy()
+        return new_cube
 
 
 def roll_cube(dimensions, start, colored):
@@ -46,25 +56,28 @@ def roll_cube(dimensions, start, colored):
     print()
 
     tick = 0
-    q = [(0, tick, complex(*start), '')]
+    initial_cube = Cube()
+    q = [(0, tick, complex(*start), initial_cube, '')]
 
     while q:
-        priority, _, a, path = heappop(q)
+        priority, _, a, cube, path = heappop(q)
 
         print('Priority:', priority)
         print('Tick:', tick)
         print('A:', a)
+        print('Cube:', cube)
         print('Path:', path)
 
         for b, direction in ((a + neighbour, direction) for neighbour, direction
                              in zip(NEIGHBOURS, DIRECTIONS)
                              if a + neighbour in all_cells):
+
+            new_cube = cube.copy()
+            new_cube.turn(direction)
             tick += 1
-            new_entry = (priority, tick, b, path + direction)
-            print('    Q:', q)
+            new_entry = (priority, tick, b, new_cube, path + direction)
             print('    New entry:', new_entry)
-            heappush(q, new_entry)
-            # quit()
+            # heappush(q, new_entry)
 
 
 if __name__ == '__main__':
