@@ -1,5 +1,33 @@
+from heapq import heappop, heappush
+
+NEIGHBOURS = 1j, 1, -1j, -1
+MOVES = 'ESWN'
+
+
 def roll_cube(dimensions, start, colored):
-    pass
+    print('Dimensions:', dimensions)
+    print('Start:', start)
+    print('Colored:', colored)
+
+    q = [(0, 0, complex(*start), '')]
+
+    while q:
+        priority, tick, a, path = heappop(q)
+
+        print('Priority:', priority)
+        print('Tick:', tick)
+        print('A:', a)
+        print('Path:', path)
+
+        for b, move in ((a + neighbour, move) for neighbour, move in zip(NEIGHBOURS, MOVES)):
+            print('    B:', b)
+            print('    Move:', move)
+
+            move = ''
+
+            tick += 1
+            new_entry = (priority, tick, b, path + move)
+            heappush(q, new_entry)
 
 
 if __name__ == '__main__':
