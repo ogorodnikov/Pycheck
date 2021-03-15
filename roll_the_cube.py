@@ -56,7 +56,7 @@ def roll_cube(dimensions, start, colored):
     print()
 
     tick = 0
-    color_history = set()
+    history = set()
     initial_cube = Cube()
     q = [(0, tick, complex(*start), initial_cube, map_colored, '')]
 
@@ -86,20 +86,30 @@ def roll_cube(dimensions, start, colored):
                 new_cube.colored.remove(new_cube.current_face)
                 new_map_colored.add(b)
 
-            current_colors = (tuple(new_cube.colored), tuple(new_map_colored))
+            if len(new_cube.colored) == 6:
+                print('==== All faces colored:', path + direction)
+                return path + direction
 
-            if current_colors in color_history:
+            current_state = (b, tuple(new_cube.colored), tuple(new_map_colored))
+
+            # print('    B:             ', b)
+            # print('    Direction:     ', direction)
+            # print('    New cube:      ', new_cube)
+            # print('    Current state: ', current_state)
+            # print('    History:       ', history)
+
+            if current_state in history:
                 print('---- In color history')
                 continue
 
+            history.add(current_state)
+
             tick += 1
             new_entry = (priority, tick, b, new_cube, new_map_colored, path + direction)
-            print('    New entry:', new_entry)
+            # print('    New entry:', new_entry)
+            # print()
 
-            color_history.add(current_colors)
-            print('Color history:', color_history)
-
-            # heappush(q, new_entry)
+            heappush(q, new_entry)
 
 
 if __name__ == '__main__':
@@ -147,10 +157,10 @@ if __name__ == '__main__':
 
         TESTS = [
             ((4, 2), (2, 1), {(0, 0), (0, 1), (1, 0), (2, 0), (3, 0), (3, 1)}),
-            ((3, 3), (2, 1), {(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (2, 0)}),
-            ((4, 4), (1, 3), {(0, 0), (1, 2), (2, 1), (3, 0), (3, 2), (3, 3)}),
-            ((4, 4), (2, 2), {(0, 0), (0, 3), (1, 2), (2, 1), (3, 0), (3, 3)}),
-            ((10, 10), (3, 9), {(0, 4), (2, 9), (3, 8), (4, 0), (4, 9), (7, 7)}),
+            # ((3, 3), (2, 1), {(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (2, 0)}),
+            # ((4, 4), (1, 3), {(0, 0), (1, 2), (2, 1), (3, 0), (3, 2), (3, 3)}),
+            # ((4, 4), (2, 2), {(0, 0), (0, 3), (1, 2), (2, 1), (3, 0), (3, 3)}),
+            # ((10, 10), (3, 9), {(0, 4), (2, 9), (3, 8), (4, 0), (4, 9), (7, 7)}),
         ]
 
         for dimensions, start, colored in TESTS:
