@@ -17,13 +17,44 @@ def rectangles(grid):
 
     initial_cell = number_cells.copy().pop()
     print('Initial cell:', initial_cell)
-    q = [(initial_cell, {initial_cell}, all_cells[initial_cell], set())]
+    q = [(initial_cell, all_cells[initial_cell], {initial_cell}, {initial_cell})]
 
     while q:
-        a, rectangle, number, used_cells = q.pop()
+        a, number, rectangle, used_cells = q.pop()
 
-        for b in (a + delta for delta in NEIGHBOURS if a + delta in all_cells.keys()):
-            print('B:', b)
+        for b in (a + delta for delta in NEIGHBOURS):
+
+            if b not in all_cells.keys():
+                continue
+            if b in used_cells:
+                continue
+            if b in number_cells:
+                continue
+
+
+            new_rectangle = rectangle | {b}
+            new_used_cells = used_cells | {b}
+
+            print('    B:', b)
+            print('    New rectangle: ', new_rectangle)
+            print('    New used cells:', new_used_cells)
+
+            if len(new_rectangle) == number:
+                print('    >>> Rectangle reached len of:', len(new_rectangle))
+
+                rectangle_height = 1 + max(new_rectangle, key=abs).real - min(new_rectangle, key=abs).real
+                rectangle_width = 1 + max(new_rectangle, key=abs).imag - min(new_rectangle, key=abs).imag
+
+                print('        Rectangle height:', rectangle_height)
+                print('        Rectangle width:', rectangle_width)
+
+                if rectangle_height * rectangle_width == len(new_rectangle):
+                    print('    === New rectangle detected:', new_rectangle)
+
+                continue
+
+            q.append((b, number, new_rectangle, new_used_cells))
+
 
 
     return []
