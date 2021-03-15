@@ -6,6 +6,8 @@ FACES_COUNT = 6
 
 
 class Cube:
+    faces_count = 6
+
     def __init__(self):
         self.equator = [1, 2, 6, 5]
         self.meridian = [1, 4, 6, 3]
@@ -65,8 +67,8 @@ def roll_cube(dimensions, start, colored):
         priority, _, a, cube, map_colored, path = heappop(q)
 
         # print('Priority:', priority)
-        if not tick % 100000:
-            print('Tick:', tick)
+        # if not tick % 100000:
+        # print('Tick:', tick)
         # print('A:', a)
         # print('Cube:', cube)
         # print('Path:', path)
@@ -94,19 +96,19 @@ def roll_cube(dimensions, start, colored):
 
             priority = FACES_COUNT - len(new_cube.colored)
 
-            current_state = (b, tuple(new_cube.colored), tuple(new_map_colored))
+            current_hash = hash((b, tuple(new_cube.colored), tuple(new_map_colored)))
 
             # print('    B:             ', b)
             # print('    Direction:     ', direction)
             # print('    New cube:      ', new_cube)
-            # print('    Current state: ', current_state)
+            # print('    Current state: ', current_hash)
             # print('    History:       ', history)
 
-            if current_state in history:
+            if current_hash in history:
                 # print('---- In color history')
                 continue
 
-            history.add(current_state)
+            history.add(current_hash)
 
             tick += 1
             new_entry = (priority, tick, b, new_cube, new_map_colored, path + direction)
@@ -180,3 +182,4 @@ if __name__ == '__main__':
             print()
         else:
             print('Well done! Click on "Check" for more tests.')
+
