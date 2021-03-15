@@ -1,10 +1,38 @@
 NEIGHBOURS = 1j, 1, -1j, -1
 
 
+class Grid:
+    def __init__(self, rows):
+
+        self.rows = rows
+        height = len(rows)
+        width = len(rows[0])
+
+        self.all_cells = {complex(y, x): grid[y][x] for x in range(width) for y in range(height)}
+        self.number_cells = {cell for cell in self.all_cells
+                             if self.all_cells[cell] > 0}
+        self.empty_cells = self.all_cells.keys() - self.number_cells
+
+        self.initial_cell = self.number_cells.copy().pop()
+        self.number = self.all_cells[self.initial_cell]
+        self.rectangle = {self.initial_cell}
+        self.used_cells = {self.initial_cell}
+
+        self.complete_rectangles = []
+
+    def __repr__(self):
+        rows = '\n'.join(row.__repr__() for row in self.rows)
+        stats = f'All cells:    {self.all_cells}    \n' + \
+                f'Number cells: {self.number_cells} \n' + \
+                f'Empty cells:  {self.empty_cells}  \n'
+        return rows + '\n' + stats
+
+
+
 def rectangles(grid):
-    print('Grid:')
-    [print(row) for row in grid]
-    print()
+    # print('Grid:')
+    # [print(row) for row in grid]
+    # print()
 
     height, width = len(grid), len(grid[0])
 
@@ -12,11 +40,16 @@ def rectangles(grid):
     number_cells = {cell for cell in all_cells if all_cells[cell] > 0}
     empty_cells = all_cells.keys() - number_cells
 
-    print('All cells:', all_cells)
-    print('Number cells:', number_cells)
-    print('Empty cells:', empty_cells)
+    # print('All cells:', all_cells)
+    # print('Number cells:', number_cells)
+    # print('Empty cells:', empty_cells)
 
-    initial_cell = number_cells.copy().pop()
+    number_cells_iter = iter(number_cells)
+    initial_cell = next(number_cells_iter)
+
+    initial_grid = Grid(grid)
+    print('Initial grid:', initial_grid)
+    quit()
 
     q = [(initial_cell, all_cells[initial_cell], {initial_cell}, {initial_cell}, [])]
 
