@@ -2,6 +2,7 @@ from heapq import heappop, heappush
 
 NEIGHBOURS = 1j, 1, -1j, -1
 DIRECTIONS = 'ESWN'
+FACES_COUNT = 6
 
 
 class Cube:
@@ -87,9 +88,11 @@ def roll_cube(dimensions, start, colored):
                 new_cube.colored.remove(new_cube.current_face)
                 new_map_colored.add(b)
 
-            if len(new_cube.colored) == 6:
+            if len(new_cube.colored) == FACES_COUNT:
                 print('==== All faces colored:', path + direction)
                 return path + direction
+
+            priority = FACES_COUNT - len(new_cube.colored)
 
             current_state = (b, tuple(new_cube.colored), tuple(new_map_colored))
 
