@@ -12,31 +12,30 @@ class Cube:
         self.meridian = [1, 4, 6, 3]
         self.colored = set()
 
-    def __repr__(self):
-        return f'E: {self.equator} M: {self.meridian} C: {self.colored}'
+    rotate_right = staticmethod(lambda perimeter: perimeter.append(perimeter.pop(0)))
+    rotate_left = staticmethod(lambda perimeter: perimeter.insert(0, perimeter.pop()))
+
+    @staticmethod
+    def copy_even_elements(a, b):
+        a[0], a[2] = b[0], b[2]
 
     def turn(self, direction):
 
-        rotate_right = lambda perimeter: perimeter.append(perimeter.pop(0))
-        rotate_left = lambda perimeter: perimeter.insert(0, perimeter.pop())
-
-
         if direction == 'E':
-            rotate_right(self.equator)
-            self.meridian[0] = self.equator[0]
-            self.meridian[2] = self.equator[2]
+            self.rotate_right(self.equator)
+            self.copy_even_elements(self.meridian, self.equator)
+
         elif direction == 'W':
-            rotate_left(self.equator)
-            self.meridian[0] = self.equator[0]
-            self.meridian[2] = self.equator[2]
+            self.rotate_left(self.equator)
+            self.copy_even_elements(self.meridian, self.equator)
+
         elif direction == 'S':
-            rotate_right(self.meridian)
-            self.equator[0] = self.meridian[0]
-            self.equator[2] = self.meridian[2]
+            self.rotate_right(self.meridian)
+            self.copy_even_elements(self.equator, self.meridian)
+
         elif direction == 'N':
-            rotate_left(self.meridian)
-            self.equator[0] = self.meridian[0]
-            self.equator[2] = self.meridian[2]
+            self.rotate_left(self.meridian)
+            self.copy_even_elements(self.equator, self.meridian)
 
     @property
     def current_face(self):
@@ -54,36 +53,25 @@ class Cube:
 
 
 def roll_cube(dimensions, start, colored):
-    height, width = dimensions
-    all_cells = {complex(re, im) for im in range(width) for re in range(height)}
-    map_colored = {complex(re, im) for re, im in colored}
 
-    print('All cells:  ', all_cells)
-    print('Map colored:', map_colored)
-    print()
+    height, width = dimensions
+    map_colored = {complex(re, im) for re, im in colored}
+    all_cells = {complex(re, im) for im in range(width) for re in range(height)}
 
     tick = 0
     history = set()
-    initial_cube = Cube()
-    q = [(0, tick, complex(*start), initial_cube, map_colored, '')]
+    q = [(0, tick, complex(*start), Cube(), map_colored, '')]
 
     while q:
         priority, _, a, cube, map_colored, path = heappop(q)
-
-        # print('Priority:', priority)
-        # if not tick % 100000:
-        # print('Tick:', tick)
-        # print('A:', a)
-        # print('Cube:', cube)
-        # print('Path:', path)
 
         for b, direction in ((a + neighbour, direction) for neighbour, direction
                              in zip(NEIGHBOURS, DIRECTIONS)
                              if a + neighbour in all_cells):
 
             new_map_colored = map_colored.copy()
-
             new_cube = cube.copy()
+
             new_cube.turn(direction)
 
             if new_cube.current_face not in new_cube.colored and b in map_colored:
@@ -94,31 +82,20 @@ def roll_cube(dimensions, start, colored):
                 new_cube.colored.remove(new_cube.current_face)
                 new_map_colored.add(b)
 
-            if len(new_cube.colored) == FACES_COUNT:
-                print('==== All faces colored:', path + direction)
+            uncolored_count = FACES_COUNT - len(new_cube.colored)
+
+            if uncolored_count == 0:
                 return path + direction
 
-            priority = FACES_COUNT - len(new_cube.colored)
-
             current_hash = hash((b, tuple(new_cube.colored), tuple(new_map_colored)))
-
-            # print('    B:             ', b)
-            # print('    Direction:     ', direction)
-            # print('    New cube:      ', new_cube)
-            # print('    Current state: ', current_hash)
-            # print('    History:       ', history)
-
             if current_hash in history:
-                # print('---- In color history')
                 continue
-
             history.add(current_hash)
+
+            priority = uncolored_count
 
             tick += 1
             new_entry = (priority, tick, b, new_cube, new_map_colored, path + direction)
-            # print('    New entry:', new_entry)
-            # print()
-
             heappush(q, new_entry)
 
 
@@ -186,4 +163,3 @@ if __name__ == '__main__':
             print()
         else:
             print('Well done! Click on "Check" for more tests.')
-
