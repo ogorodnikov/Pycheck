@@ -1,12 +1,13 @@
 NEIGHBOURS = 1j, 1, -1j, -1
 
+
 def rectangles(grid):
     print('Grid:')
     [print(row) for row in grid]
     print()
 
     height, width = len(grid), len(grid[0])
-    
+
     all_cells = {complex(y, x): grid[y][x] for x in range(width) for y in range(height)}
     number_cells = {cell for cell in all_cells if all_cells[cell] > 0}
     empty_cells = all_cells.keys() - number_cells
@@ -16,11 +17,11 @@ def rectangles(grid):
     print('Empty cells:', empty_cells)
 
     initial_cell = number_cells.copy().pop()
-    print('Initial cell:', initial_cell)
-    q = [(initial_cell, all_cells[initial_cell], {initial_cell}, {initial_cell})]
+
+    q = [(initial_cell, all_cells[initial_cell], {initial_cell}, {initial_cell}, [])]
 
     while q:
-        a, number, rectangle, used_cells = q.pop()
+        a, number, rectangle, used_cells, complete_rectangles = q.pop()
 
         for b in (a + delta for delta in NEIGHBOURS):
 
@@ -30,7 +31,6 @@ def rectangles(grid):
                 continue
             if b in number_cells:
                 continue
-
 
             new_rectangle = rectangle | {b}
             new_used_cells = used_cells | {b}
@@ -51,13 +51,58 @@ def rectangles(grid):
                 if rectangle_height * rectangle_width == len(new_rectangle):
                     print('    === New rectangle detected:', new_rectangle)
 
-                continue
+                    if len(new_used_cells) == sum(len(row) for row in grid):
+                        raise
 
-            q.append((b, number, new_rectangle, new_used_cells))
 
+                    complete_rectangles.append(new_rectangle)
 
+                    new_number_cells = {cell for cell in all_cells
+                                        if all_cells[cell] > 0
+                                        and cell not in new_used_cells}
+                    new_initial_cell = new_number_cells.copy().pop()
+                    number = all_cells[new_initial_cell]
+                    new_rectangle = {new_initial_cell}
+                    new_used_cells = new_used_cells | {new_initial_cell}
+                    b = new_initial_cell
+
+                else:
+                    continue
+
+            q.append((b, number, new_rectangle, new_used_cells, complete_rectangles))
+
+    print('Complete rectangles:')
+    [print(rectangle) for rectangle in complete_rectangles]
+
+    print_rectangles(grid, complete_rectangles)
 
     return []
+
+
+def print_rectangles(grid, rectangles):
+    print('Grid:')
+    [print(row) for row in grid]
+    print()
+
+    height, width = len(grid), len(grid[0])
+
+    rectangle_dict = {i: rectangle for i, rectangle in enumerate(rectangles)}
+    print('Rectangle dict:', rectangle_dict)
+
+    for y in range(height):
+        row = ''
+        for x in range(width):
+            cell = complex(y, x)
+            print('Cell:', cell)
+            for i, rectangle in rectangle_dict.items():
+                if cell in rectangle:
+                    number = i
+                    print('    Number:', number)
+            print('Number:', number)
+            row += str(number)
+
+        print(row)
+
 
 
 if __name__ == '__main__':
@@ -89,6 +134,7 @@ if __name__ == '__main__':
         #  [3, 0, 0, 3, 14, 0, 0, 4],
         #  [0, 0, 0, 0, 4, 0, 3, 0]],
     )
+
 
     def checker(grid, result):
         from itertools import product
@@ -137,6 +183,7 @@ if __name__ == '__main__':
             assert grid_area is not None, f'{rect} contains no area value.'
         nb_uncovered = sum(not cell for row in colored_grid for cell in row)
         assert not nb_uncovered, f'{nb_uncovered} cells are still not covered.'
+
 
     for test_nb, grid in enumerate(GRIDS, 1):
         result = rectangles([row[:] for row in grid])
