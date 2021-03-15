@@ -8,10 +8,10 @@ FACES_COUNT = 6
 
 class Cube:
 
-    transforms = {'E': (('rotate_right', ('equator',)),  ('copy_even_elements', ('meridian', 'equator'))),
-                  'W': (('rotate_left',  ('equator',)),  ('copy_even_elements', ('meridian', 'equator'))),
-                  'S': (('rotate_right', ('meridian',)), ('copy_even_elements', ('equator',  'meridian'))),
-                  'N': (('rotate_left',  ('meridian',)), ('copy_even_elements', ('equator',  'meridian')))}
+    transforms = {'E': (('rotate_right', ('equator',)),  ('inplace_even_elements', ('meridian', 'equator'))),
+                  'W': (('rotate_left',  ('equator',)),  ('inplace_even_elements', ('meridian', 'equator'))),
+                  'S': (('rotate_right', ('meridian',)), ('inplace_even_elements', ('equator',  'meridian'))),
+                  'N': (('rotate_left',  ('meridian',)), ('inplace_even_elements', ('equator',  'meridian')))}
 
     def __init__(self):
         self.equator = [1, 2, 6, 5]
@@ -23,9 +23,13 @@ class Cube:
     rotate_right = staticmethod(lambda perimeter: perimeter.append(perimeter.pop(0)))
     rotate_left = staticmethod(lambda perimeter: perimeter.insert(0, perimeter.pop()))
 
-    @staticmethod
-    def copy_even_elements(a, b):
-        a[0], a[2] = b[0], b[2]
+    inplace_even_elements = staticmethod(lambda a, b: [a.append(a.pop(0)) if i % 2
+                                                       else (a.pop(0), a.append(element_b))
+                                                       for i, (_, element_b) in enumerate(zip(a, b))])
+
+    # @staticmethod
+    # def copy_even_elements(a, b):
+    #     a[0], a[2] = b[0], b[2]
 
     def turn(self, direction):
 
