@@ -1,3 +1,5 @@
+NEIGHBOURS = 1j, 1, -1j, -1
+
 def rectangles(grid):
     print('Grid:')
     [print(row) for row in grid]
@@ -7,10 +9,21 @@ def rectangles(grid):
     
     all_cells = {complex(y, x): grid[y][x] for x in range(width) for y in range(height)}
     number_cells = {cell for cell in all_cells if all_cells[cell] > 0}
+    empty_cells = all_cells.keys() - number_cells
 
     print('All cells:', all_cells)
     print('Number cells:', number_cells)
+    print('Empty cells:', empty_cells)
 
+    initial_cell = number_cells.copy().pop()
+    print('Initial cell:', initial_cell)
+    q = [(initial_cell, {initial_cell}, all_cells[initial_cell], set())]
+
+    while q:
+        a, rectangle, number, used_cells = q.pop()
+
+        for b in (a + delta for delta in NEIGHBOURS if a + delta in all_cells.keys()):
+            print('B:', b)
 
 
     return []
