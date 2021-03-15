@@ -6,7 +6,6 @@ FACES_COUNT = 6
 
 
 class Cube:
-    faces_count = 6
 
     def __init__(self):
         self.equator = [1, 2, 6, 5]
@@ -17,20 +16,25 @@ class Cube:
         return f'E: {self.equator} M: {self.meridian} C: {self.colored}'
 
     def turn(self, direction):
+
+        rotate_right = lambda perimeter: perimeter.append(perimeter.pop(0))
+        rotate_left = lambda perimeter: perimeter.insert(0, perimeter.pop())
+
+
         if direction == 'E':
-            self.equator.append(self.equator.pop(0))
+            rotate_right(self.equator)
             self.meridian[0] = self.equator[0]
             self.meridian[2] = self.equator[2]
         elif direction == 'W':
-            self.equator.insert(0, self.equator.pop())
+            rotate_left(self.equator)
             self.meridian[0] = self.equator[0]
             self.meridian[2] = self.equator[2]
         elif direction == 'S':
-            self.meridian.append(self.meridian.pop(0))
+            rotate_right(self.meridian)
             self.equator[0] = self.meridian[0]
             self.equator[2] = self.meridian[2]
         elif direction == 'N':
-            self.meridian.insert(0, self.meridian.pop())
+            rotate_left(self.meridian)
             self.equator[0] = self.meridian[0]
             self.equator[2] = self.meridian[2]
 
