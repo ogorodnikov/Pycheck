@@ -1,6 +1,5 @@
 from heapq import heappop, heappush
 from itertools import starmap
-from operator import add
 
 NEIGHBOURS = 1j, 1, -1j, -1
 DIRECTIONS = 'ESWN'
@@ -9,23 +8,17 @@ FACES_COUNT = 6
 
 class Cube:
 
-    # transparent = lambda perimeter: perimeter
-    # rotate_right = lambda perimeter: perimeter.append(perimeter.pop(0))
-    # rotate_left = lambda perimeter: perimeter.insert(0, perimeter.pop())
-
-
-
-    # replace_even_elements = lambda a, b: [e_a if i % 2 else e_b for i, (e_a, e_b) in enumerate(zip(a, b))]
-    # inplace_even_elements = lambda a, b: [a.append(a.pop(0)) if i % 2 else (a.pop(0), a.append(e_b))
-    #                                      for i, (e_a, e_b) in enumerate(zip(a, b))]
-
-    transforms = {'E': (('rotate_right', ('equator',)), ('copy_even_elements', ('meridian', 'equator')))}
-
+    transforms = {'E': (('rotate_right', ('equator',)),  ('copy_even_elements', ('meridian', 'equator'))),
+                  'W': (('rotate_left',  ('equator',)),  ('copy_even_elements', ('meridian', 'equator'))),
+                  'S': (('rotate_right', ('meridian',)), ('copy_even_elements', ('equator',  'meridian'))),
+                  'N': (('rotate_left',  ('meridian',)), ('copy_even_elements', ('equator',  'meridian')))}
 
     def __init__(self):
         self.equator = [1, 2, 6, 5]
         self.meridian = [1, 4, 6, 3]
         self.colored = set()
+
+    execute = staticmethod(lambda function, arguments: function(*arguments))
 
     rotate_right = staticmethod(lambda perimeter: perimeter.append(perimeter.pop(0)))
     rotate_left = staticmethod(lambda perimeter: perimeter.insert(0, perimeter.pop()))
@@ -34,54 +27,13 @@ class Cube:
     def copy_even_elements(a, b):
         a[0], a[2] = b[0], b[2]
 
-    execute = staticmethod(lambda function, arguments: function(*arguments))
-
     def turn(self, direction):
 
-        if direction == 'E':
+        transform = ((getattr(self, operation),
+                      (getattr(self, operand) for operand in operands))
+                     for operation, operands in self.transforms[direction])
 
-            for transform in self.transforms['E']:
-
-                operation_str, operand_strs = transform
-
-                operation = getattr(self, operation_str)
-                operands = [getattr(self, operand_str) for operand_str in operand_strs]
-
-                # print('Operation str:', operation_str)
-                # print('Operation:    ', operation)
-                # print('Operand strs: ', operand_strs)
-                # print('Operands:     ', operands)
-                # print()
-
-            parsed_transforms = [(getattr(self, operation_str),
-                                  [getattr(self, operand_str) for operand_str in operand_strs])
-                                 for operation_str, operand_strs in self.transforms['E']]
-
-            # print('Parsed transforms:', parsed_transforms)
-            # print()
-
-            list(starmap(self.execute, parsed_transforms))
-
-
-            # quit()
-            #
-            # list(starmap(self.execute, ((self.rotate_right, (getattr(self, self.transforms['E'][1]),)),
-            #                             (self.copy_even_elements, (self.meridian, self.equator)))))
-
-        elif direction == 'W':
-
-            list(starmap(self.execute, ((self.rotate_left, (self.equator,)),
-                                        (self.copy_even_elements, (self.meridian, self.equator)))))
-
-        elif direction == 'S':
-
-            list(starmap(self.execute, ((self.rotate_right, (self.meridian,)),
-                                        (self.copy_even_elements, (self.equator, self.meridian)))))
-
-        elif direction == 'N':
-
-            list(starmap(self.execute, ((self.rotate_left, (self.meridian,)),
-                                        (self.copy_even_elements, (self.equator, self.meridian)))))
+        list(starmap(self.execute, transform))
 
     @property
     def current_face(self):
@@ -99,7 +51,6 @@ class Cube:
 
 
 def roll_cube(dimensions, start, colored):
-
     height, width = dimensions
     map_colored = {complex(re, im) for re, im in colored}
     all_cells = {complex(re, im) for im in range(width) for re in range(height)}
