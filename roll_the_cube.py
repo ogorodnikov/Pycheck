@@ -1,4 +1,6 @@
 from heapq import heappop, heappush
+from itertools import starmap
+from operator import add
 
 NEIGHBOURS = 1j, 1, -1j, -1
 DIRECTIONS = 'ESWN'
@@ -6,6 +8,19 @@ FACES_COUNT = 6
 
 
 class Cube:
+
+    # transparent = lambda perimeter: perimeter
+    # rotate_right = lambda perimeter: perimeter.append(perimeter.pop(0))
+    # rotate_left = lambda perimeter: perimeter.insert(0, perimeter.pop())
+
+
+
+    # replace_even_elements = lambda a, b: [e_a if i % 2 else e_b for i, (e_a, e_b) in enumerate(zip(a, b))]
+    # inplace_even_elements = lambda a, b: [a.append(a.pop(0)) if i % 2 else (a.pop(0), a.append(e_b))
+    #                                      for i, (e_a, e_b) in enumerate(zip(a, b))]
+
+    transforms = {'E': ('rotate_right', 'equator')}
+
 
     def __init__(self):
         self.equator = [1, 2, 6, 5]
@@ -19,23 +34,29 @@ class Cube:
     def copy_even_elements(a, b):
         a[0], a[2] = b[0], b[2]
 
+    execute = staticmethod(lambda function, arguments: function(*arguments))
+
     def turn(self, direction):
 
         if direction == 'E':
-            self.rotate_right(self.equator)
-            self.copy_even_elements(self.meridian, self.equator)
+
+            list(starmap(self.execute, ((self.rotate_right, (getattr(self, self.transforms['E'][1]),)),
+                                        (self.copy_even_elements, (self.meridian, self.equator)))))
 
         elif direction == 'W':
-            self.rotate_left(self.equator)
-            self.copy_even_elements(self.meridian, self.equator)
+
+            list(starmap(self.execute, ((self.rotate_left, (self.equator,)),
+                                        (self.copy_even_elements, (self.meridian, self.equator)))))
 
         elif direction == 'S':
-            self.rotate_right(self.meridian)
-            self.copy_even_elements(self.equator, self.meridian)
+
+            list(starmap(self.execute, ((self.rotate_right, (self.meridian,)),
+                                        (self.copy_even_elements, (self.equator, self.meridian)))))
 
         elif direction == 'N':
-            self.rotate_left(self.meridian)
-            self.copy_even_elements(self.equator, self.meridian)
+
+            list(starmap(self.execute, ((self.rotate_left, (self.meridian,)),
+                                        (self.copy_even_elements, (self.equator, self.meridian)))))
 
     @property
     def current_face(self):
