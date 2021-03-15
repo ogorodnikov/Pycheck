@@ -63,11 +63,12 @@ def roll_cube(dimensions, start, colored):
     while q:
         priority, _, a, cube, map_colored, path = heappop(q)
 
-        print('Priority:', priority)
-        print('Tick:', tick)
-        print('A:', a)
-        print('Cube:', cube)
-        print('Path:', path)
+        # print('Priority:', priority)
+        if not tick % 100000:
+            print('Tick:', tick)
+        # print('A:', a)
+        # print('Cube:', cube)
+        # print('Path:', path)
 
         for b, direction in ((a + neighbour, direction) for neighbour, direction
                              in zip(NEIGHBOURS, DIRECTIONS)
@@ -99,7 +100,7 @@ def roll_cube(dimensions, start, colored):
             # print('    History:       ', history)
 
             if current_state in history:
-                print('---- In color history')
+                # print('---- In color history')
                 continue
 
             history.add(current_state)
@@ -157,10 +158,10 @@ if __name__ == '__main__':
 
         TESTS = [
             ((4, 2), (2, 1), {(0, 0), (0, 1), (1, 0), (2, 0), (3, 0), (3, 1)}),
-            # ((3, 3), (2, 1), {(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (2, 0)}),
-            # ((4, 4), (1, 3), {(0, 0), (1, 2), (2, 1), (3, 0), (3, 2), (3, 3)}),
-            # ((4, 4), (2, 2), {(0, 0), (0, 3), (1, 2), (2, 1), (3, 0), (3, 3)}),
-            # ((10, 10), (3, 9), {(0, 4), (2, 9), (3, 8), (4, 0), (4, 9), (7, 7)}),
+            ((3, 3), (2, 1), {(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (2, 0)}),
+            ((4, 4), (1, 3), {(0, 0), (1, 2), (2, 1), (3, 0), (3, 2), (3, 3)}),
+            ((4, 4), (2, 2), {(0, 0), (0, 3), (1, 2), (2, 1), (3, 0), (3, 3)}),
+            ((10, 10), (3, 9), {(0, 4), (2, 9), (3, 8), (4, 0), (4, 9), (7, 7)}),
         ]
 
         for dimensions, start, colored in TESTS:
