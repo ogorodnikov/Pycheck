@@ -19,7 +19,7 @@ class Cube:
     # inplace_even_elements = lambda a, b: [a.append(a.pop(0)) if i % 2 else (a.pop(0), a.append(e_b))
     #                                      for i, (e_a, e_b) in enumerate(zip(a, b))]
 
-    transforms = {'E': ('rotate_right', 'equator')}
+    transforms = {'E': (('rotate_right', ('equator',)), ('copy_even_elements', ('meridian', 'equator')))}
 
 
     def __init__(self):
@@ -40,8 +40,33 @@ class Cube:
 
         if direction == 'E':
 
-            list(starmap(self.execute, ((self.rotate_right, (getattr(self, self.transforms['E'][1]),)),
-                                        (self.copy_even_elements, (self.meridian, self.equator)))))
+            for transform in self.transforms['E']:
+
+                operation_str, operand_strs = transform
+
+                operation = getattr(self, operation_str)
+                operands = [getattr(self, operand_str) for operand_str in operand_strs]
+
+                # print('Operation str:', operation_str)
+                # print('Operation:    ', operation)
+                # print('Operand strs: ', operand_strs)
+                # print('Operands:     ', operands)
+                # print()
+
+            parsed_transforms = [(getattr(self, operation_str),
+                                  [getattr(self, operand_str) for operand_str in operand_strs])
+                                 for operation_str, operand_strs in self.transforms['E']]
+
+            # print('Parsed transforms:', parsed_transforms)
+            # print()
+
+            list(starmap(self.execute, parsed_transforms))
+
+
+            # quit()
+            #
+            # list(starmap(self.execute, ((self.rotate_right, (getattr(self, self.transforms['E'][1]),)),
+            #                             (self.copy_even_elements, (self.meridian, self.equator)))))
 
         elif direction == 'W':
 
