@@ -97,18 +97,34 @@ def rectangles(grid):
     while q:
         level, g = q.pop()
 
-        for b in (current_cell + delta for delta in NEIGHBOURS for current_cell in g.rectangle):
+        # for b in (current_cell + delta for delta in NEIGHBOURS for current_cell in g.rectangle):
 
-            if b not in g.all_cells.keys():
-                continue
-            if b in g.used_cells:
-                continue
-            if b in g.number_cells:
+        for delta in NEIGHBOURS:
+
+            new_cells = {cell + delta for cell in g.rectangle} - g.rectangle
+
+            if any(cell not in g.all_cells.keys() or
+                   cell in g.used_cells | g.number_cells
+                   for cell in new_cells):
                 continue
 
             new_g = g.copy()
-            new_g.rectangle = g.rectangle | {b}
-            new_g.used_cells = g.used_cells | {b}
+            new_g.rectangle = g.rectangle | new_cells
+            new_g.used_cells = g.used_cells | new_cells
+
+            # if b not in g.all_cells.keys():
+            #     continue
+            # if b in g.used_cells:
+            #     continue
+            # if b in g.number_cells:
+            #     continue
+            #
+            # new_g = g.copy()
+            # new_g.rectangle = g.rectangle | {b}
+            # new_g.used_cells = g.used_cells | {b}
+
+            if len(new_g.rectangle) > new_g.number:
+                continue
 
             if len(new_g.rectangle) == new_g.number:
 
