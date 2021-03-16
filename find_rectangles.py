@@ -47,12 +47,6 @@ class Grid:
         return unused_number_cells.pop()
 
     @property
-    def is_rectangle(self):
-        rectangle_height = 1 + max(cell.real for cell in self.rectangle) - min(cell.real for cell in self.rectangle)
-        rectangle_width = 1 + max(cell.imag for cell in self.rectangle) - min(cell.imag for cell in self.rectangle)
-        return rectangle_height * rectangle_width == len(self.rectangle)
-
-    @property
     def is_all_parsed(self):
         return self.used_cells == set(self.all_cells.keys())
 
@@ -91,13 +85,10 @@ class Grid:
 
 
 def rectangles(grid):
-
     q = [(0, Grid(grid))]
 
     while q:
         level, g = q.pop()
-
-        # for b in (current_cell + delta for delta in NEIGHBOURS for current_cell in g.rectangle):
 
         for delta in NEIGHBOURS:
 
@@ -112,56 +103,38 @@ def rectangles(grid):
             new_g.rectangle = g.rectangle | new_cells
             new_g.used_cells = g.used_cells | new_cells
 
-            # if b not in g.all_cells.keys():
-            #     continue
-            # if b in g.used_cells:
-            #     continue
-            # if b in g.number_cells:
-            #     continue
-            #
-            # new_g = g.copy()
-            # new_g.rectangle = g.rectangle | {b}
-            # new_g.used_cells = g.used_cells | {b}
-
             if len(new_g.rectangle) > new_g.number:
                 continue
 
             if len(new_g.rectangle) == new_g.number:
 
-                # print('    >>> Length reached:', len(new_g.rectangle), new_g.rectangle)
+                new_g.complete_rectangles.append(new_g.rectangle)
 
-                if new_g.is_rectangle:
+                complete_rectangles_len = sum(map(len, new_g.complete_rectangles))
+                total_len = len(new_g.all_cells)
 
-                    new_g.complete_rectangles.append(new_g.rectangle)
+                print('    +++ Adding new rectangle:', new_g.rectangle)
+                print('        Level:               ', level)
+                print('        Complete rectangles: ', new_g.complete_rectangles)
+                print(f'        {complete_rectangles_len} of {total_len}')
 
-                    complete_rectangles_len = sum(map(len, new_g.complete_rectangles))
-                    total_len = len(new_g.all_cells)
+                if new_g.is_all_parsed:
+                    new_g.print_rectangles()
+                    coordinates = new_g.rectangles_coordinates
+                    print('Coordinates:', coordinates)
+                    return coordinates
 
-                    print('    +++ Adding new rectangle:', new_g.rectangle)
-                    print('        Level:               ', level)
-                    print('        Complete rectangles: ', new_g.complete_rectangles)
-                    print(f'        {complete_rectangles_len} of {total_len}')
+                new_initial_cell = new_g.get_unused_number_cell
 
-                    if new_g.is_all_parsed:
-                        new_g.print_rectangles()
-                        coordinates = new_g.rectangles_coordinates
-                        print('Coordinates:', coordinates)
-                        return coordinates
+                new_g.number = new_g.all_cells[new_initial_cell]
+                new_g.rectangle = {new_initial_cell}
+                new_g.used_cells |= {new_initial_cell}
 
-                    new_initial_cell = new_g.get_unused_number_cell
+                print('        New number:      ', new_g.number)
+                print('        New rectangle:   ', new_g.rectangle)
+                print('        New used cells:  ', new_g.used_cells)
+                print()
 
-                    new_g.number = new_g.all_cells[new_initial_cell]
-                    new_g.rectangle = {new_initial_cell}
-                    new_g.used_cells |= {new_initial_cell}
-
-                    print('        New number:      ', new_g.number)
-                    print('        New rectangle:   ', new_g.rectangle)
-                    print('        New used cells:  ', new_g.used_cells)
-                    print()
-
-                else:
-                    # print('    --- Not a rectangle')
-                    continue
 
             q.append((level + 1, new_g))
 
