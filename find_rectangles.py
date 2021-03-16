@@ -39,22 +39,18 @@ class Grid:
 
         quit()
 
-    @classmethod
-    def from_grid(cls, old_grid):
-        new_grid = cls.__new__(cls)
-        super(Grid, new_grid).__init__()
+    def copy(self):
+        new_grid = Grid.__new__(Grid)
 
-        # new_grid.rows = old_grid.rows.copy()
+        new_grid.all_cells = self.all_cells.copy()
+        new_grid.number_cells = self.number_cells.copy()
+        new_grid.empty_cells = self.empty_cells.copy()
 
-        new_grid.all_cells = old_grid.all_cells.copy()
-        new_grid.number_cells = old_grid.number_cells.copy()
-        new_grid.empty_cells = old_grid.empty_cells.copy()
-
-        new_grid.used_cells = old_grid.used_cells.copy()
-        new_grid.number = old_grid.number
-        new_grid.rectangle = old_grid.rectangle.copy()
-        new_grid.used_cells = old_grid.used_cells.copy()
-        new_grid.complete_rectangles = [{e for e in rectangle} for rectangle in old_grid.complete_rectangles]
+        new_grid.used_cells = self.used_cells.copy()
+        new_grid.number = self.number
+        new_grid.rectangle = self.rectangle.copy()
+        new_grid.used_cells = self.used_cells.copy()
+        new_grid.complete_rectangles = [{e for e in rectangle} for rectangle in self.complete_rectangles]
 
         return new_grid
 
@@ -126,7 +122,7 @@ def rectangles(grid):
                    for cell in new_cells):
                 continue
 
-            new_g = Grid.from_grid(g)
+            new_g = g.copy()
 
             new_g.rectangle = g.rectangle | new_cells
             new_g.used_cells = g.used_cells | new_cells
