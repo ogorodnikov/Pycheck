@@ -63,6 +63,28 @@ class Grid:
     def rectangles_coordinates(self):
         raise NotImplementedError
 
+    @property
+    def print_rectangles(self):
+        print('Grid:')
+        [print(row) for row in self.rows]
+        print()
+
+        height = len(self.rows)
+        width = len(self.rows[0])
+
+        rectangle_dict = {i: rectangle for i, rectangle in enumerate(self.complete_rectangles)}
+
+        for y in range(height):
+            row = ''
+            for x in range(width):
+                cell = complex(y, x)
+                for i, rectangle in rectangle_dict.items():
+                    if cell in rectangle:
+                        row += str(i)
+            print(row)
+        print()
+        print('Rectangle dict:', rectangle_dict)
+
 
 def rectangles(grid):
 
@@ -102,7 +124,7 @@ def rectangles(grid):
                     print(f'        {complete_rectangles_len} of {total_len}')
 
                     if new_g.is_all_parsed:
-                        print_rectangles(grid, new_g.complete_rectangles)
+                        new_g.print_rectangles
                         return new_g.rectangles_coordinates
 
                     new_initial_cell = new_g.get_unused_number_cell
@@ -125,26 +147,6 @@ def rectangles(grid):
             q.append((level + 1, new_g))
 
     return []
-
-
-def print_rectangles(grid, rectangles):
-    print('Grid:')
-    [print(row) for row in grid]
-    print()
-
-    height, width = len(grid), len(grid[0])
-
-    rectangle_dict = {i: rectangle for i, rectangle in enumerate(rectangles)}
-    print('Rectangle dict:', rectangle_dict)
-
-    for y in range(height):
-        row = ''
-        for x in range(width):
-            cell = complex(y, x)
-            for i, rectangle in rectangle_dict.items():
-                if cell in rectangle:
-                    row += str(i)
-        print(row)
 
 
 if __name__ == '__main__':
