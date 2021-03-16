@@ -1,4 +1,5 @@
 from functools import reduce
+from itertools import cycle
 
 
 class Board:
@@ -15,10 +16,11 @@ class Board:
                            for cell in self.number_cells]
         self.free_cells = self.all_cells.keys() - self.number_cells
 
+        self.rectangle_cycle = cycle(sorted(self.rectangles, key=lambda rectangle: -rectangle.number))
+
     def next_rectangle(self):
-        return next(rectangle for rectangle in self.rectangles
-                    if not rectangle.is_complete
-                    and rectangle.number == max(rectangle.number for rectangle in self.rectangles))
+        next_rectangle = next(self.rectangle_cycle)
+        return next_rectangle
 
 
 class Rectangle:
@@ -50,7 +52,6 @@ class Rectangle:
 
                 if not all(cell in self.board.free_cells | {self.cell}
                            for cell in new_cells):
-
                     # print('---- Obstacle')
                     # print()
 
@@ -67,7 +68,7 @@ class Rectangle:
 
                 q.append(new_cells)
 
-        all_possible_cells = reduce(set.union, possible_used_cells)
+        all_possible_cells = reduce(set.union, possible_used_cells, set())
 
         common_cells = {cell for cell in all_possible_cells
                         if all(cell in used_cells
@@ -105,13 +106,18 @@ class Rectangle:
 def rectangles(grid):
     board = Board(grid)
 
-    for i in range(2):
+    for i in range(20):
         next_rectangle = board.next_rectangle()
-        print('Next rectangle:', next_rectangle.number)
+        print('Next rectangle:', next_rectangle.number, next_rectangle.cell)
 
         next_rectangle.recalculate_used_cells()
+        input()
 
     quit()
+
+    next_rectangle = next(rectangle_cycle)
+    while next_rectangle.is_complete:
+        next_rectangle = next(rectangle_cycle)
 
 
 if __name__ == '__main__':
