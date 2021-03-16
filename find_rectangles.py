@@ -53,6 +53,16 @@ class Grid:
     def is_rectangle(self):
         rectangle_height = 1 + max(self.rectangle, key=abs).real - min(self.rectangle, key=abs).real
         rectangle_width = 1 + max(self.rectangle, key=abs).imag - min(self.rectangle, key=abs).imag
+
+        print('        Max rectangle real:', max(self.rectangle, key=abs).real)
+        print('        Min rectangle real:', min(self.rectangle, key=abs).real)
+
+        print('        Rectangle height:', rectangle_height)
+        print('        Rectangle width:', rectangle_width)
+
+        if self.rectangle == {3j, (1+3j), (2+3j), (1+4j)}:
+            quit()
+
         return rectangle_height * rectangle_width == len(self.rectangle)
 
     @property
