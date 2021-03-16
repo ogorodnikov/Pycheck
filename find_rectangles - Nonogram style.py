@@ -18,10 +18,6 @@ class Board:
 
         self.rectangle_cycle = cycle(sorted(self.rectangles, key=lambda rectangle: -rectangle.number))
 
-    def next_rectangle(self):
-        next_rectangle = next(self.rectangle_cycle)
-        return next_rectangle
-
 
 class Rectangle:
     def __init__(self, cell, board):
@@ -106,9 +102,12 @@ class Rectangle:
 def rectangles(grid):
     board = Board(grid)
 
-    for i in range(20):
-        next_rectangle = board.next_rectangle()
+    for i in range(50):
+        next_rectangle = next(board.rectangle_cycle)
         print('Next rectangle:', next_rectangle.number, next_rectangle.cell)
+
+        if next_rectangle.is_complete:
+            continue
 
         next_rectangle.recalculate_used_cells()
         input()
