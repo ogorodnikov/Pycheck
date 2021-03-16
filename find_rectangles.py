@@ -118,12 +118,12 @@ def rectangles(grid):
 
             rectangle_hash = hash(tuple(new_g.rectangle))
             if rectangle_hash in new_g.checked:
-                print('---- Rectangle already checked')
-                print('     Rectangle:', new_g.rectangle)
-                print('     Rectangle hash:', rectangle_hash)
-                print('     Checked:  ', new_g.checked)
-                new_g.print_rectangles(grid)
-                input()
+                # print('---- Rectangle already checked')
+                # print('     Rectangle:', new_g.rectangle)
+                # print('     Rectangle hash:', rectangle_hash)
+                # print('     Checked:  ', new_g.checked)
+                # new_g.print_rectangles(grid)
+                # input()
                 continue
             new_g.checked.add(rectangle_hash)
 
@@ -157,11 +157,7 @@ def rectangles(grid):
                 new_g.rectangle = {new_initial_cell}
                 new_g.used_cells |= {new_initial_cell}
                 new_g.expansion_directions = {1j, 1, -1j, -1}
-
-                # print('        New number:      ', new_g.number)
-                # print('        New rectangle:   ', new_g.rectangle)
-                # print('        New used cells:  ', new_g.used_cells)
-                # print()
+                new_g.checked = set()
 
             q.append((level + 1, new_g))
 
