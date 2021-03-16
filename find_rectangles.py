@@ -61,7 +61,15 @@ class Grid:
 
     @property
     def rectangles_coordinates(self):
-        raise NotImplementedError
+
+        coordinates = set()
+        for rectangle in self.complete_rectangles:
+            minimum = min(rectangle, key=abs)
+            maximum = max(rectangle, key=abs)
+            rectangle_coordinates = tuple(map(int, (minimum.real, minimum.imag, maximum.real, maximum.imag)))
+            coordinates.add(rectangle_coordinates)
+
+        return coordinates
 
     @property
     def print_rectangles(self):
@@ -109,7 +117,7 @@ def rectangles(grid):
 
             if len(new_g.rectangle) == new_g.number:
 
-                print('    >>> Length reached:', len(new_g.rectangle), new_g.rectangle)
+                # print('    >>> Length reached:', len(new_g.rectangle), new_g.rectangle)
 
                 if new_g.is_rectangle:
 
@@ -125,7 +133,9 @@ def rectangles(grid):
 
                     if new_g.is_all_parsed:
                         new_g.print_rectangles
-                        return new_g.rectangles_coordinates
+                        coordinates = new_g.rectangles_coordinates
+                        print('Coordinates:', coordinates)
+                        return coordinates
 
                     new_initial_cell = new_g.get_unused_number_cell
 
@@ -141,7 +151,7 @@ def rectangles(grid):
                     print()
 
                 else:
-                    print('    --- Not a rectangle')
+                    # print('    --- Not a rectangle')
                     continue
 
             q.append((level + 1, new_g))
