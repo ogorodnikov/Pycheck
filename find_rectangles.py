@@ -30,6 +30,17 @@ class Grid:
                             f'    Rectangle:    {self.rectangle}'))
         return values
 
+    @classmethod
+    def from_grid(cls, grid):
+        new_grid = Grid.__new__(cls)
+
+
+
+        print('New grid:', new_grid.__class__)
+        print('Grid:', grid)
+
+        quit()
+
     def copy(self):
         new_grid = Grid(self.rows.copy())
 
@@ -87,6 +98,8 @@ class Grid:
 
 
 def rectangles(grid):
+    print('Grid:')
+    [print(row) for row in grid]
 
     tick = 0
     q = [(0, Grid(grid))]
@@ -184,7 +197,7 @@ if __name__ == '__main__':
          [21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0],
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0],
          [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
-         [0, 0, 0, 0, 0, 3, 0, 0, 4, 0, 0, 0, 3, 0, 0, 0]]
+         [0, 0, 0, 0, 0, 3, 0, 0, 4, 0, 0, 0, 3, 0, 0, 0]],
     )
 
 
