@@ -17,7 +17,6 @@ class Grid:
         self.number = self.all_cells[initial_cell]
         self.rectangle = {initial_cell}
         self.used_cells = {initial_cell}
-        self.current_cell = initial_cell
         self.complete_rectangles = []
 
     def __repr__(self):
@@ -27,7 +26,6 @@ class Grid:
                 f'    Empty cells:  {self.empty_cells}  \n'
         values = '\n'.join((f'    Complete:     {self.complete_rectangles}',
                             f'    Used cells:   {self.used_cells}',
-                            f'    Current cell: {self.current_cell}',
                             f'    Number:       {self.number}',
                             f'    Rectangle:    {self.rectangle}'))
         return values
@@ -39,7 +37,6 @@ class Grid:
         new_grid.number = self.number
         new_grid.rectangle = self.rectangle.copy()
         new_grid.used_cells = self.used_cells.copy()
-        new_grid.current_cell = self.current_cell
         new_grid.complete_rectangles = [{e for e in rectangle} for rectangle in self.complete_rectangles]
 
         return new_grid
@@ -71,7 +68,6 @@ class Grid:
 
         return coordinates
 
-    @property
     def print_rectangles(self):
         print('Grid:')
         [print(row) for row in self.rows]
@@ -113,7 +109,6 @@ def rectangles(grid):
             new_g = g.copy()
             new_g.rectangle = g.rectangle | {b}
             new_g.used_cells = g.used_cells | {b}
-            new_g.current_cell = b
 
             if len(new_g.rectangle) == new_g.number:
 
@@ -132,19 +127,17 @@ def rectangles(grid):
                     print(f'        {complete_rectangles_len} of {total_len}')
 
                     if new_g.is_all_parsed:
-                        new_g.print_rectangles
+                        new_g.print_rectangles()
                         coordinates = new_g.rectangles_coordinates
                         print('Coordinates:', coordinates)
                         return coordinates
 
                     new_initial_cell = new_g.get_unused_number_cell
 
-                    new_g.current_cell = new_initial_cell
                     new_g.number = new_g.all_cells[new_initial_cell]
                     new_g.rectangle = {new_initial_cell}
                     new_g.used_cells |= {new_initial_cell}
 
-                    print('        New current cell:', new_g.current_cell)
                     print('        New number:      ', new_g.number)
                     print('        New rectangle:   ', new_g.rectangle)
                     print('        New used cells:  ', new_g.used_cells)
