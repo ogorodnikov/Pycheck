@@ -3,7 +3,6 @@ NEIGHBOURS = 1j, 1, -1j, -1
 
 class Grid:
     def __init__(self, rows):
-        self.rows = rows
         height = len(rows)
         width = len(rows[0])
 
@@ -20,7 +19,6 @@ class Grid:
         self.complete_rectangles = []
 
     def __repr__(self):
-        rows = '\n'.join(row.__repr__() for row in self.rows)
         stats = f'    All cells:    {self.all_cells}    \n' + \
                 f'    Number cells: {self.number_cells} \n' + \
                 f'    Empty cells:  {self.empty_cells}  \n'
@@ -41,16 +39,25 @@ class Grid:
 
         quit()
 
-    def copy(self):
-        new_grid = Grid(self.rows.copy())
+    @classmethod
+    def from_grid(cls, old_grid):
+        new_grid = cls.__new__(cls)
+        super(Grid, new_grid).__init__()
 
-        new_grid.used_cells = self.used_cells.copy()
-        new_grid.number = self.number
-        new_grid.rectangle = self.rectangle.copy()
-        new_grid.used_cells = self.used_cells.copy()
-        new_grid.complete_rectangles = [{e for e in rectangle} for rectangle in self.complete_rectangles]
+        # new_grid.rows = old_grid.rows.copy()
+
+        new_grid.all_cells = old_grid.all_cells.copy()
+        new_grid.number_cells = old_grid.number_cells.copy()
+        new_grid.empty_cells = old_grid.empty_cells.copy()
+
+        new_grid.used_cells = old_grid.used_cells.copy()
+        new_grid.number = old_grid.number
+        new_grid.rectangle = old_grid.rectangle.copy()
+        new_grid.used_cells = old_grid.used_cells.copy()
+        new_grid.complete_rectangles = [{e for e in rectangle} for rectangle in old_grid.complete_rectangles]
 
         return new_grid
+
 
     @property
     def get_unused_number_cell(self):
@@ -75,13 +82,13 @@ class Grid:
 
         return coordinates
 
-    def print_rectangles(self):
+    def print_rectangles(self, grid):
         print('Grid:')
-        [print(row) for row in self.rows]
+        [print(row) for row in grid]
         print()
 
-        height = len(self.rows)
-        width = len(self.rows[0])
+        height = len(grid)
+        width = len(grid[0])
 
         rectangle_dict = {i: rectangle for i, rectangle in enumerate(self.complete_rectangles)}
 
@@ -119,7 +126,8 @@ def rectangles(grid):
                    for cell in new_cells):
                 continue
 
-            new_g = g.copy()
+            new_g = Grid.from_grid(g)
+
             new_g.rectangle = g.rectangle | new_cells
             new_g.used_cells = g.used_cells | new_cells
 
@@ -139,7 +147,7 @@ def rectangles(grid):
                 # print(f'        {complete_rectangles_len} of {total_len}')
 
                 if new_g.is_all_parsed:
-                    new_g.print_rectangles()
+                    new_g.print_rectangles(grid)
                     coordinates = new_g.rectangles_coordinates
                     print('Coordinates:', coordinates)
                     return coordinates
