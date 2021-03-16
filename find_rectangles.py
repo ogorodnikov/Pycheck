@@ -7,9 +7,8 @@ class Grid:
         width = len(rows[0])
 
         self.all_cells = {complex(y, x): rows[y][x] for x in range(width) for y in range(height)}
-        self.number_cells = {cell for cell in self.all_cells
-                             if self.all_cells[cell] > 0}
-        self.empty_cells = self.all_cells.keys() - self.number_cells
+        self.empty_cells = {cell for cell in self.all_cells
+                            if self.all_cells[cell] == 0}
 
         self.used_cells = set()
         initial_cell = self.get_unused_number_cell
@@ -28,22 +27,10 @@ class Grid:
                             f'    Rectangle:    {self.rectangle}'))
         return values
 
-    @classmethod
-    def from_grid(cls, grid):
-        new_grid = Grid.__new__(cls)
-
-
-
-        print('New grid:', new_grid.__class__)
-        print('Grid:', grid)
-
-        quit()
-
     def copy(self):
         new_grid = Grid.__new__(Grid)
 
         new_grid.all_cells = self.all_cells.copy()
-        new_grid.number_cells = self.number_cells.copy()
         new_grid.empty_cells = self.empty_cells.copy()
 
         new_grid.used_cells = self.used_cells.copy()
@@ -54,10 +41,11 @@ class Grid:
 
         return new_grid
 
-
     @property
     def get_unused_number_cell(self):
-        unused_number_cells = self.number_cells - self.used_cells
+        number_cells = {cell for cell in self.all_cells
+                        if self.all_cells[cell] != 0}
+        unused_number_cells = number_cells - self.used_cells
         max_number = max(self.all_cells[cell] for cell in unused_number_cells)
         max_unused_number_cell = next(cell for cell in unused_number_cells if self.all_cells[cell] == max_number)
         return max_unused_number_cell
@@ -117,8 +105,7 @@ def rectangles(grid):
 
             new_cells = {cell + delta for cell in g.rectangle} - g.rectangle
 
-            if any(cell not in g.all_cells.keys() or
-                   cell in g.used_cells | g.number_cells
+            if any(cell not in g.empty_cells - g.used_cells
                    for cell in new_cells):
                 continue
 
