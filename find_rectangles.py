@@ -51,18 +51,8 @@ class Grid:
 
     @property
     def is_rectangle(self):
-        rectangle_height = 1 + max(self.rectangle, key=abs).real - min(self.rectangle, key=abs).real
-        rectangle_width = 1 + max(self.rectangle, key=abs).imag - min(self.rectangle, key=abs).imag
-
-        print('        Max rectangle real:', max(self.rectangle, key=abs).real)
-        print('        Min rectangle real:', min(self.rectangle, key=abs).real)
-
-        print('        Rectangle height:', rectangle_height)
-        print('        Rectangle width:', rectangle_width)
-
-        if self.rectangle == {3j, (1+3j), (2+3j), (1+4j)}:
-            quit()
-
+        rectangle_height = 1 + max(cell.real for cell in self.rectangle) - min(cell.real for cell in self.rectangle)
+        rectangle_width = 1 + max(cell.imag for cell in self.rectangle) - min(cell.imag for cell in self.rectangle)
         return rectangle_height * rectangle_width == len(self.rectangle)
 
     @property
@@ -153,9 +143,7 @@ def print_rectangles(grid, rectangles):
             cell = complex(y, x)
             for i, rectangle in rectangle_dict.items():
                 if cell in rectangle:
-                    number = i
-            row += str(number)
-
+                    row += str(i)
         print(row)
 
 
