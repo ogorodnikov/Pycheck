@@ -117,7 +117,7 @@ def rectangles(grid):
             if len(new_g.rectangle) == new_g.number:
 
                 new_g.complete_rectangles.append(new_g.rectangle)
-
+                print('Complete rectangles count:', len(new_g.complete_rectangles))
                 # complete_rectangles_len = sum(map(len, new_g.complete_rectangles))
                 # total_len = len(new_g.all_cells)
                 #
