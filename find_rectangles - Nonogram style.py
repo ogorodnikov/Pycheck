@@ -18,6 +18,16 @@ class Board:
 
         self.rectangle_cycle = cycle(sorted(self.rectangles, key=lambda rectangle: -rectangle.number))
 
+    @property
+    def rectangles_coordinates(self):
+        coordinates = set()
+        for rectangle in self.rectangles:
+            minimum = min(rectangle.used_cells, key=abs)
+            maximum = max(rectangle.used_cells, key=abs)
+            rectangle_coordinates = tuple(map(int, (minimum.real, minimum.imag, maximum.real, maximum.imag)))
+            coordinates.add(rectangle_coordinates)
+        return coordinates
+
 
 class Rectangle:
     def __init__(self, cell, board):
@@ -119,11 +129,10 @@ def rectangles(grid):
     for rectangle in board.rectangles:
         print(rectangle.number, len(rectangle.used_cells))
 
-    quit()
+    coordinates = board.rectangles_coordinates
+    print('Coordinates:', coordinates)
 
-    next_rectangle = next(rectangle_cycle)
-    while next_rectangle.is_complete:
-        next_rectangle = next(rectangle_cycle)
+    return coordinates
 
 
 if __name__ == '__main__':
