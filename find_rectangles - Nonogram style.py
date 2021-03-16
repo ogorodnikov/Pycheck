@@ -1,24 +1,133 @@
+class Board:
+    def __init__(self, rows):
+        height = len(rows)
+        width = len(rows[0])
+
+        self.all_cells = {complex(y, x): rows[y][x] for x in range(width) for y in range(height)}
+        self.empty_cells = {cell for cell in self.all_cells
+                            if self.all_cells[cell] == 0}
+        self.number_cells = {cell for cell in self.all_cells
+                             if self.all_cells[cell] != 0}
+
+        self.rectangles = [Rectangle(cell, self)
+                           for cell in self.number_cells]
+        self.free_cells = self.all_cells.keys() - self.number_cells
+
+    def next_rectangle(self):
+        return next(rectangle for rectangle in self.rectangles
+                    if not rectangle.is_complete
+                    and rectangle.number == max(rectangle.number for rectangle in self.rectangles))
+
+
+class Rectangle:
+    def __init__(self, cell, board):
+        self.cell = cell
+        self.board = board
+        self.used_cells = set()
+        self.number = board.all_cells[cell]
+        self.expansion_directions = {1j, 1, -1j, -1}
+
+    def recalculate_used_cells(self):
+
+        q = [set()]
+
+        while q:
+            cells = q.pop()
+
+            for delta in g.expansion_directions.copy():
+
+                new_cells = {cell + delta for cell in cells} - cells
+
+                if not all(cell in self.board.free_cells
+                           for cell in new_cells):
+                    g.expansion_directions -= {delta}
+                    continue
+
+                new_g = g.copy()
+                new_g.rectangle = g.rectangle | new_cells
+
+                if len(new_g.rectangle) > new_g.number:
+                    continue
+
+                rectangle_hash = hash(tuple(new_g.rectangle))
+                if rectangle_hash in new_g.checked:
+                    # print('---- Rectangle already checked')
+                    # print('     Rectangle:', new_g.rectangle)
+                    # print('     Rectangle hash:', rectangle_hash)
+                    # print('     Checked:  ', new_g.checked)
+                    # new_g.print_rectangles(grid)
+                    # input()
+                    continue
+                new_g.checked.add(rectangle_hash)
+
+                new_g.used_cells = g.used_cells | new_cells
+
+                if len(new_g.rectangle) == new_g.number:
+
+                    new_g.complete_rectangles.append(new_g.rectangle)
+
+                    # print('Complete rectangles count:', len(new_g.complete_rectangles))
+
+                    # complete_rectangles_len = sum(map(len, new_g.complete_rectangles))
+                    # total_len = len(new_g.all_cells)
+                    #
+                    # print('    +++ Adding new rectangle:', new_g.rectangle)
+                    # print('        Level:               ', level)
+                    # print('        Complete rectangles: ', new_g.complete_rectangles)
+                    # print(f'        {complete_rectangles_len} of {total_len}')
+
+                    if new_g.is_all_parsed:
+                        new_g.print_rectangles(grid)
+                        coordinates = new_g.rectangles_coordinates
+                        print('Coordinates:', coordinates)
+                        return coordinates
+
+                    new_initial_cell = new_g.get_unused_number_cell
+
+                    new_g.number = new_g.all_cells[new_initial_cell]
+                    new_g.rectangle = {new_initial_cell}
+                    new_g.used_cells |= {new_initial_cell}
+                    new_g.expansion_directions = {1j, 1, -1j, -1}
+                    new_g.checked = set()
+
+                q.append((level + 1, new_g))
+
+
+
+
+
+
+
+    @property
+    def is_complete(self):
+        return len(self.used_cells) == self.number
+
+
 def rectangles(grid):
-    return []
+    board = Board(grid)
+
+    next_rectangle = board.next_rectangle()
+    print('Next rectangle:', next_rectangle.number)
+    quit()
 
 
 if __name__ == '__main__':
     GRIDS = (
-        [[3, 0, 0, 0, 0, 2],
-         [2, 0, 0, 4, 0, 0],
-         [0, 5, 0, 0, 0, 0],
-         [3, 0, 3, 2, 0, 0],
-         [0, 0, 2, 0, 0, 6],
-         [0, 0, 0, 4, 0, 0]],
-        # [[6, 0, 0, 0, 0, 0, 0, 2, 0],
-        #  [0, 2, 0, 2, 0, 0, 4, 0, 0],
-        #  [0, 0, 0, 0, 0, 0, 5, 0, 0],
-        #  [0, 12, 2, 0, 5, 0, 0, 0, 0],
-        #  [0, 0, 2, 0, 3, 0, 2, 0, 0],
-        #  [0, 0, 0, 0, 0, 0, 0, 2, 0],
-        #  [0, 0, 0, 0, 0, 0, 0, 0, 7],
-        #  [0, 0, 3, 0, 0, 12, 0, 0, 0],
-        #  [0, 2, 0, 0, 0, 4, 0, 0, 4]],
+        # [[3, 0, 0, 0, 0, 2],
+        #  [2, 0, 0, 4, 0, 0],
+        #  [0, 5, 0, 0, 0, 0],
+        #  [3, 0, 3, 2, 0, 0],
+        #  [0, 0, 2, 0, 0, 6],
+        #  [0, 0, 0, 4, 0, 0]],
+        [[6, 0, 0, 0, 0, 0, 0, 2, 0],
+         [0, 2, 0, 2, 0, 0, 4, 0, 0],
+         [0, 0, 0, 0, 0, 0, 5, 0, 0],
+         [0, 12, 2, 0, 5, 0, 0, 0, 0],
+         [0, 0, 2, 0, 3, 0, 2, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 2, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 7],
+         [0, 0, 3, 0, 0, 12, 0, 0, 0],
+         [0, 2, 0, 0, 0, 4, 0, 0, 4]],
         # [[2, 6, 0, 0, 0, 0, 0, 3],
         #  [0, 2, 0, 0, 0, 0, 0, 0],
         #  [0, 0, 0, 0, 0, 8, 0, 0],
