@@ -12,11 +12,11 @@ class Grid:
         self.number = self.all_cells[initial_cell]
         self.rectangle = {initial_cell}
         self.used_cells = {initial_cell}
+        self.expansion_directions = {1j, 1, -1j, -1}
         self.complete_rectangles = []
 
     def __repr__(self):
         stats = f'    All cells:    {self.all_cells}    \n' + \
-                f'    Number cells: {self.number_cells} \n' + \
                 f'    Empty cells:  {self.empty_cells}  \n'
         values = '\n'.join((f'    Complete:     {self.complete_rectangles}',
                             f'    Used cells:   {self.used_cells}',
@@ -33,6 +33,7 @@ class Grid:
         new_grid.number = self.number
         new_grid.rectangle = self.rectangle.copy()
         new_grid.used_cells = self.used_cells.copy()
+        new_grid.expansion_directions = self.expansion_directions.copy()
         new_grid.complete_rectangles = self.complete_rectangles.copy()
 
         return new_grid
@@ -52,14 +53,12 @@ class Grid:
 
     @property
     def rectangles_coordinates(self):
-
         coordinates = set()
         for rectangle in self.complete_rectangles:
             minimum = min(rectangle, key=abs)
             maximum = max(rectangle, key=abs)
             rectangle_coordinates = tuple(map(int, (minimum.real, minimum.imag, maximum.real, maximum.imag)))
             coordinates.add(rectangle_coordinates)
-
         return coordinates
 
     def print_rectangles(self, grid):
@@ -90,6 +89,7 @@ def rectangles(grid):
 
     tick = 0
     q = [(0, Grid(grid))]
+    checked = set()
 
     while q:
         level, g = q.pop()
@@ -97,13 +97,19 @@ def rectangles(grid):
         if not tick % 100000:
             print('Tick:', tick)
 
-        for delta in 1j, 1, -1j, -1:
+        for delta in g.expansion_directions.copy():
             tick += 1
 
             new_cells = {cell + delta for cell in g.rectangle} - g.rectangle
 
             if any(cell not in g.empty_cells - g.used_cells
                    for cell in new_cells):
+                print('G:', g)
+                print('Delta:', delta)
+                print('G expansion directions:', g.expansion_directions)
+                g.expansion_directions -= {delta}
+                print('G expansion directions:', g.expansion_directions)
+                input()
                 continue
 
             new_g = g.copy()
@@ -117,7 +123,9 @@ def rectangles(grid):
             if len(new_g.rectangle) == new_g.number:
 
                 new_g.complete_rectangles.append(new_g.rectangle)
-                print('Complete rectangles count:', len(new_g.complete_rectangles))
+
+                # print('Complete rectangles count:', len(new_g.complete_rectangles))
+
                 # complete_rectangles_len = sum(map(len, new_g.complete_rectangles))
                 # total_len = len(new_g.all_cells)
                 #
@@ -137,6 +145,7 @@ def rectangles(grid):
                 new_g.number = new_g.all_cells[new_initial_cell]
                 new_g.rectangle = {new_initial_cell}
                 new_g.used_cells |= {new_initial_cell}
+                new_g.expansion_directions = {1j, 1, -1j, -1}
 
                 # print('        New number:      ', new_g.number)
                 # print('        New rectangle:   ', new_g.rectangle)
@@ -176,23 +185,23 @@ if __name__ == '__main__':
         #  [0, 0, 8, 0, 0, 0, 0, 0],
         #  [3, 0, 0, 3, 14, 0, 0, 4],
         #  [0, 0, 0, 0, 4, 0, 3, 0]],
-        # [[0, 0, 0, 2, 0, 3, 4, 0, 4, 0, 0, 0, 3, 0, 0, 2],
-        #  [0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #  [0, 0, 0, 6, 0, 0, 2, 0, 3, 0, 0, 6, 6, 0, 0, 4],
-        #  [0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #  [0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 16, 0, 4, 0, 0],
-        #  [21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0],
-        #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0],
-        #  [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
-        #  [0, 0, 0, 0, 0, 3, 0, 0, 4, 0, 0, 0, 3, 0, 0, 0]],
-        [[0, 0, 2, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0], [4, 9, 0, 3, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0],
-         [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
-         [0, 0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         [6, 0, 0, 0, 0, 0, 0, 6, 0, 10, 0, 0, 0, 0, 2], [0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 4, 0, 0, 0],
-         [0, 0, 0, 20, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0], [0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0], [2, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 2, 3, 0, 0],
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 2, 0, 0], [6, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 2, 4, 0, 0],
-         [0, 0, 2, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 3]],
+        [[0, 0, 0, 2, 0, 3, 4, 0, 4, 0, 0, 0, 3, 0, 0, 2],
+         [0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 6, 0, 0, 2, 0, 3, 0, 0, 6, 6, 0, 0, 4],
+         [0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 16, 0, 4, 0, 0],
+         [21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0],
+         [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
+         [0, 0, 0, 0, 0, 3, 0, 0, 4, 0, 0, 0, 3, 0, 0, 0]],
+        # [[0, 0, 2, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0], [4, 9, 0, 3, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0],
+        #  [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
+        #  [0, 0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        #  [6, 0, 0, 0, 0, 0, 0, 6, 0, 10, 0, 0, 0, 0, 2], [0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 4, 0, 0, 0],
+        #  [0, 0, 0, 20, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0], [0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+        #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0], [2, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 2, 3, 0, 0],
+        #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 2, 0, 0], [6, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 2, 4, 0, 0],
+        #  [0, 0, 2, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 3]],
     )
 
 
