@@ -3,12 +3,11 @@ from functools import reduce
 
 class Board:
     def __init__(self, rows):
+        self.rows = rows
         height = len(rows)
         width = len(rows[0])
 
         self.all_cells = {complex(y, x): rows[y][x] for x in range(width) for y in range(height)}
-        self.empty_cells = {cell for cell in self.all_cells
-                            if self.all_cells[cell] == 0}
         self.number_cells = {cell for cell in self.all_cells
                              if self.all_cells[cell] != 0}
 
@@ -37,7 +36,8 @@ class Rectangle:
 
         while q:
             cells = q.pop()
-            print('A:', cells)
+            print('A:')
+            self.print_cells(cells, self.board.rows)
 
             for delta in self.expansion_directions.copy():
 
@@ -54,9 +54,6 @@ class Rectangle:
                 if len(new_cells) > self.number:
                     continue
 
-                # self.used_cells |= new_cells
-                # self.board.free_cells -= new_cells
-
                 if len(new_cells) == self.number:
                     possible_used_cells.append(new_cells)
 
@@ -72,19 +69,37 @@ class Rectangle:
                                for used_cells in possible_used_cells)}
 
         print('Common cells:', common_cells)
+        self.used_cells = common_cells
+        self.board.free_cells -= common_cells
 
     @property
     def is_complete(self):
         return len(self.used_cells) == self.number
 
+    def print_cells(self, cells, grid):
+        # print('Grid:')
+        # [print(row) for row in grid]
+        # print()
+
+        height = len(grid)
+        width = len(grid[0])
+
+        for y in range(height):
+            row = ''
+            for x in range(width):
+                cell = complex(y, x)
+                if cell in cells:
+                    row += 'X'
+                elif cell in self.board.number_cells:
+                    row += str(self.board.all_cells[cell])[-1]
+                else:
+                    row += '.'
+            print(row)
+        print()
+
 
 def rectangles(grid):
     board = Board(grid)
-
-    next_rectangle = board.next_rectangle()
-    print('Next rectangle:', next_rectangle.number)
-
-    next_rectangle.recalculate_used_cells()
 
     next_rectangle = board.next_rectangle()
     print('Next rectangle:', next_rectangle.number)
@@ -102,10 +117,19 @@ if __name__ == '__main__':
         #  [3, 0, 3, 2, 0, 0],
         #  [0, 0, 2, 0, 0, 6],
         #  [0, 0, 0, 4, 0, 0]],
+        # [[6, 0, 0, 0, 0, 0, 0, 2, 0],
+        #  [0, 2, 0, 2, 0, 0, 4, 0, 0],
+        #  [0, 0, 0, 0, 0, 0, 5, 0, 0],
+        #  [0, 12, 2, 0, 5, 0, 0, 0, 0],
+        #  [0, 0, 2, 0, 3, 0, 2, 0, 0],
+        #  [0, 0, 0, 0, 0, 0, 0, 2, 0],
+        #  [0, 0, 0, 0, 0, 0, 0, 0, 7],
+        #  [0, 0, 3, 0, 0, 12, 0, 0, 0],
+        #  [0, 2, 0, 0, 0, 4, 0, 0, 4]],
         [[6, 0, 0, 0, 0, 0, 0, 2, 0],
          [0, 2, 0, 2, 0, 0, 4, 0, 0],
          [0, 0, 0, 0, 0, 0, 5, 0, 0],
-         [0, 12, 2, 0, 5, 0, 0, 0, 0],
+         [0, 0, 2, 0, 5, 0, 0, 0, 0],
          [0, 0, 2, 0, 3, 0, 2, 0, 0],
          [0, 0, 0, 0, 0, 0, 0, 2, 0],
          [0, 0, 0, 0, 0, 0, 0, 0, 7],
