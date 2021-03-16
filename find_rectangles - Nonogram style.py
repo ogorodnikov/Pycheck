@@ -1,3 +1,6 @@
+from functools import reduce
+
+
 class Board:
     def __init__(self, rows):
         height = len(rows)
@@ -29,74 +32,46 @@ class Rectangle:
 
     def recalculate_used_cells(self):
 
-        q = [set()]
+        possible_used_cells = []
+        q = [{self.cell}]
 
         while q:
             cells = q.pop()
+            print('A:', cells)
 
-            for delta in g.expansion_directions.copy():
+            for delta in self.expansion_directions.copy():
 
-                new_cells = {cell + delta for cell in cells} - cells
+                new_cells = {cell + delta for cell in cells} | cells
+                print('    New cells:', new_cells)
 
-                if not all(cell in self.board.free_cells
+                if not all(cell in self.board.free_cells | {self.cell}
                            for cell in new_cells):
-                    g.expansion_directions -= {delta}
+                    print('Self board free cells:', self.board.free_cells)
+                    print('Obstacle')
+                    self.expansion_directions -= {delta}
                     continue
 
-                new_g = g.copy()
-                new_g.rectangle = g.rectangle | new_cells
-
-                if len(new_g.rectangle) > new_g.number:
+                if len(new_cells) > self.number:
                     continue
 
-                rectangle_hash = hash(tuple(new_g.rectangle))
-                if rectangle_hash in new_g.checked:
-                    # print('---- Rectangle already checked')
-                    # print('     Rectangle:', new_g.rectangle)
-                    # print('     Rectangle hash:', rectangle_hash)
-                    # print('     Checked:  ', new_g.checked)
-                    # new_g.print_rectangles(grid)
-                    # input()
-                    continue
-                new_g.checked.add(rectangle_hash)
+                # self.used_cells |= new_cells
+                # self.board.free_cells -= new_cells
 
-                new_g.used_cells = g.used_cells | new_cells
+                if len(new_cells) == self.number:
+                    possible_used_cells.append(new_cells)
 
-                if len(new_g.rectangle) == new_g.number:
+                q.append(new_cells)
 
-                    new_g.complete_rectangles.append(new_g.rectangle)
+        print('Possible used cells:', possible_used_cells)
 
-                    # print('Complete rectangles count:', len(new_g.complete_rectangles))
+        all_possible_cells = reduce(set.union, possible_used_cells, set())
+        print('All possible cells:', all_possible_cells)
 
-                    # complete_rectangles_len = sum(map(len, new_g.complete_rectangles))
-                    # total_len = len(new_g.all_cells)
-                    #
-                    # print('    +++ Adding new rectangle:', new_g.rectangle)
-                    # print('        Level:               ', level)
-                    # print('        Complete rectangles: ', new_g.complete_rectangles)
-                    # print(f'        {complete_rectangles_len} of {total_len}')
+        common_cells = {cell for cell in all_possible_cells
+                        if all(cell in used_cells
+                               for used_cells in possible_used_cells)}
 
-                    if new_g.is_all_parsed:
-                        new_g.print_rectangles(grid)
-                        coordinates = new_g.rectangles_coordinates
-                        print('Coordinates:', coordinates)
-                        return coordinates
-
-                    new_initial_cell = new_g.get_unused_number_cell
-
-                    new_g.number = new_g.all_cells[new_initial_cell]
-                    new_g.rectangle = {new_initial_cell}
-                    new_g.used_cells |= {new_initial_cell}
-                    new_g.expansion_directions = {1j, 1, -1j, -1}
-                    new_g.checked = set()
-
-                q.append((level + 1, new_g))
-
-
-
-
-
-
+        print('Common cells:', common_cells)
 
     @property
     def is_complete(self):
@@ -108,6 +83,14 @@ def rectangles(grid):
 
     next_rectangle = board.next_rectangle()
     print('Next rectangle:', next_rectangle.number)
+
+    next_rectangle.recalculate_used_cells()
+
+    next_rectangle = board.next_rectangle()
+    print('Next rectangle:', next_rectangle.number)
+
+    next_rectangle.recalculate_used_cells()
+
     quit()
 
 
