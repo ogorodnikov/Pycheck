@@ -7,7 +7,7 @@ class Grid:
         height = len(rows)
         width = len(rows[0])
 
-        self.all_cells = {complex(y, x): grid[y][x] for x in range(width) for y in range(height)}
+        self.all_cells = {complex(y, x): rows[y][x] for x in range(width) for y in range(height)}
         self.number_cells = {cell for cell in self.all_cells
                              if self.all_cells[cell] > 0}
         self.empty_cells = self.all_cells.keys() - self.number_cells
@@ -44,7 +44,9 @@ class Grid:
     @property
     def get_unused_number_cell(self):
         unused_number_cells = self.number_cells - self.used_cells
-        return unused_number_cells.pop()
+        max_number = max(self.all_cells[cell] for cell in unused_number_cells)
+        max_unused_number_cell = next(cell for cell in unused_number_cells if self.all_cells[cell] == max_number)
+        return max_unused_number_cell
 
     @property
     def is_all_parsed(self):
@@ -85,10 +87,15 @@ class Grid:
 
 
 def rectangles(grid):
+
+    tick =0
     q = [(0, Grid(grid))]
 
     while q:
         level, g = q.pop()
+
+        if not tick % 10000:
+            print('Tick:', tick)
 
         for delta in NEIGHBOURS:
 
@@ -110,13 +117,13 @@ def rectangles(grid):
 
                 new_g.complete_rectangles.append(new_g.rectangle)
 
-                complete_rectangles_len = sum(map(len, new_g.complete_rectangles))
-                total_len = len(new_g.all_cells)
-
-                print('    +++ Adding new rectangle:', new_g.rectangle)
-                print('        Level:               ', level)
-                print('        Complete rectangles: ', new_g.complete_rectangles)
-                print(f'        {complete_rectangles_len} of {total_len}')
+                # complete_rectangles_len = sum(map(len, new_g.complete_rectangles))
+                # total_len = len(new_g.all_cells)
+                #
+                # print('    +++ Adding new rectangle:', new_g.rectangle)
+                # print('        Level:               ', level)
+                # print('        Complete rectangles: ', new_g.complete_rectangles)
+                # print(f'        {complete_rectangles_len} of {total_len}')
 
                 if new_g.is_all_parsed:
                     new_g.print_rectangles()
@@ -130,11 +137,12 @@ def rectangles(grid):
                 new_g.rectangle = {new_initial_cell}
                 new_g.used_cells |= {new_initial_cell}
 
-                print('        New number:      ', new_g.number)
-                print('        New rectangle:   ', new_g.rectangle)
-                print('        New used cells:  ', new_g.used_cells)
-                print()
+                # print('        New number:      ', new_g.number)
+                # print('        New rectangle:   ', new_g.rectangle)
+                # print('        New used cells:  ', new_g.used_cells)
+                # print()
 
+            tick += 1
             q.append((level + 1, new_g))
 
     return []
@@ -157,17 +165,17 @@ if __name__ == '__main__':
          [0, 0, 0, 0, 0, 0, 0, 0, 7],
          [0, 0, 3, 0, 0, 12, 0, 0, 0],
          [0, 2, 0, 0, 0, 4, 0, 0, 4]],
-        # [[2, 6, 0, 0, 0, 0, 0, 3],
-        #  [0, 2, 0, 0, 0, 0, 0, 0],
-        #  [0, 0, 0, 0, 0, 8, 0, 0],
-        #  [4, 0, 0, 2, 0, 0, 0, 0],
-        #  [0, 0, 6, 0, 0, 0, 2, 2],
-        #  [0, 2, 0, 0, 0, 0, 0, 6],
-        #  [2, 0, 0, 0, 0, 0, 0, 0],
-        #  [0, 2, 0, 0, 0, 0, 0, 0],
-        #  [0, 0, 8, 0, 0, 0, 0, 0],
-        #  [3, 0, 0, 3, 14, 0, 0, 4],
-        #  [0, 0, 0, 0, 4, 0, 3, 0]],
+        [[2, 6, 0, 0, 0, 0, 0, 3],
+         [0, 2, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 8, 0, 0],
+         [4, 0, 0, 2, 0, 0, 0, 0],
+         [0, 0, 6, 0, 0, 0, 2, 2],
+         [0, 2, 0, 0, 0, 0, 0, 6],
+         [2, 0, 0, 0, 0, 0, 0, 0],
+         [0, 2, 0, 0, 0, 0, 0, 0],
+         [0, 0, 8, 0, 0, 0, 0, 0],
+         [3, 0, 0, 3, 14, 0, 0, 4],
+         [0, 0, 0, 0, 4, 0, 3, 0]],
     )
 
 
