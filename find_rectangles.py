@@ -13,6 +13,7 @@ class Grid:
         self.rectangle = {initial_cell}
         self.used_cells = {initial_cell}
         self.expansion_directions = {1j, 1, -1j, -1}
+        self.checked = set()
         self.complete_rectangles = []
 
     def __repr__(self):
@@ -34,6 +35,7 @@ class Grid:
         new_grid.rectangle = self.rectangle.copy()
         new_grid.used_cells = self.used_cells.copy()
         new_grid.expansion_directions = self.expansion_directions.copy()
+        new_grid.checked = self.checked
         new_grid.complete_rectangles = self.complete_rectangles.copy()
 
         return new_grid
@@ -75,12 +77,14 @@ class Grid:
             row = ''
             for x in range(width):
                 cell = complex(y, x)
+                letter = ''
                 for i, rectangle in rectangle_dict.items():
                     if cell in rectangle:
-                        row += str(i)[-1]
+                        letter = str(i)[-1]
+                row += letter or '.'
             print(row)
         print()
-        print('Rectangle dict:', rectangle_dict, len(rectangle_dict), height * width)
+        # print('Rectangle dict:', rectangle_dict, len(rectangle_dict), height * width)
 
 
 def rectangles(grid):
@@ -89,13 +93,12 @@ def rectangles(grid):
 
     tick = 0
     q = [(0, Grid(grid))]
-    checked = set()
 
     while q:
         level, g = q.pop()
 
-        if not tick % 100000:
-            print('Tick:', tick)
+        if not tick % 10000:
+            print('Tick:', tick, len(g.complete_rectangles))
 
         for delta in g.expansion_directions.copy():
             tick += 1
@@ -104,21 +107,29 @@ def rectangles(grid):
 
             if any(cell not in g.empty_cells - g.used_cells
                    for cell in new_cells):
-                print('G:', g)
-                print('Delta:', delta)
-                print('G expansion directions:', g.expansion_directions)
                 g.expansion_directions -= {delta}
-                print('G expansion directions:', g.expansion_directions)
-                input()
                 continue
 
             new_g = g.copy()
-
             new_g.rectangle = g.rectangle | new_cells
-            new_g.used_cells = g.used_cells | new_cells
 
             if len(new_g.rectangle) > new_g.number:
                 continue
+
+            rectangle_hash = hash(tuple(new_g.rectangle))
+            if rectangle_hash in new_g.checked:
+                print('---- Rectangle already checked')
+                print('     Rectangle:', new_g.rectangle)
+                print('     Rectangle hash:', rectangle_hash)
+                print('     Checked:  ', new_g.checked)
+                new_g.print_rectangles(grid)
+                input()
+                continue
+            new_g.checked.add(rectangle_hash)
+
+            new_g.used_cells = g.used_cells | new_cells
+
+
 
             if len(new_g.rectangle) == new_g.number:
 
@@ -185,23 +196,23 @@ if __name__ == '__main__':
         #  [0, 0, 8, 0, 0, 0, 0, 0],
         #  [3, 0, 0, 3, 14, 0, 0, 4],
         #  [0, 0, 0, 0, 4, 0, 3, 0]],
-        [[0, 0, 0, 2, 0, 3, 4, 0, 4, 0, 0, 0, 3, 0, 0, 2],
-         [0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         [0, 0, 0, 6, 0, 0, 2, 0, 3, 0, 0, 6, 6, 0, 0, 4],
-         [0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         [0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 16, 0, 4, 0, 0],
-         [21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0],
-         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0],
-         [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
-         [0, 0, 0, 0, 0, 3, 0, 0, 4, 0, 0, 0, 3, 0, 0, 0]],
-        # [[0, 0, 2, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0], [4, 9, 0, 3, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0],
-        #  [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
-        #  [0, 0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #  [6, 0, 0, 0, 0, 0, 0, 6, 0, 10, 0, 0, 0, 0, 2], [0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 4, 0, 0, 0],
-        #  [0, 0, 0, 20, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0], [0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-        #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0], [2, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 2, 3, 0, 0],
-        #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 2, 0, 0], [6, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 2, 4, 0, 0],
-        #  [0, 0, 2, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 3]],
+        # [[0, 0, 0, 2, 0, 3, 4, 0, 4, 0, 0, 0, 3, 0, 0, 2],
+        #  [0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        #  [0, 0, 0, 6, 0, 0, 2, 0, 3, 0, 0, 6, 6, 0, 0, 4],
+        #  [0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        #  [0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 16, 0, 4, 0, 0],
+        #  [21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0],
+        #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0],
+        #  [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
+        #  [0, 0, 0, 0, 0, 3, 0, 0, 4, 0, 0, 0, 3, 0, 0, 0]],
+        [[0, 0, 2, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0], [4, 9, 0, 3, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0],
+         [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
+         [0, 0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [6, 0, 0, 0, 0, 0, 0, 6, 0, 10, 0, 0, 0, 0, 2], [0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 4, 0, 0, 0],
+         [0, 0, 0, 20, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0], [0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0], [2, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 2, 3, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 2, 0, 0], [6, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 2, 4, 0, 0],
+         [0, 0, 2, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 3]],
     )
 
 
