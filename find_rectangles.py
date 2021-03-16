@@ -22,19 +22,26 @@ class Grid:
 
     def __repr__(self):
         rows = '\n'.join(row.__repr__() for row in self.rows)
-        stats = f'All cells:    {self.all_cells}    \n' + \
-                f'Number cells: {self.number_cells} \n' + \
-                f'Empty cells:  {self.empty_cells}  \n'
-        values = '\n'.join((f'Complete:     {self.complete_rectangles}',
-                            f'Used cells:   {self.used_cells}',
-                            f'Current cell: {self.current_cell}',
-                            f'Number:       {self.number}',
-                            f'Rectangle:    {self.rectangle}'))
-        return rows + '\n' + values
+        stats = f'    All cells:    {self.all_cells}    \n' + \
+                f'    Number cells: {self.number_cells} \n' + \
+                f'    Empty cells:  {self.empty_cells}  \n'
+        values = '\n'.join((f'    Complete:     {self.complete_rectangles}',
+                            f'    Used cells:   {self.used_cells}',
+                            f'    Current cell: {self.current_cell}',
+                            f'    Number:       {self.number}',
+                            f'    Rectangle:    {self.rectangle}'))
+        return values
 
     def copy(self):
-        new_grid = Grid(self.rows)
-        new_grid.__dict__.update(self.__dict__)
+        new_grid = Grid(self.rows.copy())
+
+        new_grid.used_cells = self.used_cells.copy()
+        new_grid.number = self.number
+        new_grid.rectangle = self.rectangle.copy()
+        new_grid.used_cells = self.used_cells.copy()
+        new_grid.current_cell = self.current_cell
+        new_grid.complete_rectangles = [{e for e in rectangle} for rectangle in self.complete_rectangles]
+
         return new_grid
 
     @property
@@ -58,13 +65,11 @@ class Grid:
 
 
 def rectangles(grid):
-    initial_grid = Grid(grid)
-    q = [initial_grid]
+
+    q = [(0, Grid(grid))]
 
     while q:
-        g = q.pop()
-
-        print('A:', g.current_cell)
+        level, g = q.pop()
 
         for b in (g.current_cell + delta for delta in NEIGHBOURS):
 
@@ -80,12 +85,10 @@ def rectangles(grid):
             new_g.used_cells = g.used_cells | {b}
             new_g.current_cell = b
 
-            print('    B:', b)
-            # print('    New rectangle: ', new_g.rectangle)
-            # print('    New used cells:', new_g.used_cells)
-
             if len(new_g.rectangle) == new_g.number:
-                print('    >>> Rectangle reached len of:', len(new_g.rectangle))
+
+                print('    >>> Length reached:', len(new_g.rectangle), new_g.rectangle)
+
                 if new_g.is_rectangle:
 
                     new_g.complete_rectangles.append(new_g.rectangle)
@@ -93,7 +96,8 @@ def rectangles(grid):
                     complete_rectangles_len = sum(map(len, new_g.complete_rectangles))
                     total_len = len(new_g.all_cells)
 
-                    print('    === Adding new rectangle:', new_g.rectangle)
+                    print('    +++ Adding new rectangle:', new_g.rectangle)
+                    print('        Level:               ', level)
                     print('        Complete rectangles: ', new_g.complete_rectangles)
                     print(f'        {complete_rectangles_len} of {total_len}')
 
@@ -107,13 +111,17 @@ def rectangles(grid):
                     new_g.rectangle = {new_initial_cell}
                     new_g.used_cells |= {new_initial_cell}
 
-                    print('New grid:')
-                    print(new_g)
+                    print('        New current cell:', new_g.current_cell)
+                    print('        New number:      ', new_g.number)
+                    print('        New rectangle:   ', new_g.rectangle)
+                    print('        New used cells:  ', new_g.used_cells)
+                    print()
 
                 else:
+                    print('    --- Not a rectangle')
                     continue
 
-            q.append(new_g)
+            q.append((level + 1, new_g))
 
     return []
 
