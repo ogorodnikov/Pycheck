@@ -23,33 +23,33 @@ class Rectangle:
     def __init__(self, cell, board):
         self.cell = cell
         self.board = board
-        self.used_cells = set()
+        self.used_cells = {self.cell}
         self.number = board.all_cells[cell]
         self.expansion_directions = {1j, 1, -1j, -1}
 
     def recalculate_used_cells(self):
 
         possible_used_cells = []
-        q = [{self.cell}]
+        q = [self.used_cells]
 
         while q:
             cells = q.pop()
 
-            # print('A:')
-            # self.print_cells(cells, self.board.rows)
-            # print()
+            print('A:')
+            self.print_cells(cells, self.board.rows)
+            print()
 
             for delta in self.expansion_directions.copy():
 
                 new_cells = {cell + delta for cell in cells} | cells
 
-                # print('New cells:')
-                # self.print_cells(new_cells, self.board.rows)
+                print('New cells:')
+                self.print_cells(new_cells, self.board.rows)
 
-                if not all(cell in self.board.free_cells | {self.cell}
+                if not all(cell in self.board.free_cells | self.used_cells
                            for cell in new_cells):
-                    # print('---- Obstacle')
-                    # print()
+                    print('---- Obstacle')
+                    print()
 
                     # todo: expansion_directions limitation
                     # self.expansion_directions -= {delta}
@@ -73,9 +73,10 @@ class Rectangle:
         self.used_cells = common_cells
         self.board.free_cells -= common_cells
 
-        # print('Possible used cells:', possible_used_cells)
-        # print('All possible cells:', all_possible_cells)
-        print('Common cells:', common_cells)
+        print('==== Rectangle recalculated:', self.number, self.cell)
+        print('Possible used cells:        ', possible_used_cells)
+        print('All possible cells:         ', all_possible_cells)
+        print('Common cells:               ', common_cells)
         self.print_cells(common_cells, self.board.rows)
 
     @property
@@ -102,15 +103,21 @@ class Rectangle:
 def rectangles(grid):
     board = Board(grid)
 
-    for i in range(50):
+    for i in range(100):
         next_rectangle = next(board.rectangle_cycle)
-        print('Next rectangle:', next_rectangle.number, next_rectangle.cell)
+        print('>>>> Next rectangle:', next_rectangle.number, next_rectangle.cell)
 
         if next_rectangle.is_complete:
             continue
 
         next_rectangle.recalculate_used_cells()
-        input()
+
+        # if next_rectangle.number == 7:
+        #     input()
+
+    print('Rectangles')
+    for rectangle in board.rectangles:
+        print(rectangle.number, len(rectangle.used_cells))
 
     quit()
 
