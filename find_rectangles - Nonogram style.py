@@ -36,19 +36,27 @@ class Rectangle:
 
         while q:
             cells = q.pop()
-            print('A:')
-            self.print_cells(cells, self.board.rows)
+
+            # print('A:')
+            # self.print_cells(cells, self.board.rows)
+            # print()
 
             for delta in self.expansion_directions.copy():
 
                 new_cells = {cell + delta for cell in cells} | cells
-                print('    New cells:', new_cells)
+
+                # print('New cells:')
+                # self.print_cells(new_cells, self.board.rows)
 
                 if not all(cell in self.board.free_cells | {self.cell}
                            for cell in new_cells):
-                    print('Self board free cells:', self.board.free_cells)
-                    print('Obstacle')
-                    self.expansion_directions -= {delta}
+
+                    # print('---- Obstacle')
+                    # print()
+
+                    # todo: expansion_directions limitation
+                    # self.expansion_directions -= {delta}
+
                     continue
 
                 if len(new_cells) > self.number:
@@ -59,28 +67,25 @@ class Rectangle:
 
                 q.append(new_cells)
 
-        print('Possible used cells:', possible_used_cells)
-
-        all_possible_cells = reduce(set.union, possible_used_cells, set())
-        print('All possible cells:', all_possible_cells)
+        all_possible_cells = reduce(set.union, possible_used_cells)
 
         common_cells = {cell for cell in all_possible_cells
                         if all(cell in used_cells
                                for used_cells in possible_used_cells)}
 
-        print('Common cells:', common_cells)
         self.used_cells = common_cells
         self.board.free_cells -= common_cells
+
+        # print('Possible used cells:', possible_used_cells)
+        # print('All possible cells:', all_possible_cells)
+        print('Common cells:', common_cells)
+        self.print_cells(common_cells, self.board.rows)
 
     @property
     def is_complete(self):
         return len(self.used_cells) == self.number
 
     def print_cells(self, cells, grid):
-        # print('Grid:')
-        # [print(row) for row in grid]
-        # print()
-
         height = len(grid)
         width = len(grid[0])
 
@@ -95,16 +100,16 @@ class Rectangle:
                 else:
                     row += '.'
             print(row)
-        print()
 
 
 def rectangles(grid):
     board = Board(grid)
 
-    next_rectangle = board.next_rectangle()
-    print('Next rectangle:', next_rectangle.number)
+    for i in range(2):
+        next_rectangle = board.next_rectangle()
+        print('Next rectangle:', next_rectangle.number)
 
-    next_rectangle.recalculate_used_cells()
+        next_rectangle.recalculate_used_cells()
 
     quit()
 
@@ -117,19 +122,10 @@ if __name__ == '__main__':
         #  [3, 0, 3, 2, 0, 0],
         #  [0, 0, 2, 0, 0, 6],
         #  [0, 0, 0, 4, 0, 0]],
-        # [[6, 0, 0, 0, 0, 0, 0, 2, 0],
-        #  [0, 2, 0, 2, 0, 0, 4, 0, 0],
-        #  [0, 0, 0, 0, 0, 0, 5, 0, 0],
-        #  [0, 12, 2, 0, 5, 0, 0, 0, 0],
-        #  [0, 0, 2, 0, 3, 0, 2, 0, 0],
-        #  [0, 0, 0, 0, 0, 0, 0, 2, 0],
-        #  [0, 0, 0, 0, 0, 0, 0, 0, 7],
-        #  [0, 0, 3, 0, 0, 12, 0, 0, 0],
-        #  [0, 2, 0, 0, 0, 4, 0, 0, 4]],
         [[6, 0, 0, 0, 0, 0, 0, 2, 0],
          [0, 2, 0, 2, 0, 0, 4, 0, 0],
          [0, 0, 0, 0, 0, 0, 5, 0, 0],
-         [0, 0, 2, 0, 5, 0, 0, 0, 0],
+         [0, 12, 2, 0, 5, 0, 0, 0, 0],
          [0, 0, 2, 0, 3, 0, 2, 0, 0],
          [0, 0, 0, 0, 0, 0, 0, 2, 0],
          [0, 0, 0, 0, 0, 0, 0, 0, 7],
