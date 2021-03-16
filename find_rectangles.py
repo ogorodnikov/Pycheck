@@ -71,7 +71,7 @@ def rectangles(grid):
     while q:
         level, g = q.pop()
 
-        for b in (g.current_cell + delta for delta in NEIGHBOURS):
+        for b in (current_cell + delta for delta in NEIGHBOURS for current_cell in g.rectangle):
 
             if b not in g.all_cells.keys():
                 continue
@@ -102,6 +102,7 @@ def rectangles(grid):
                     print(f'        {complete_rectangles_len} of {total_len}')
 
                     if new_g.is_all_parsed:
+                        print_rectangles(grid, new_g.complete_rectangles)
                         return new_g.rectangles_coordinates
 
                     new_initial_cell = new_g.get_unused_number_cell
@@ -140,12 +141,9 @@ def print_rectangles(grid, rectangles):
         row = ''
         for x in range(width):
             cell = complex(y, x)
-            print('Cell:', cell)
             for i, rectangle in rectangle_dict.items():
                 if cell in rectangle:
                     number = i
-                    print('    Number:', number)
-            print('Number:', number)
             row += str(number)
 
         print(row)
