@@ -12,7 +12,8 @@ class Grid:
                              if self.all_cells[cell] > 0}
         self.empty_cells = self.all_cells.keys() - self.number_cells
 
-        initial_cell = self.number_cells.copy().pop()
+        self.used_cells = set()
+        initial_cell = self.get_unused_number_cell
         self.number = self.all_cells[initial_cell]
         self.rectangle = {initial_cell}
         self.used_cells = {initial_cell}
@@ -24,7 +25,12 @@ class Grid:
         stats = f'All cells:    {self.all_cells}    \n' + \
                 f'Number cells: {self.number_cells} \n' + \
                 f'Empty cells:  {self.empty_cells}  \n'
-        return rows + '\n' + stats
+        values = '\n'.join((f'Complete:     {self.complete_rectangles}',
+                            f'Used cells:   {self.used_cells}',
+                            f'Current cell: {self.current_cell}',
+                            f'Number:       {self.number}',
+                            f'Rectangle:    {self.rectangle}'))
+        return rows + '\n' + values
 
     def copy(self):
         new_grid = Grid(self.rows)
@@ -32,13 +38,14 @@ class Grid:
         return new_grid
 
     @property
+    def get_unused_number_cell(self):
+        unused_number_cells = self.number_cells - self.used_cells
+        return unused_number_cells.pop()
+
+    @property
     def is_rectangle(self):
         rectangle_height = 1 + max(self.rectangle, key=abs).real - min(self.rectangle, key=abs).real
         rectangle_width = 1 + max(self.rectangle, key=abs).imag - min(self.rectangle, key=abs).imag
-
-        print('        Rectangle height:', rectangle_height)
-        print('        Rectangle width:', rectangle_width)
-
         return rectangle_height * rectangle_width == len(self.rectangle)
 
     @property
@@ -48,21 +55,16 @@ class Grid:
     @property
     def rectangles_coordinates(self):
         raise NotImplementedError
-        return self.complete_rectangles
 
 
 def rectangles(grid):
-
     initial_grid = Grid(grid)
-    print('Initial grid:')
-    print(initial_grid)
-
     q = [initial_grid]
 
     while q:
         g = q.pop()
-        print('Current grid:')
-        print(g)
+
+        print('A:', g.current_cell)
 
         for b in (g.current_cell + delta for delta in NEIGHBOURS):
 
@@ -79,31 +81,37 @@ def rectangles(grid):
             new_g.current_cell = b
 
             print('    B:', b)
-            print('    New rectangle: ', new_g.rectangle)
-            print('    New used cells:', new_g.used_cells)
+            # print('    New rectangle: ', new_g.rectangle)
+            # print('    New used cells:', new_g.used_cells)
 
             if len(new_g.rectangle) == new_g.number:
                 print('    >>> Rectangle reached len of:', len(new_g.rectangle))
                 if new_g.is_rectangle:
-                    print('    === New rectangle detected:', new_g.rectangle)
-                    quit()
+
+                    new_g.complete_rectangles.append(new_g.rectangle)
+
+                    complete_rectangles_len = sum(map(len, new_g.complete_rectangles))
+                    total_len = len(new_g.all_cells)
+
+                    print('    === Adding new rectangle:', new_g.rectangle)
+                    print('        Complete rectangles: ', new_g.complete_rectangles)
+                    print(f'        {complete_rectangles_len} of {total_len}')
 
                     if new_g.is_all_parsed:
                         return new_g.rectangles_coordinates
 
-                #     complete_rectangles.append(new_rectangle)
-                #
-                #     new_number_cells = {cell for cell in all_cells
-                #                         if all_cells[cell] > 0
-                #                         and cell not in new_used_cells}
-                #     new_initial_cell = new_number_cells.copy().pop()
-                #     number = all_cells[new_initial_cell]
-                #     new_rectangle = {new_initial_cell}
-                #     new_used_cells = new_used_cells | {new_initial_cell}
-                #     b = new_initial_cell
-                #
-                # else:
-                #     continue
+                    new_initial_cell = new_g.get_unused_number_cell
+
+                    new_g.current_cell = new_initial_cell
+                    new_g.number = new_g.all_cells[new_initial_cell]
+                    new_g.rectangle = {new_initial_cell}
+                    new_g.used_cells |= {new_initial_cell}
+
+                    print('New grid:')
+                    print(new_g)
+
+                else:
+                    continue
 
             q.append(new_g)
 
