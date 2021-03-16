@@ -45,6 +45,11 @@ class Grid:
     def is_all_parsed(self):
         return self.used_cells == set(self.all_cells.keys())
 
+    @property
+    def rectangles_coordinates(self):
+        raise NotImplementedError
+        return self.complete_rectangles
+
 
 def rectangles(grid):
 
@@ -59,12 +64,6 @@ def rectangles(grid):
         print('Current grid:')
         print(g)
 
-        a, number, rectangle, used_cells, complete_rectangles = g.current_cell, \
-                                                                g.number, \
-                                                                g.rectangle, \
-                                                                g.used_cells, \
-                                                                g.complete_rectangles
-
         for b in (g.current_cell + delta for delta in NEIGHBOURS):
 
             if b not in g.all_cells.keys():
@@ -77,9 +76,7 @@ def rectangles(grid):
             new_g = g.copy()
             new_g.rectangle = g.rectangle | {b}
             new_g.used_cells = g.used_cells | {b}
-
-            # new_rectangle = rectangle | {b}
-            # new_used_cells = used_cells | {b}
+            new_g.current_cell = b
 
             print('    B:', b)
             print('    New rectangle: ', new_g.rectangle)
@@ -89,8 +86,10 @@ def rectangles(grid):
                 print('    >>> Rectangle reached len of:', len(new_g.rectangle))
                 if new_g.is_rectangle:
                     print('    === New rectangle detected:', new_g.rectangle)
+                    quit()
+
                     if new_g.is_all_parsed:
-                        raise
+                        return new_g.rectangles_coordinates
 
                 #     complete_rectangles.append(new_rectangle)
                 #
@@ -106,12 +105,7 @@ def rectangles(grid):
                 # else:
                 #     continue
 
-            if new_g.is_all_parsed:
-                pass
-
-            quit()
-
-            q.append((b, number, new_rectangle, new_used_cells, complete_rectangles))
+            q.append(new_g)
 
     return []
 
