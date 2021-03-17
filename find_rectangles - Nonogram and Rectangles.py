@@ -35,78 +35,61 @@ class Rectangle:
         self.board = board
         self.used_cells = {self.cell}
         self.number = board.all_cells[cell]
-        self.expansion_directions = {1j, 1, -1j, -1}
+        # {1j, 1, -1j, -1}
 
-        self.possible_dimensions = {(height + 1, width + 1)
+        self.possible_dimensions = [(height + 1, width + 1)
                                     for width in range(self.board.width)
                                     for height in range(self.board.height)
-                                    if (width + 1) * (height + 1) == self.number}
+                                    if (width + 1) * (height + 1) == self.number]
 
-        self.possible_rectangles = [{complex(y, x)
-                                     for x in range(width)
-                                     for y in range(height)}
-                                    for height, width
-                                    in self.possible_dimensions]
-
-        print('Self number:', self.number)
-        print('Self board width:', self.board.width)
-        print('Self board height:', self.board.height)
-        print('Self possible dimensions:', self.possible_dimensions)
-        print()
-        print('Self possible rectangles:', sorted(self.possible_rectangles))
-        quit()
+        self.possible_patterns = [{complex(y, x)
+                                   for x in range(width)
+                                   for y in range(height)}
+                                  for height, width
+                                  in self.possible_dimensions]
 
     def recalculate_used_cells(self):
 
-        # for x in range(30):
-        #     for y in range(40):
-        #         if x * y == 42:
-        #             print(x, y, x*y)
-        # quit()
-
         possible_used_cells = []
-        q = [(self.used_cells, self.expansion_directions.copy())]
+        q = [self.used_cells]
 
         while q:
-            cells, expansion_directions = q.pop()
-
-            new_expansion_directions = expansion_directions.copy()
-            level_entry = []
+            cells = q.pop()
 
             # print('A:')
             # self.print_cells(cells, self.board.rows)
             # print()
 
-            for delta in expansion_directions.copy():
+            for pattern in self.possible_patterns:
 
-                new_cells = {cell + delta for cell in cells} | cells
+                for shift in pattern:
 
-                # print('New cells:')
-                # self.print_cells(new_cells, self.board.rows)
+                    print('Self number:', self.number)
+                    print('Self cell:', self.cell)
+                    print('Shift:', shift)
+                    print('Pattern:', pattern)
 
-                if not all(cell in self.board.free_cells | self.used_cells
+                    new_cells = {self.cell - shift + delta for delta in pattern}
+
+                    print('New cells:', new_cells)
+                    self.print_cells(new_cells, self.board.rows)
+                    print()
+
+                    if any(cell not in self.board.free_cells | self.used_cells
                            for cell in new_cells):
-                    # print('---- Obstacle')
-                    # print()
+                        print('---- Obstacle')
+                        print()
+                        continue
 
-                    new_expansion_directions -= {delta}
-                    # print('---- Expansion directions:', new_expansion_directions)
-                    continue
+                    quit()
 
-                if len(new_cells) > self.number:
-                    continue
+                    if len(new_cells) > self.number:
+                        continue
 
-                if len(new_cells) == self.number:
-                    possible_used_cells.append(new_cells)
+                    if len(new_cells) == self.number:
+                        possible_used_cells.append(new_cells)
 
-                level_entry = [(old_cells, new_expansion_directions)
-                               for old_cells, old_expansion_directions in level_entry]
-
-                level_entry.append((new_cells, new_expansion_directions))
-
-                # q.append((new_cells, new_expansion_directions))
-
-            q.extend(level_entry)
+                    q.append(new_cells)
 
         all_possible_cells = reduce(set.union, possible_used_cells, set())
 
