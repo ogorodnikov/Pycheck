@@ -39,17 +39,25 @@ class Rectangle:
 
     def recalculate_used_cells(self):
 
+        # for x in range(30):
+        #     for y in range(40):
+        #         if x * y == 42:
+        #             print(x, y, x*y)
+        # quit()
+
         possible_used_cells = []
-        q = [self.used_cells]
+        q = [(self.used_cells, self.expansion_directions.copy())]
 
         while q:
-            cells = q.pop()
+            cells, expansion_directions = q.pop()
+
+            new_expansion_directions = expansion_directions.copy()
 
             # print('A:')
             # self.print_cells(cells, self.board.rows)
             # print()
 
-            for delta in self.expansion_directions.copy():
+            for delta in expansion_directions.copy():
 
                 new_cells = {cell + delta for cell in cells} | cells
 
@@ -61,9 +69,8 @@ class Rectangle:
                     # print('---- Obstacle')
                     # print()
 
-                    # todo: expansion_directions limitation
-                    # self.expansion_directions -= {delta}
-
+                    new_expansion_directions -= {delta}
+                    # print('---- Expansion directions:', new_expansion_directions)
                     continue
 
                 if len(new_cells) > self.number:
@@ -72,7 +79,7 @@ class Rectangle:
                 if len(new_cells) == self.number:
                     possible_used_cells.append(new_cells)
 
-                q.append(new_cells)
+                q.append((new_cells, new_expansion_directions))
 
         all_possible_cells = reduce(set.union, possible_used_cells, set())
 
@@ -84,8 +91,8 @@ class Rectangle:
         self.board.free_cells -= common_cells
 
         print('==== Rectangle recalculated:', self.number, self.cell)
-        # print('Possible used cells:        ', possible_used_cells)
-        # print('All possible cells:         ', all_possible_cells)
+        print('Possible used cells:        ', possible_used_cells)
+        print('All possible cells:         ', all_possible_cells)
         print('Common cells:               ', common_cells)
         self.print_cells(common_cells, self.board.rows)
 
@@ -186,6 +193,25 @@ if __name__ == '__main__':
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0], [2, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 2, 3, 0, 0],
          [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 2, 0, 0], [6, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 2, 4, 0, 0],
          [0, 0, 2, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 3]],
+        # [[3, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+        #  [0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        #  [0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 5, 0],
+        #  [0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        #  [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0],
+        #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 2, 0, 0, 8, 0, 4],
+        #  [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0],
+        #  [0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0],
+        #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 0, 0, 0, 0, 0, 0, 0],
+        #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        #  [5, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        #  [0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0],
+        #  [3, 0, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0],
+        #  [3, 0, 2, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 2, 0, 0, 4, 0],
+        #  [0, 2, 4, 0, 0, 0, 3, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 3, 0],
+        #  [0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 5, 0, 0, 0, 0, 12, 0, 0],
+        #  [2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0],
+        #  [2, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 2, 0, 0, 0, 0, 0, 4]],
     )
 
 
