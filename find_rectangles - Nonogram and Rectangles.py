@@ -51,51 +51,40 @@ class Rectangle:
     def recalculate_used_cells(self):
 
         possible_used_cells = []
-        q = [self.used_cells]
 
-        while q:
-            cells = q.pop()
+        for pattern in self.possible_patterns:
 
-            # print('A:')
-            # self.print_cells(cells, self.board.rows)
-            # print()
+            for shift in pattern:
 
-            for pattern in self.possible_patterns:
+                print('Self number:', self.number)
+                print('Self cell:', self.cell)
+                print('Shift:', shift)
+                print('Pattern:', pattern)
 
-                for shift in pattern:
+                new_cells = {self.cell - shift + delta for delta in pattern}
 
-                    print('Self number:', self.number)
-                    print('Self cell:', self.cell)
-                    print('Shift:', shift)
-                    print('Pattern:', pattern)
+                print('New cells:', new_cells)
+                self.print_cells(new_cells, self.board.rows)
+                print()
 
-                    new_cells = {self.cell - shift + delta for delta in pattern}
-
-                    print('New cells:', new_cells)
-                    self.print_cells(new_cells, self.board.rows)
+                if any(cell not in self.board.free_cells | self.used_cells
+                       for cell in new_cells):
+                    print('---- Obstacle')
                     print()
+                    continue
 
-                    if any(cell not in self.board.free_cells | self.used_cells
-                           for cell in new_cells):
-                        print('---- Obstacle')
-                        print()
-                        continue
+                possible_used_cells.append(new_cells)
+                print('Possible used cells:', possible_used_cells)
 
-                    quit()
-
-                    if len(new_cells) > self.number:
-                        continue
-
-                    if len(new_cells) == self.number:
-                        possible_used_cells.append(new_cells)
-
-                    q.append(new_cells)
+                # if len(possible_used_cells) == 3:
+                #     quit()
 
         all_possible_cells = reduce(set.union, possible_used_cells, set())
 
         common_cells = {cell for cell in all_possible_cells
                         if all(cell in used_cells
-                               for used_cells in possible_used_cells)}
+                               for used_cells
+                               in possible_used_cells)}
 
         self.used_cells = common_cells
         self.board.free_cells -= common_cells
@@ -105,6 +94,10 @@ class Rectangle:
         print('All possible cells:         ', all_possible_cells)
         print('Common cells:               ', common_cells)
         self.print_cells(common_cells, self.board.rows)
+
+        quit()
+
+
 
     @property
     def is_complete(self):
