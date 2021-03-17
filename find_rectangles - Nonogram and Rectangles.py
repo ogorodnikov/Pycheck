@@ -56,28 +56,24 @@ class Rectangle:
 
             for shift in pattern:
 
-                print('Self number:', self.number)
-                print('Self cell:', self.cell)
-                print('Shift:', shift)
-                print('Pattern:', pattern)
+                # print('Self number:', self.number)
+                # print('Self cell:', self.cell)
+                # print('Shift:', shift)
+                # print('Pattern:', pattern)
 
                 new_cells = {self.cell - shift + delta for delta in pattern}
 
-                print('New cells:', new_cells)
-                self.print_cells(new_cells, self.board.rows)
-                print()
+                # print('New cells:', new_cells)
+                # self.print_cells(new_cells, self.board.rows)
+                # print()
 
                 if any(cell not in self.board.free_cells | self.used_cells
                        for cell in new_cells):
-                    print('---- Obstacle')
-                    print()
+                    # print('---- Obstacle')
+                    # print()
                     continue
 
                 possible_used_cells.append(new_cells)
-                print('Possible used cells:', possible_used_cells)
-
-                # if len(possible_used_cells) == 3:
-                #     quit()
 
         all_possible_cells = reduce(set.union, possible_used_cells, set())
 
@@ -89,15 +85,12 @@ class Rectangle:
         self.used_cells = common_cells
         self.board.free_cells -= common_cells
 
-        print('==== Rectangle recalculated:', self.number, self.cell)
-        print('Possible used cells:        ', possible_used_cells)
-        print('All possible cells:         ', all_possible_cells)
-        print('Common cells:               ', common_cells)
-        self.print_cells(common_cells, self.board.rows)
-
-        quit()
-
-
+        # print('==== Rectangle recalculated:', self.number, self.cell)
+        # print('Possible used cells:        ', possible_used_cells)
+        # print('All possible cells:         ', all_possible_cells)
+        # print('Common cells:               ', common_cells)
+        # print('Self is complete:           ', self.is_complete)
+        # self.print_cells(common_cells, self.board.rows)
 
     @property
     def is_complete(self):
@@ -127,7 +120,21 @@ def rectangles(grid):
 
         next_rectangle = next(board.rectangle_cycle)
 
-        print('>>>> Next rectangle:', next_rectangle.number, next_rectangle.cell)
+        # if not next_rectangle.is_complete:
+        #     print('>>>> Next rectangle:', next_rectangle.number, next_rectangle.cell, next_rectangle.is_complete)
+
+        print(sum(r.is_complete for r in board.rectangles), 'of', len(board.rectangles))
+
+        # if sum(r.is_complete for r in board.rectangles) == 32 and len(board.rectangles) == 47:
+        #     print()
+        #     print('Free:')
+        #     next_rectangle.print_cells(board.free_cells, board.rows)
+
+        all_used_cells = board.all_cells.keys() - board.free_cells
+        print('All used cells:')
+        next_rectangle.print_cells(all_used_cells, board.rows)
+
+            # quit()
 
         if next_rectangle.is_complete:
             continue
