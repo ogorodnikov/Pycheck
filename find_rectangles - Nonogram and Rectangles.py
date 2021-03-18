@@ -19,6 +19,11 @@ class Board:
         # self.rectangle_cycle = cycle(sorted(self.rectangles, key=lambda rectangle: -abs(rectangle.cell)))
 
     @property
+    def not_placed_rectangles(self):
+        return [rectangle for rectangle in self.rectangles
+                if not rectangle.is_placed]
+
+    @property
     def rectangles_coordinates(self):
         coordinates = set()
         for rectangle in self.rectangles:
@@ -35,15 +40,15 @@ class Board:
             used_cells |= rectangle.used_cells
         return used_cells
 
-    def recalculate_next(self):
-        if all(rectangle.is_complete for rectangle in self.rectangles):
-            return
-
-        next_rectangle = next(self.rectangle_cycle)
-        while next_rectangle.is_complete:
-            next_rectangle = next(self.rectangle_cycle)
-
-        next_rectangle.recalculate_used_cells()
+    # def recalculate_next(self):
+    #     if all(rectangle.is_complete for rectangle in self.rectangles):
+    #         return
+    #
+    #     next_rectangle = next(self.rectangle_cycle)
+    #     while next_rectangle.is_complete:
+    #         next_rectangle = next(self.rectangle_cycle)
+    #
+    #     next_rectangle.recalculate_used_cells()
 
     def print_cells(self, cells):
         for y in range(self.height):
@@ -65,7 +70,6 @@ class Rectangle:
         self.board = board
         self.used_cells = {self.cell}
         self.number = board.all_cells[cell]
-        # {1j, 1, -1j, -1}
 
         self.possible_dimensions = [(height + 1, width + 1)
                                     for width in range(self.board.width)
@@ -112,25 +116,24 @@ class Rectangle:
         # self.board.print_cells(common_cells)
 
     @property
-    def is_complete(self):
+    def is_placed(self):
         return len(self.used_cells) == self.number
 
 
 def rectangles(grid):
     board = Board(grid)
 
-    while True:
+    while any(not rectangle.is_placed for rectangle in board.rectangles):
 
-        board.recalculate_next()
+        for rectangle in board.not_placed_rectangles:
 
-        print('All used cells:')
-        board.print_cells(board.used_cells)
-        print()
+            rectangle.recalculate_used_cells()
 
-        if all(rectangle.is_complete for rectangle in board.rectangles):
-            print('==== All complete')
-            break
+            print('All used cells:')
+            board.print_cells(board.used_cells)
+            print()
 
+    print('==== All complete')
     print('Rectangles')
     for rectangle in board.rectangles:
         print(rectangle.number, len(rectangle.used_cells))
