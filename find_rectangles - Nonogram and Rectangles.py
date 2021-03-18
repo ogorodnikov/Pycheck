@@ -15,13 +15,17 @@ class Board:
                            for cell in self.number_cells]
         self.free_cells = self.all_cells.keys() - self.number_cells
 
-        self.rectangle_cycle = cycle(sorted(self.rectangles, key=lambda rectangle: -rectangle.number))
-        # self.rectangle_cycle = cycle(sorted(self.rectangles, key=lambda rectangle: -abs(rectangle.cell)))
-
     @property
     def not_placed_rectangles(self):
-        return [rectangle for rectangle in self.rectangles
-                if not rectangle.is_placed]
+        return (rectangle for rectangle in self.rectangles
+                if not rectangle.is_placed)
+
+    @property
+    def used_cells(self):
+        used_cells = set()
+        for rectangle in self.rectangles:
+            used_cells |= rectangle.used_cells
+        return used_cells
 
     @property
     def rectangles_coordinates(self):
@@ -32,23 +36,6 @@ class Board:
             rectangle_coordinates = tuple(map(int, (minimum.real, minimum.imag, maximum.real, maximum.imag)))
             coordinates.add(rectangle_coordinates)
         return coordinates
-
-    @property
-    def used_cells(self):
-        used_cells = set()
-        for rectangle in self.rectangles:
-            used_cells |= rectangle.used_cells
-        return used_cells
-
-    # def recalculate_next(self):
-    #     if all(rectangle.is_complete for rectangle in self.rectangles):
-    #         return
-    #
-    #     next_rectangle = next(self.rectangle_cycle)
-    #     while next_rectangle.is_complete:
-    #         next_rectangle = next(self.rectangle_cycle)
-    #
-    #     next_rectangle.recalculate_used_cells()
 
     def print_cells(self, cells):
         for y in range(self.height):
@@ -126,7 +113,6 @@ def rectangles(grid):
     while any(not rectangle.is_placed for rectangle in board.rectangles):
 
         for rectangle in board.not_placed_rectangles:
-
             rectangle.recalculate_used_cells()
 
             print('All used cells:')
