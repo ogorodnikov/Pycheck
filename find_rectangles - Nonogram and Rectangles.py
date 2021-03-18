@@ -1,6 +1,3 @@
-from itertools import cycle
-
-
 class Board:
     def __init__(self, rows):
         self.rows = rows
@@ -112,12 +109,21 @@ def rectangles(grid):
 
     while any(not rectangle.is_placed for rectangle in board.rectangles):
 
+        possible_count_before = sum(len(r.possible_rectangles) for r in board.rectangles)
+
         for rectangle in board.not_placed_rectangles:
             rectangle.recalculate_used_cells()
 
             print('All used cells:')
             board.print_cells(board.used_cells)
             print()
+
+        possible_count_after = sum(len(r.possible_rectangles) for r in board.rectangles)
+        print('Possible count before:', possible_count_before)
+        print('Possible count after:', possible_count_after)
+
+        if possible_count_after == possible_count_before:
+            quit()
 
     print('==== All complete')
     print('Rectangles')
