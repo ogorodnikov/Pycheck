@@ -1,4 +1,3 @@
-from functools import reduce
 from itertools import cycle
 
 
@@ -97,11 +96,9 @@ class Rectangle:
                 # print('---- Obstacle\n')
                 continue
 
-        all_possible_cells = reduce(set.union, self.possible_rectangles, set())
-
-        common_cells = {cell for cell in all_possible_cells
-                        if all(cell in used_cells
-                               for used_cells
+        common_cells = {cell for possible_rectangle in self.possible_rectangles
+                        for cell in possible_rectangle
+                        if all(cell in used_cells for used_cells
                                in self.possible_rectangles)}
 
         self.used_cells = common_cells
