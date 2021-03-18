@@ -28,6 +28,14 @@ class Board:
             coordinates.add(rectangle_coordinates)
         return coordinates
 
+    @property
+    def used_cells(self):
+        used_cells = set()
+        for rectangle in self.rectangles:
+            used_cells |= rectangle.used_cells
+        return used_cells
+
+
     def recalculate_next(self):
 
         if all(rectangle.is_complete for rectangle in self.rectangles):
@@ -38,6 +46,19 @@ class Board:
             next_rectangle = next(self.rectangle_cycle)
 
         next_rectangle.recalculate_used_cells()
+
+    def print_cells(self, cells):
+        for y in range(self.height):
+            row = ''
+            for x in range(self.width):
+                cell = complex(y, x)
+                if cell in cells:
+                    row += 'X'
+                elif cell in self.number_cells:
+                    row += str(self.all_cells[cell])[-1]
+                else:
+                    row += '.'
+            print(row)
 
 
 class Rectangle:
@@ -67,21 +88,21 @@ class Rectangle:
 
             for shift in pattern:
 
-                print('Self number:', self.number)
-                print('Self cell:', self.cell)
-                print('Shift:', shift)
-                print('Pattern:', pattern)
+                # print('Self number:', self.number)
+                # print('Self cell:', self.cell)
+                # print('Shift:', shift)
+                # print('Pattern:', pattern)
 
                 new_cells = {self.cell - shift + delta for delta in pattern}
 
-                print('New cells:', new_cells)
-                self.print_cells(new_cells, self.board.rows)
-                print()
+                # print('New cells:', new_cells)
+                # self.board.print_cells(new_cells)
+                # print()
 
                 if any(cell not in self.board.free_cells | self.used_cells
                        for cell in new_cells):
-                    print('---- Obstacle')
-                    print()
+                    # print('---- Obstacle')
+                    # print()
                     continue
 
                 possible_used_cells.append(new_cells)
@@ -96,93 +117,28 @@ class Rectangle:
         self.used_cells = common_cells
         self.board.free_cells -= common_cells
 
-        print('==== Rectangle recalculated:', self.number, self.cell)
-        print('Possible used cells:        ', possible_used_cells)
-        print('All possible cells:         ', all_possible_cells)
-        print('Common cells:               ', common_cells)
-        print('Self is complete:           ', self.is_complete)
-        self.print_cells(common_cells, self.board.rows)
+        # print('==== Rectangle recalculated:', self.number, self.cell)
+        # print('Possible used cells:        ', possible_used_cells)
+        # print('All possible cells:         ', all_possible_cells)
+        # print('Common cells:               ', common_cells)
+        # print('Self is complete:           ', self.is_complete)
+        # self.board.print_cells(common_cells)
 
     @property
     def is_complete(self):
         return len(self.used_cells) == self.number
 
-    def print_cells(self, cells, grid):
-        height = len(grid)
-        width = len(grid[0])
-
-        for y in range(height):
-            row = ''
-            for x in range(width):
-                cell = complex(y, x)
-                if cell in cells:
-                    row += 'X'
-                elif cell in self.board.number_cells:
-                    row += str(self.board.all_cells[cell])[-1]
-                else:
-                    row += '.'
-            print(row)
-
 
 def rectangles(grid):
     board = Board(grid)
 
-    not_changed_counter = 0
-
-    rectangle = board.rectangles[0]
-
     while True:
-        initial_free_count = len(board.free_cells)
 
         board.recalculate_next()
 
         print('All used cells:')
-        all_used_cells = board.all_cells.keys() - board.free_cells
-        rectangle.print_cells(all_used_cells, board.rows)
+        board.print_cells(board.used_cells)
         print()
-
-        # if next_rectangle.cell == 5 + 18j:
-        #     input_cell = input('Input cell:')
-
-            # next_rectangle.used_cells |= {(3+18j), (4+18j), (5+18j), (6+18j)}
-            # board.free_cells -= {(3+18j), (4+18j), (5+18j), (6+18j)}
-
-            # next_rectangle.used_cells |= {(7+18j), (4+18j), (5+18j), (6+18j)}
-            # board.free_cells -= {(7+18j), (4+18j), (5+18j), (6+18j)}
-
-        # if next_rectangle.cell == 18 + 18j:
-        #     input_cell = input('Input cell:')
-        #     # input_cell = complex(input_cell)
-
-            # next_rectangle.used_cells |= {(18+18j), (17+17j), (18+17j), (17+18j)}
-            # board.free_cells -= {(18+18j), (17+17j), (18+17j), (17+18j)}
-
-            # next_rectangle.used_cells |= {(15+18j), (16+18j), (17+18j), (18+18j)}
-            # board.free_cells -= {(15+18j), (16+18j), (17+18j), (18+18j)}
-
-            # next_rectangle.used_cells |= {(15j+18), (16j+18), (17j+18), (18j+18)}
-            # board.free_cells -= {(15j+18), (16j+18), (17j+18), (18j+18)}
-
-        # if sum(r.is_complete for r in board.rectangles) == 32 and len(board.rectangles) == 47:
-
-        # print(sum(r.is_complete for r in board.rectangles), 'of', len(board.rectangles))
-
-        # next_rectangle.print_cells(set(), board.rows)
-        # print()
-
-
-        # if next_rectangle.number == 7:
-        #     input()
-
-        if len(board.free_cells) == initial_free_count:
-            not_changed_counter += 1
-        else:
-            not_changed_counter = 0
-
-        if not_changed_counter > len(board.rectangles):
-            print('Initial free count:', initial_free_count)
-            print('Len board free cells :', len(board.free_cells))
-            quit()
 
         if all(rectangle.is_complete for rectangle in board.rectangles):
             print('==== All complete')
@@ -200,53 +156,53 @@ def rectangles(grid):
 
 if __name__ == '__main__':
     GRIDS = (
-        # [[0, 0, 0, 0],
-        #  [0, 0, 0, 0],
-        #  [0, 0, 0, 0],
-        #  [0, 0, 0, 4]],
-        # [[3, 0, 0, 0, 0, 2],
-        #  [2, 0, 0, 4, 0, 0],
-        #  [0, 5, 0, 0, 0, 0],
-        #  [3, 0, 3, 2, 0, 0],
-        #  [0, 0, 2, 0, 0, 6],
-        #  [0, 0, 0, 4, 0, 0]],
-        # [[6, 0, 0, 0, 0, 0, 0, 2, 0],
-        #  [0, 2, 0, 2, 0, 0, 4, 0, 0],
-        #  [0, 0, 0, 0, 0, 0, 5, 0, 0],
-        #  [0, 12, 2, 0, 5, 0, 0, 0, 0],
-        #  [0, 0, 2, 0, 3, 0, 2, 0, 0],
-        #  [0, 0, 0, 0, 0, 0, 0, 2, 0],
-        #  [0, 0, 0, 0, 0, 0, 0, 0, 7],
-        #  [0, 0, 3, 0, 0, 12, 0, 0, 0],
-        #  [0, 2, 0, 0, 0, 4, 0, 0, 4]],
-        # [[2, 6, 0, 0, 0, 0, 0, 3],
-        #  [0, 2, 0, 0, 0, 0, 0, 0],
-        #  [0, 0, 0, 0, 0, 8, 0, 0],
-        #  [4, 0, 0, 2, 0, 0, 0, 0],
-        #  [0, 0, 6, 0, 0, 0, 2, 2],
-        #  [0, 2, 0, 0, 0, 0, 0, 6],
-        #  [2, 0, 0, 0, 0, 0, 0, 0],
-        #  [0, 2, 0, 0, 0, 0, 0, 0],
-        #  [0, 0, 8, 0, 0, 0, 0, 0],
-        #  [3, 0, 0, 3, 14, 0, 0, 4],
-        #  [0, 0, 0, 0, 4, 0, 3, 0]],
-        # [[0, 0, 0, 2, 0, 3, 4, 0, 4, 0, 0, 0, 3, 0, 0, 2],
-        #  [0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #  [0, 0, 0, 6, 0, 0, 2, 0, 3, 0, 0, 6, 6, 0, 0, 4],
-        #  [0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #  [0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 16, 0, 4, 0, 0],
-        #  [21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0],
-        #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0],
-        #  [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
-        #  [0, 0, 0, 0, 0, 3, 0, 0, 4, 0, 0, 0, 3, 0, 0, 0]],
-        # [[0, 0, 2, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0], [4, 9, 0, 3, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0],
-        #  [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
-        #  [0, 0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #  [6, 0, 0, 0, 0, 0, 0, 6, 0, 10, 0, 0, 0, 0, 2], [0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 4, 0, 0, 0],
-        #  [0, 0, 0, 20, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0], [0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-        #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0], [2, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 2, 3, 0, 0],
-        #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 2, 0, 0], [6, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 2, 4, 0, 0],
-        #  [0, 0, 2, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 3]],
+        [[4, 0, 0, 4],
+         [0, 0, 0, 0],
+         [0, 0, 0, 0],
+         [4, 0, 0, 4]],
+        [[3, 0, 0, 0, 0, 2],
+         [2, 0, 0, 4, 0, 0],
+         [0, 5, 0, 0, 0, 0],
+         [3, 0, 3, 2, 0, 0],
+         [0, 0, 2, 0, 0, 6],
+         [0, 0, 0, 4, 0, 0]],
+        [[6, 0, 0, 0, 0, 0, 0, 2, 0],
+         [0, 2, 0, 2, 0, 0, 4, 0, 0],
+         [0, 0, 0, 0, 0, 0, 5, 0, 0],
+         [0, 12, 2, 0, 5, 0, 0, 0, 0],
+         [0, 0, 2, 0, 3, 0, 2, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 2, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 7],
+         [0, 0, 3, 0, 0, 12, 0, 0, 0],
+         [0, 2, 0, 0, 0, 4, 0, 0, 4]],
+        [[2, 6, 0, 0, 0, 0, 0, 3],
+         [0, 2, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 8, 0, 0],
+         [4, 0, 0, 2, 0, 0, 0, 0],
+         [0, 0, 6, 0, 0, 0, 2, 2],
+         [0, 2, 0, 0, 0, 0, 0, 6],
+         [2, 0, 0, 0, 0, 0, 0, 0],
+         [0, 2, 0, 0, 0, 0, 0, 0],
+         [0, 0, 8, 0, 0, 0, 0, 0],
+         [3, 0, 0, 3, 14, 0, 0, 4],
+         [0, 0, 0, 0, 4, 0, 3, 0]],
+        [[0, 0, 0, 2, 0, 3, 4, 0, 4, 0, 0, 0, 3, 0, 0, 2],
+         [0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 6, 0, 0, 2, 0, 3, 0, 0, 6, 6, 0, 0, 4],
+         [0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 16, 0, 4, 0, 0],
+         [21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0],
+         [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
+         [0, 0, 0, 0, 0, 3, 0, 0, 4, 0, 0, 0, 3, 0, 0, 0]],
+        [[0, 0, 2, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0], [4, 9, 0, 3, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0],
+         [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
+         [0, 0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [6, 0, 0, 0, 0, 0, 0, 6, 0, 10, 0, 0, 0, 0, 2], [0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 4, 0, 0, 0],
+         [0, 0, 0, 20, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0], [0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0], [2, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 2, 3, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 2, 0, 0], [6, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 2, 4, 0, 0],
+         [0, 0, 2, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 3]],
         [[3, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
          [0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          [0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 5, 0],
