@@ -166,11 +166,18 @@ def rectangles(grid):
                 new_board = backup_board
 
                 if newest_board.recalculate_board():
-                    raise ValueError
+
+                    print('==== All complete')
+                    print('Rectangles:')
+                    for rectangle in newest_board.rectangles:
+                        print(rectangle.number, len(rectangle.used_cells))
+
+                    coordinates = newest_board.rectangles_coordinates
+                    print('Coordinates:', coordinates)
+
+                    return coordinates
 
                 q.append(newest_board)
-
-
 
     print('==== All complete')
     print('Rectangles')
