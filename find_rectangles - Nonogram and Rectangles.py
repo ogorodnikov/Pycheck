@@ -119,12 +119,15 @@ class Rectangle:
         self.used_cells = common_cells
         self.board.free_cells -= common_cells
 
+        # print('Used cells:')
+        # self.board.print_cells(self.board.used_cells)
+        # print()
         # print('==== Rectangle recalculated:', self.number, self.cell)
-        # print('Possible used cells:        ', possible_used_cells)
-        # print('All possible cells:         ', all_possible_cells)
+        # print('Possible used cells:        ', self.possible_rectangles)
+        # print('Self is complete:           ', self.is_placed)
         # print('Common cells:               ', common_cells)
-        # print('Self is complete:           ', self.is_complete)
         # self.board.print_cells(common_cells)
+        # print()
 
     @property
     def is_placed(self):
@@ -136,23 +139,37 @@ def rectangles(grid):
 
     if not board.recalculate_board():
 
-        q = [board]
+        tick = 0
+        level = 0
+        rectangle_index = 0
+        q = [(level, board)]
 
         while q:
 
-            board = q.pop(0)
+            level, board = q.pop(0)
 
             for r_index in range(len(board.rectangles)):
 
-                rectangle = board.not_placed_rectangles[r_index]
+                rectangle = board.rectangles[r_index]
+
+                # print('R index:   ', r_index)
+                # print('Rectangle: ', rectangle.number, rectangle.cell, rectangle.is_placed)
+                # print('Not placed:', rectangle.number, rectangle.cell)
+                # print('Possible:  ', rectangle.possible_rectangles)
+
                 if rectangle.is_placed:
                     continue
 
-                print('Not placed:  ', rectangle.number, rectangle.cell)
-                print('Possible:    ', rectangle.possible_rectangles)
+                rectangle_index += 1
 
                 for guessed in rectangle.possible_rectangles:
-                    print('Guessed:     ', guessed)
+                    # print('Guessed:     ', guessed)
+
+                    tick += 1
+                    print('Tick:     ', tick)
+                    print('Rectangle:', rectangle_index)
+                    print('Level:    ', level)
+                    print()
 
                     new_board = deepcopy(board)
                     new_rectangle = new_board.rectangles[r_index]
@@ -168,7 +185,7 @@ def rectangles(grid):
                         print('==== All complete:', coordinates)
                         return coordinates
 
-                    q.append(new_board)
+                    q.append((level + 1, new_board))
 
     else:
         coordinates = board.rectangles_coordinates
@@ -178,10 +195,10 @@ def rectangles(grid):
 
 if __name__ == '__main__':
     GRIDS = (
-        [[4, 0, 0, 4],
-         [0, 0, 0, 0],
-         [0, 0, 0, 0],
-         [4, 0, 0, 4]],
+        # [[4, 0, 0, 4],
+        #  [0, 0, 0, 0],
+        #  [0, 0, 0, 0],
+        #  [4, 0, 0, 4]],
         # [[3, 0, 0, 0, 0, 2],
         #  [2, 0, 0, 4, 0, 0],
         #  [0, 5, 0, 0, 0, 0],
