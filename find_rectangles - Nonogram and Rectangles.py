@@ -23,9 +23,9 @@ class Board:
             for rectangle in self.not_placed_rectangles:
                 rectangle.recalculate()
 
-                print('All used cells:')
-                self.print_cells(self.used_cells)
-                print()
+            print('All used cells:')
+            self.print_cells(self.used_cells)
+            print()
 
             possible_count_after = sum(len(r.possible_rectangles) for r in self.rectangles)
             print('Possible count before:', possible_count_before)
@@ -101,9 +101,9 @@ class Rectangle:
 
         for rectangle in self.possible_rectangles.copy():
 
-            print('Rectangle:', rectangle)
-            self.board.print_cells(rectangle)
-            print()
+            # print('Rectangle:', rectangle)
+            # self.board.print_cells(rectangle)
+            # print()
 
             if any(cell not in self.board.free_cells | self.used_cells
                    for cell in rectangle):
@@ -137,32 +137,40 @@ def rectangles(grid):
     if not board.recalculate_board():
 
         new_board = deepcopy(board)
-        next_not_placed = next(new_board.not_placed_rectangles)
-        next_guessed = next(iter(next_not_placed.possible_rectangles))
-        next_not_placed.possible_rectangles = {next_guessed}
+        q = [new_board]
 
-        print('Not placed:  ', next_not_placed.number, next_not_placed.cell)
-        print('All guessed: ', next_not_placed.guessed_rectangles)
-        print('Next guessed:', next_guessed)
+        while q:
+            new_board = q.pop(0)
 
-        next_not_placed.recalculate()
+            next_not_placed = next(new_board.not_placed_rectangles)
 
-        for i in range(10):
+            print('Not placed:  ', next_not_placed.number, next_not_placed.cell)
+            print('Possible:    ', next_not_placed.possible_rectangles)
 
-            possible_count_before = sum(len(r.possible_rectangles) for r in new_board.rectangles)
+            for guessed in next_not_placed.possible_rectangles.copy():
+                print('Guessed:     ', guessed)
+                # print('New Possible:', next_not_placed.possible_rectangles)
 
-            for rectangle in new_board.not_placed_rectangles:
-                rectangle.recalculate()
+                backup_board = deepcopy(new_board)
+                backup_rectangle = deepcopy(next_not_placed)
 
-                print('All used cells:')
-                new_board.print_cells(new_board.used_cells)
-                print()
+                next_not_placed.possible_rectangles = {guessed}
+                next_not_placed.recalculate()
 
-            possible_count_after = sum(len(r.possible_rectangles) for r in new_board.rectangles)
-            print('Possible count before:', possible_count_before)
-            print('Possible count after:', possible_count_after)
+                if not next_not_placed.is_placed:
+                    raise FileNotFoundError
 
-        quit()
+                newest_board = deepcopy(new_board)
+
+                next_not_placed = backup_rectangle
+                new_board = backup_board
+
+                if newest_board.recalculate_board():
+                    raise ValueError
+
+                q.append(newest_board)
+
+
 
     print('==== All complete')
     print('Rectangles')
