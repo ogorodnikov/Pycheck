@@ -166,10 +166,10 @@ def rectangles(grid):
                     # print('Guessed:     ', guessed)
 
                     tick += 1
-                    print('Tick:     ', tick)
-                    print('Rectangle:', rectangle_index)
-                    print('Level:    ', level)
-                    print()
+                    # print('Tick:     ', tick)
+                    # print('Rectangle:', rectangle_index)
+                    # print('Level:    ', level)
+                    # print()
 
                     new_board = deepcopy(board)
                     new_rectangle = new_board.rectangles[r_index]
