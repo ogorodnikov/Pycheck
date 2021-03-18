@@ -17,6 +17,7 @@ class Board:
         self.free_cells = self.all_cells.keys() - self.number_cells
 
         self.rectangle_cycle = cycle(sorted(self.rectangles, key=lambda rectangle: -rectangle.number))
+        # self.rectangle_cycle = cycle(sorted(self.rectangles, key=lambda rectangle: -abs(rectangle.cell)))
 
     @property
     def rectangles_coordinates(self):
@@ -35,9 +36,7 @@ class Board:
             used_cells |= rectangle.used_cells
         return used_cells
 
-
     def recalculate_next(self):
-
         if all(rectangle.is_complete for rectangle in self.rectangles):
             return
 
@@ -80,39 +79,30 @@ class Rectangle:
                                   for height, width
                                   in self.possible_dimensions]
 
+        self.possible_rectangles = {tuple(self.cell - shift + delta for delta in pattern)
+                                    for pattern in self.possible_patterns
+                                    for shift in pattern}
+
     def recalculate_used_cells(self):
 
-        possible_used_cells = []
+        for rectangle in self.possible_rectangles.copy():
 
-        for pattern in self.possible_patterns:
+            print('Rectangle:', rectangle)
+            self.board.print_cells(rectangle)
+            print()
 
-            for shift in pattern:
+            if any(cell not in self.board.free_cells | self.used_cells
+                   for cell in rectangle):
+                self.possible_rectangles.remove(rectangle)
+                # print('---- Obstacle\n')
+                continue
 
-                # print('Self number:', self.number)
-                # print('Self cell:', self.cell)
-                # print('Shift:', shift)
-                # print('Pattern:', pattern)
-
-                new_cells = {self.cell - shift + delta for delta in pattern}
-
-                # print('New cells:', new_cells)
-                # self.board.print_cells(new_cells)
-                # print()
-
-                if any(cell not in self.board.free_cells | self.used_cells
-                       for cell in new_cells):
-                    # print('---- Obstacle')
-                    # print()
-                    continue
-
-                possible_used_cells.append(new_cells)
-
-        all_possible_cells = reduce(set.union, possible_used_cells, set())
+        all_possible_cells = reduce(set.union, self.possible_rectangles, set())
 
         common_cells = {cell for cell in all_possible_cells
                         if all(cell in used_cells
                                for used_cells
-                               in possible_used_cells)}
+                               in self.possible_rectangles)}
 
         self.used_cells = common_cells
         self.board.free_cells -= common_cells
