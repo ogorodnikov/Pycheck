@@ -1,86 +1,68 @@
-from copy import deepcopy, copy
+from copy import deepcopy
 
 
 class Board:
+
     def __init__(self, rows):
+
         self.rows = rows
         self.height = len(rows)
         self.width = len(rows[0])
 
-        self.all_cells = {complex(y, x): rows[y][x] for x in range(self.width) for y in range(self.height)}
-        self.number_cells = {cell for cell in self.all_cells
-                             if self.all_cells[cell] != 0}
+        self.all_cells = {complex(y, x): rows[y][x]
+                          for x in range(self.width)
+                          for y in range(self.height)}
 
-        self.rectangles = [Rectangle(cell, self)
+        self.number_cells = {cell for cell in self.all_cells
+                             if self.all_cells[cell]}
+
+        self.rectangles = [Rectangle(number_cell=cell, board=self)
                            for cell in self.number_cells]
+
         self.free_cells = self.all_cells.keys() - self.number_cells
 
     def recalculate_board(self):
-        while any(not rectangle.is_placed for rectangle in self.rectangles):
 
-            possible_count_before = sum(len(r.possible_rectangles) for r in self.rectangles)
+        while True:
 
-            for rectangle in self.not_placed_rectangles:
+            possible_count_before = self.possible_rectangles_count
+
+            not_placed_rectangles = filter(lambda r: not r.is_placed,
+                                           self.rectangles)
+            for rectangle in not_placed_rectangles:
                 rectangle.recalculate()
 
-            # print('All used cells:')
-            # self.print_cells(self.used_cells)
-            # print()
-
-            possible_count_after = sum(len(r.possible_rectangles) for r in self.rectangles)
-            # print('Possible count before:', possible_count_before)
-            # print('Possible count after:', possible_count_after)
-
-            if possible_count_after == possible_count_before:
+            if self.possible_rectangles_count == possible_count_before:
                 print('>>>> Cycling')
                 return False
 
-        print('==== Complete')
-        return True
+            if all(rectangle.is_placed for rectangle in self.rectangles):
+                print('==== Complete')
+                return True
 
     @property
-    def not_placed_rectangles(self):
-        return [rectangle for rectangle in self.rectangles
-                if not rectangle.is_placed]
-
-    @property
-    def used_cells(self):
-        used_cells = set()
-        for rectangle in self.rectangles:
-            used_cells |= rectangle.used_cells
-        return used_cells
+    def possible_rectangles_count(self):
+        return sum(len(r.possible_rectangles) for r in self.rectangles)
 
     @property
     def rectangles_coordinates(self):
         coordinates = set()
         for rectangle in self.rectangles:
-            minimum = min(rectangle.used_cells, key=abs)
-            maximum = max(rectangle.used_cells, key=abs)
+            minimum = min(rectangle.own_cells, key=abs)
+            maximum = max(rectangle.own_cells, key=abs)
             rectangle_coordinates = tuple(map(int, (minimum.real, minimum.imag, maximum.real, maximum.imag)))
             coordinates.add(rectangle_coordinates)
         return coordinates
 
-    def print_cells(self, cells):
-        for y in range(self.height):
-            row = ''
-            for x in range(self.width):
-                cell = complex(y, x)
-                if cell in cells:
-                    row += 'X'
-                elif cell in self.number_cells:
-                    row += str(self.all_cells[cell])[-1]
-                else:
-                    row += '.'
-            print(row)
-
 
 class Rectangle:
-    def __init__(self, cell, board):
-        self.cell = cell
+    def __init__(self, number_cell, board):
         self.board = board
-        self.used_cells = {self.cell}
-        self.number = board.all_cells[cell]
+        self.number_cell = number_cell
+        self.number = board.all_cells[number_cell]
+
         self.guessed_rectangles = set()
+        self.own_cells = {self.number_cell}
 
         self.possible_dimensions = [(height + 1, width + 1)
                                     for width in range(self.board.width)
@@ -93,7 +75,7 @@ class Rectangle:
                                   for height, width
                                   in self.possible_dimensions]
 
-        self.possible_rectangles = {tuple(self.cell - shift + delta for delta in pattern)
+        self.possible_rectangles = {tuple(self.number_cell - shift + delta for delta in pattern)
                                     for pattern in self.possible_patterns
                                     for shift in pattern}
 
@@ -101,75 +83,44 @@ class Rectangle:
 
         for rectangle in self.possible_rectangles.copy():
 
-            # print('Rectangle:', rectangle)
-            # self.board.print_cells(rectangle)
-            # print()
-
-            if any(cell not in self.board.free_cells | self.used_cells
-                   for cell in rectangle):
+            available_cells = self.board.free_cells | self.own_cells
+            if any(cell not in available_cells for cell in rectangle):
                 self.possible_rectangles.remove(rectangle)
-                # print('---- Obstacle\n')
+                # print('---- Obstacle')
                 continue
 
-        common_cells = {cell for possible_rectangle in self.possible_rectangles
-                        for cell in possible_rectangle
-                        if all(cell in used_cells for used_cells
-                               in self.possible_rectangles)}
+        common_cells = {cell for rectangle in self.possible_rectangles
+                        for cell in rectangle
+                        if all(cell in rectangle
+                               for rectangle in self.possible_rectangles)}
 
-        self.used_cells = common_cells
+        self.own_cells = common_cells
         self.board.free_cells -= common_cells
-
-        # print('Used cells:')
-        # self.board.print_cells(self.board.used_cells)
-        # print()
-        # print('==== Rectangle recalculated:', self.number, self.cell)
-        # print('Possible used cells:        ', self.possible_rectangles)
-        # print('Self is complete:           ', self.is_placed)
-        # print('Common cells:               ', common_cells)
-        # self.board.print_cells(common_cells)
-        # print()
 
     @property
     def is_placed(self):
-        return len(self.used_cells) == self.number
+        return len(self.own_cells) == self.number
 
 
 def rectangles(grid):
+
     board = Board(grid)
 
     if not board.recalculate_board():
 
-        tick = 0
-        level = 0
-        rectangle_index = 0
-        q = [(level, board)]
+        q = [board]
 
         while q:
 
-            level, board = q.pop(0)
+            board = q.pop(0)
 
             for r_index in range(len(board.rectangles)):
 
                 rectangle = board.rectangles[r_index]
-
-                # print('R index:   ', r_index)
-                # print('Rectangle: ', rectangle.number, rectangle.cell, rectangle.is_placed)
-                # print('Not placed:', rectangle.number, rectangle.cell)
-                # print('Possible:  ', rectangle.possible_rectangles)
-
                 if rectangle.is_placed:
                     continue
 
-                rectangle_index += 1
-
                 for guessed in rectangle.possible_rectangles:
-                    # print('Guessed:     ', guessed)
-
-                    tick += 1
-                    # print('Tick:     ', tick)
-                    # print('Rectangle:', rectangle_index)
-                    # print('Level:    ', level)
-                    # print()
 
                     new_board = deepcopy(board)
                     new_rectangle = new_board.rectangles[r_index]
@@ -177,15 +128,12 @@ def rectangles(grid):
                     new_rectangle.possible_rectangles = {guessed}
                     new_rectangle.recalculate()
 
-                    if not new_rectangle.is_placed:
-                        raise FileNotFoundError
-
                     if new_board.recalculate_board():
                         coordinates = new_board.rectangles_coordinates
                         print('==== All complete:', coordinates)
                         return coordinates
 
-                    q.append((level + 1, new_board))
+                    q.append(new_board)
 
     else:
         coordinates = board.rectangles_coordinates
@@ -195,53 +143,53 @@ def rectangles(grid):
 
 if __name__ == '__main__':
     GRIDS = (
-        # [[4, 0, 0, 4],
-        #  [0, 0, 0, 0],
-        #  [0, 0, 0, 0],
-        #  [4, 0, 0, 4]],
-        # [[3, 0, 0, 0, 0, 2],
-        #  [2, 0, 0, 4, 0, 0],
-        #  [0, 5, 0, 0, 0, 0],
-        #  [3, 0, 3, 2, 0, 0],
-        #  [0, 0, 2, 0, 0, 6],
-        #  [0, 0, 0, 4, 0, 0]],
-        # [[6, 0, 0, 0, 0, 0, 0, 2, 0],
-        #  [0, 2, 0, 2, 0, 0, 4, 0, 0],
-        #  [0, 0, 0, 0, 0, 0, 5, 0, 0],
-        #  [0, 12, 2, 0, 5, 0, 0, 0, 0],
-        #  [0, 0, 2, 0, 3, 0, 2, 0, 0],
-        #  [0, 0, 0, 0, 0, 0, 0, 2, 0],
-        #  [0, 0, 0, 0, 0, 0, 0, 0, 7],
-        #  [0, 0, 3, 0, 0, 12, 0, 0, 0],
-        #  [0, 2, 0, 0, 0, 4, 0, 0, 4]],
-        # [[2, 6, 0, 0, 0, 0, 0, 3],
-        #  [0, 2, 0, 0, 0, 0, 0, 0],
-        #  [0, 0, 0, 0, 0, 8, 0, 0],
-        #  [4, 0, 0, 2, 0, 0, 0, 0],
-        #  [0, 0, 6, 0, 0, 0, 2, 2],
-        #  [0, 2, 0, 0, 0, 0, 0, 6],
-        #  [2, 0, 0, 0, 0, 0, 0, 0],
-        #  [0, 2, 0, 0, 0, 0, 0, 0],
-        #  [0, 0, 8, 0, 0, 0, 0, 0],
-        #  [3, 0, 0, 3, 14, 0, 0, 4],
-        #  [0, 0, 0, 0, 4, 0, 3, 0]],
-        # [[0, 0, 0, 2, 0, 3, 4, 0, 4, 0, 0, 0, 3, 0, 0, 2],
-        #  [0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #  [0, 0, 0, 6, 0, 0, 2, 0, 3, 0, 0, 6, 6, 0, 0, 4],
-        #  [0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #  [0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 16, 0, 4, 0, 0],
-        #  [21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0],
-        #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0],
-        #  [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
-        #  [0, 0, 0, 0, 0, 3, 0, 0, 4, 0, 0, 0, 3, 0, 0, 0]],
-        # [[0, 0, 2, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0], [4, 9, 0, 3, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0],
-        #  [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
-        #  [0, 0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        #  [6, 0, 0, 0, 0, 0, 0, 6, 0, 10, 0, 0, 0, 0, 2], [0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 4, 0, 0, 0],
-        #  [0, 0, 0, 20, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0], [0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-        #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0], [2, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 2, 3, 0, 0],
-        #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 2, 0, 0], [6, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 2, 4, 0, 0],
-        #  [0, 0, 2, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 3]],
+        [[4, 0, 0, 4],
+         [0, 0, 0, 0],
+         [0, 0, 0, 0],
+         [4, 0, 0, 4]],
+        [[3, 0, 0, 0, 0, 2],
+         [2, 0, 0, 4, 0, 0],
+         [0, 5, 0, 0, 0, 0],
+         [3, 0, 3, 2, 0, 0],
+         [0, 0, 2, 0, 0, 6],
+         [0, 0, 0, 4, 0, 0]],
+        [[6, 0, 0, 0, 0, 0, 0, 2, 0],
+         [0, 2, 0, 2, 0, 0, 4, 0, 0],
+         [0, 0, 0, 0, 0, 0, 5, 0, 0],
+         [0, 12, 2, 0, 5, 0, 0, 0, 0],
+         [0, 0, 2, 0, 3, 0, 2, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 2, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 7],
+         [0, 0, 3, 0, 0, 12, 0, 0, 0],
+         [0, 2, 0, 0, 0, 4, 0, 0, 4]],
+        [[2, 6, 0, 0, 0, 0, 0, 3],
+         [0, 2, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0, 8, 0, 0],
+         [4, 0, 0, 2, 0, 0, 0, 0],
+         [0, 0, 6, 0, 0, 0, 2, 2],
+         [0, 2, 0, 0, 0, 0, 0, 6],
+         [2, 0, 0, 0, 0, 0, 0, 0],
+         [0, 2, 0, 0, 0, 0, 0, 0],
+         [0, 0, 8, 0, 0, 0, 0, 0],
+         [3, 0, 0, 3, 14, 0, 0, 4],
+         [0, 0, 0, 0, 4, 0, 3, 0]],
+        [[0, 0, 0, 2, 0, 3, 4, 0, 4, 0, 0, 0, 3, 0, 0, 2],
+         [0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 6, 0, 0, 2, 0, 3, 0, 0, 6, 6, 0, 0, 4],
+         [0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 16, 0, 4, 0, 0],
+         [21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0],
+         [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0],
+         [0, 0, 0, 0, 0, 3, 0, 0, 4, 0, 0, 0, 3, 0, 0, 0]],
+        [[0, 0, 2, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0], [4, 9, 0, 3, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0],
+         [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
+         [0, 0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         [6, 0, 0, 0, 0, 0, 0, 6, 0, 10, 0, 0, 0, 0, 2], [0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 4, 0, 0, 0],
+         [0, 0, 0, 20, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0], [0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0], [2, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 2, 3, 0, 0],
+         [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 2, 0, 0], [6, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 2, 4, 0, 0],
+         [0, 0, 2, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 3]],
         [[3, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
          [0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          [0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 5, 0],
