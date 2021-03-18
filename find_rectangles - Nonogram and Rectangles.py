@@ -28,6 +28,17 @@ class Board:
             coordinates.add(rectangle_coordinates)
         return coordinates
 
+    def recalculate_next(self):
+
+        if all(rectangle.is_complete for rectangle in self.rectangles):
+            return
+
+        next_rectangle = next(self.rectangle_cycle)
+        while next_rectangle.is_complete:
+            next_rectangle = next(self.rectangle_cycle)
+
+        next_rectangle.recalculate_used_cells()
+
 
 class Rectangle:
     def __init__(self, cell, board):
@@ -116,28 +127,41 @@ class Rectangle:
 def rectangles(grid):
     board = Board(grid)
 
+    not_changed_counter = 0
+
+    rectangle = board.rectangles[0]
+
     while True:
+        initial_free_count = len(board.free_cells)
 
-        next_rectangle = next(board.rectangle_cycle)
-
-        # if not next_rectangle.is_complete:
-        #     print('>>>> Next rectangle:', next_rectangle.number, next_rectangle.cell, next_rectangle.is_complete)
-
-        if next_rectangle.is_complete:
-            continue
-
-        next_rectangle.recalculate_used_cells()
+        board.recalculate_next()
 
         print('All used cells:')
         all_used_cells = board.all_cells.keys() - board.free_cells
-        next_rectangle.print_cells(all_used_cells, board.rows)
+        rectangle.print_cells(all_used_cells, board.rows)
         print()
 
-        if next_rectangle.cell == 18 + 18j:
-            input_cell = input('Input cell:')
-            input_cell = complex(input_cell)
-            next_rectangle.used_cells |= {input_cell}
-            board.free_cells -= {input_cell}
+        # if next_rectangle.cell == 5 + 18j:
+        #     input_cell = input('Input cell:')
+
+            # next_rectangle.used_cells |= {(3+18j), (4+18j), (5+18j), (6+18j)}
+            # board.free_cells -= {(3+18j), (4+18j), (5+18j), (6+18j)}
+
+            # next_rectangle.used_cells |= {(7+18j), (4+18j), (5+18j), (6+18j)}
+            # board.free_cells -= {(7+18j), (4+18j), (5+18j), (6+18j)}
+
+        # if next_rectangle.cell == 18 + 18j:
+        #     input_cell = input('Input cell:')
+        #     # input_cell = complex(input_cell)
+
+            # next_rectangle.used_cells |= {(18+18j), (17+17j), (18+17j), (17+18j)}
+            # board.free_cells -= {(18+18j), (17+17j), (18+17j), (17+18j)}
+
+            # next_rectangle.used_cells |= {(15+18j), (16+18j), (17+18j), (18+18j)}
+            # board.free_cells -= {(15+18j), (16+18j), (17+18j), (18+18j)}
+
+            # next_rectangle.used_cells |= {(15j+18), (16j+18), (17j+18), (18j+18)}
+            # board.free_cells -= {(15j+18), (16j+18), (17j+18), (18j+18)}
 
         # if sum(r.is_complete for r in board.rectangles) == 32 and len(board.rectangles) == 47:
 
@@ -149,6 +173,16 @@ def rectangles(grid):
 
         # if next_rectangle.number == 7:
         #     input()
+
+        if len(board.free_cells) == initial_free_count:
+            not_changed_counter += 1
+        else:
+            not_changed_counter = 0
+
+        if not_changed_counter > len(board.rectangles):
+            print('Initial free count:', initial_free_count)
+            print('Len board free cells :', len(board.free_cells))
+            quit()
 
         if all(rectangle.is_complete for rectangle in board.rectangles):
             print('==== All complete')
