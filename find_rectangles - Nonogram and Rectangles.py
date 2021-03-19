@@ -4,14 +4,12 @@ from copy import deepcopy
 class Board:
 
     def __init__(self, rows):
-
-        self.rows = rows
         self.height = len(rows)
         self.width = len(rows[0])
 
         self.all_cells = {complex(y, x): rows[y][x]
-                          for x in range(self.width)
-                          for y in range(self.height)}
+                          for y in range(self.height)
+                          for x in range(self.width)}
 
         self.number_cells = {cell for cell in self.all_cells
                              if self.all_cells[cell]}
@@ -39,6 +37,32 @@ class Board:
             if all(rectangle.is_placed for rectangle in self.rectangles):
                 print('==== Complete')
                 return True
+
+    def guess_possible_rectangles(self):
+
+        q = [self]
+
+        while q:
+            board = q.pop(0)
+
+            for r_index in range(len(board.rectangles)):
+
+                rectangle = board.rectangles[r_index]
+                if rectangle.is_placed:
+                    continue
+
+                for guessed in rectangle.possible_rectangles:
+
+                    new_board = deepcopy(board)
+                    new_rectangle = new_board.rectangles[r_index]
+
+                    new_rectangle.possible_rectangles = {guessed}
+                    new_rectangle.recalculate()
+
+                    if new_board.recalculate_board():
+                        return new_board
+
+                    q.append(new_board)
 
     @property
     def possible_rectangles_count(self):
@@ -107,38 +131,9 @@ def rectangles(grid):
     board = Board(grid)
 
     if not board.recalculate_board():
+        board = board.guess_possible_rectangles()
 
-        q = [board]
-
-        while q:
-
-            board = q.pop(0)
-
-            for r_index in range(len(board.rectangles)):
-
-                rectangle = board.rectangles[r_index]
-                if rectangle.is_placed:
-                    continue
-
-                for guessed in rectangle.possible_rectangles:
-
-                    new_board = deepcopy(board)
-                    new_rectangle = new_board.rectangles[r_index]
-
-                    new_rectangle.possible_rectangles = {guessed}
-                    new_rectangle.recalculate()
-
-                    if new_board.recalculate_board():
-                        coordinates = new_board.rectangles_coordinates
-                        print('==== All complete:', coordinates)
-                        return coordinates
-
-                    q.append(new_board)
-
-    else:
-        coordinates = board.rectangles_coordinates
-        print('==== All complete:', coordinates)
-        return coordinates
+    return board.rectangles_coordinates
 
 
 if __name__ == '__main__':
