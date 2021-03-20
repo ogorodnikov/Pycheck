@@ -1,9 +1,55 @@
 from typing import Tuple, Dict, List
 
 
+class Board:
+    EMPTY = '.'
+    MIRRORS = '/\\'
+
+    def __init__(self, plan, monsters, counts):
+        self.plan = plan
+        self.height = len(plan)
+        self.width = len(plan[0])
+
+        self.all_cells = {complex(y, x): plan[y][x]
+                          for y in range(self.height)
+                          for x in range(self.width)}
+
+        self.empty_cells = {cell for cell in self.all_cells
+                            if self.all_cells[cell] in self.EMPTY}
+
+        self.mirror_cells = {cell for cell in self.all_cells
+                             if self.all_cells[cell] in self.MIRRORS}
+
+        for starting_direction, direction_name in zip((-1j, 1, -1, 1j), 'ENSW'):
+            print('Direction name starting direction:', direction_name, starting_direction)
+
+            if direction_name in 'EW':
+                offset_parameter = self.height
+            elif direction_name in 'NS':
+                offset_parameter = self.width
+
+            offset_range = range()
+            for offset in range()
+            q = [starting_direction]
+            while q:
+
+
+
+        quit()
+
+
+
+
+
+
 def undead(house_plan: Tuple[str, ...],
            monsters: Dict[str, int],
            counts: Dict[str, List[int]]) -> Tuple[str, ...]:
+
+    board = Board(house_plan, monsters, counts)
+
+
+
     return house_plan
 
 
