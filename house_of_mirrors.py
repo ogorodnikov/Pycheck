@@ -3,9 +3,11 @@ from typing import Tuple, Dict, List
 
 class Board:
     EMPTY = '.'
-    MIRRORS = '/\\'
+    MIRRORS = '\\/'
 
-    def __init__(self, plan, monsters, counts):
+    def __init__(self, house_plan, monsters, counts):
+        plan = [row.replace(' ', '') for row in house_plan]
+        print('Plan:', plan)
         self.plan = plan
         self.height = len(plan)
         self.width = len(plan[0])
@@ -20,24 +22,40 @@ class Board:
         self.mirror_cells = {cell for cell in self.all_cells
                              if self.all_cells[cell] in self.MIRRORS}
 
+        perimeter_coordinates = {'N': [complex(0, x) for x in range(self.width)],
+                                 'W': [complex(y, 0) for y in range(self.height)],
+                                 'S': [complex(self.height - 1, x) for x in range(self.width)],
+                                 'E': [complex(y, self.width - 1) for y in range(self.height)]}
+
         for starting_direction, direction_name in zip((-1j, 1, -1, 1j), 'ENSW'):
             print('Direction name starting direction:', direction_name, starting_direction)
 
-            if direction_name in 'EW':
-                offset_parameter = self.height
-            elif direction_name in 'NS':
-                offset_parameter = self.width
+            for starting_cell in perimeter_coordinates[direction_name]:
 
-            offset_range = range()
-            for offset in range()
-            q = [starting_direction]
-            while q:
+                q = [(starting_cell, starting_direction)]
+
+                while q:
+                    cell, direction = q.pop()
+                    print('Cell:', cell)
+                    print('Direction:', direction)
+
+                    if self.all_cells[cell] == '\\':
+                        new_direction = direction * 1j
+                    elif self.all_cells[cell] == '/':
+                        new_direction = direction * -1j
+                    else:
+                        new_direction = direction
+
+                    new_cell = cell + new_direction
+
+                    print('New cell:', new_cell)
+                    print('New direction:', new_direction)
+                    print()
+                    quit()
 
 
-
-        quit()
-
-
+                    if new_cell in self.all_cells:
+                        q.append((new_cell, new_direction))
 
 
 
@@ -45,10 +63,7 @@ class Board:
 def undead(house_plan: Tuple[str, ...],
            monsters: Dict[str, int],
            counts: Dict[str, List[int]]) -> Tuple[str, ...]:
-
     board = Board(house_plan, monsters, counts)
-
-
 
     return house_plan
 
