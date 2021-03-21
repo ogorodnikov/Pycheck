@@ -1,3 +1,5 @@
+from cmath import phase, polar, exp, cos, sin, pi, rect
+from collections import defaultdict
 from typing import Tuple, Dict, List
 
 
@@ -27,35 +29,85 @@ class Board:
                                  'S': [complex(self.height - 1, x) for x in range(self.width)],
                                  'E': [complex(y, self.width - 1) for y in range(self.height)]}
 
+        paths = defaultdict(dict)
+
         for starting_direction, direction_name in zip((-1j, 1, -1, 1j), 'ENSW'):
             print('Direction name starting direction:', direction_name, starting_direction)
 
+            angle = pi / 4
+
+            for a in 1, 1j, -1, -1j:
+                b = (a * exp(1j * -angle)).conjugate() * exp(1j * angle)
+                c = (a * (cos(-angle) + 1j * sin(-angle))).conjugate() * (cos(angle) + 1j * sin(angle))
+
+                a_phase = phase(a)
+                a_modulus = abs(a)
+
+                # print('A phase:', a_phase)
+                # print('A modulus:', a_modulus)
+
+                phase_minus = a_phase - angle
+                # print('Phase minus:', phase_minus)
+
+                a_minus_phase = rect(a_modulus, phase_minus)
+                # print('A minus phase:', a_minus_phase)
+
+                a_minus_phase_conjugate = a_minus_phase.conjugate()
+                # print('A minus phase conjugate:', a_minus_phase_conjugate)
+
+                a_minus_phase = phase(a_minus_phase_conjugate)
+                a_minus_modulus = abs(a_minus_phase_conjugate)
+                # print('A minus phase:', a_minus_phase)
+                # print('A minus modulus:', a_minus_modulus)
+
+                a_back_phase = a_minus_phase + angle
+                # print('A back phase:', a_back_phase)
+
+                d = rect(a_minus_modulus, a_back_phase)
+                # print('D:', d)
+
+                print(f'A:{a:25} B: {b:25} C:{c:25} D{d:25}')
+
+            quit()
+
             for starting_cell in perimeter_coordinates[direction_name]:
 
+                is_before_mirror = True
+                paths[starting_cell]['before_mirror'] = set()
+                paths[starting_cell]['after_mirror'] = set()
                 q = [(starting_cell, starting_direction)]
 
                 while q:
                     cell, direction = q.pop()
+
                     print('Cell:', cell)
                     print('Direction:', direction)
+                    print('Value:', self.all_cells[cell])
 
                     if self.all_cells[cell] == '\\':
-                        new_direction = direction * 1j
-                    elif self.all_cells[cell] == '/':
+                        is_before_mirror = False
                         new_direction = direction * -1j
+
+                    elif self.all_cells[cell] == '/':
+                        is_before_mirror = False
+                        new_direction = direction * 1j
+
                     else:
+                        paths[starting_cell]['before_mirror' if is_before_mirror else 'after_mirror'] |= {cell}
                         new_direction = direction
 
                     new_cell = cell + new_direction
 
-                    print('New cell:', new_cell)
                     print('New direction:', new_direction)
+                    print('New cell:', new_cell)
                     print()
-                    quit()
-
 
                     if new_cell in self.all_cells:
                         q.append((new_cell, new_direction))
+
+                quit()
+
+
 
 
 
