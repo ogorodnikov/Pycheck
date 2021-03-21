@@ -8,6 +8,15 @@ class Board:
     MIRRORS = '\\/'
 
     @staticmethod
+    def round_complex(function):
+        def function_with_rounding(*args, **kwargs):
+            complex_result = function(*args, **kwargs)
+            rounded_result = complex(int(complex_result.real), int(complex_result.imag))
+            return rounded_result
+        return function_with_rounding
+
+    @staticmethod
+    @round_complex.__get__(...)
     def mirror(vector, mirror_angle):
 
         rotated_minus_angle = vector * exp(1j * -mirror_angle)
@@ -22,8 +31,10 @@ class Board:
         # conjugated = rotated_minus_angle.conjugate()
         # rotated_minus_angle = rect(abs(conjugated), phase(conjugated) + mirror_angle)
 
-        rounded = complex(int(rotated_plus_angle.real), int(rotated_plus_angle.imag))
-        return rounded
+        # rounded = complex(int(rotated_plus_angle.real), int(rotated_plus_angle.imag))
+        # return rounded
+
+        return rotated_plus_angle
 
     def __init__(self, house_plan, monsters, counts):
         plan = [row.replace(' ', '') for row in house_plan]
