@@ -1,4 +1,4 @@
-from cmath import phase, polar, exp, cos, sin, pi, rect
+from cmath import exp, pi
 from collections import defaultdict
 from typing import Tuple, Dict, List
 
@@ -66,8 +66,7 @@ class Board:
             for starting_cell in perimeter_coordinates[direction_name]:
 
                 is_before_mirror = True
-                paths[starting_cell]['before_mirror'] = set()
-                paths[starting_cell]['after_mirror'] = set()
+                paths[direction_name][starting_cell] = {'before_mirror': set(), 'after_mirror': set()}
                 q = [(starting_cell, starting_direction)]
 
                 while q:
@@ -86,7 +85,7 @@ class Board:
                         new_direction = self.mirror(direction, -pi / 4)
 
                     else:
-                        paths[starting_cell]['before_mirror' if is_before_mirror else 'after_mirror'] |= {cell}
+                        paths[direction_name][starting_cell]['before_mirror' if is_before_mirror else 'after_mirror'] |= {cell}
                         new_direction = direction
 
                     new_cell = cell + new_direction
@@ -98,7 +97,8 @@ class Board:
                     if new_cell in self.all_cells:
                         q.append((new_cell, new_direction))
 
-                quit()
+        print('Paths:', paths)
+        quit()
 
 
 def undead(house_plan: Tuple[str, ...],
