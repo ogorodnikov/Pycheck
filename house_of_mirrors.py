@@ -7,9 +7,27 @@ class Board:
     EMPTY = '.'
     MIRRORS = '\\/'
 
+    @staticmethod
+    def mirror(vector, mirror_angle):
+
+        rotated_minus_angle = vector * exp(1j * -mirror_angle)
+        conjugated = rotated_minus_angle.conjugate()
+        rotated_plus_angle = conjugated * exp(1j * mirror_angle)
+
+        # rotated_minus_angle = vector * (cos(-mirror_angle) + 1j * sin(-mirror_angle))
+        # conjugated = rotated_minus_angle.conjugate()
+        # rotated_plus_angle = conjugated * (cos(mirror_angle) + 1j * sin(mirror_angle))
+        #
+        # rotated_minus_angle = rect(abs(vector), phase(vector) - mirror_angle)
+        # conjugated = rotated_minus_angle.conjugate()
+        # rotated_minus_angle = rect(abs(conjugated), phase(conjugated) + mirror_angle)
+
+        rounded = complex(int(rotated_plus_angle.real), int(rotated_plus_angle.imag))
+        return rounded
+
     def __init__(self, house_plan, monsters, counts):
         plan = [row.replace(' ', '') for row in house_plan]
-        print('Plan:', plan)
+        [print(row) for row in plan]
         self.plan = plan
         self.height = len(plan)
         self.width = len(plan[0])
@@ -34,42 +52,6 @@ class Board:
         for starting_direction, direction_name in zip((-1j, 1, -1, 1j), 'ENSW'):
             print('Direction name starting direction:', direction_name, starting_direction)
 
-            angle = pi / 4
-
-            for a in 1, 1j, -1, -1j:
-                b = (a * exp(1j * -angle)).conjugate() * exp(1j * angle)
-                c = (a * (cos(-angle) + 1j * sin(-angle))).conjugate() * (cos(angle) + 1j * sin(angle))
-
-                a_phase = phase(a)
-                a_modulus = abs(a)
-
-                # print('A phase:', a_phase)
-                # print('A modulus:', a_modulus)
-
-                phase_minus = a_phase - angle
-                # print('Phase minus:', phase_minus)
-
-                a_minus_phase = rect(a_modulus, phase_minus)
-                # print('A minus phase:', a_minus_phase)
-
-                a_minus_phase_conjugate = a_minus_phase.conjugate()
-                # print('A minus phase conjugate:', a_minus_phase_conjugate)
-
-                a_minus_phase = phase(a_minus_phase_conjugate)
-                a_minus_modulus = abs(a_minus_phase_conjugate)
-                # print('A minus phase:', a_minus_phase)
-                # print('A minus modulus:', a_minus_modulus)
-
-                a_back_phase = a_minus_phase + angle
-                # print('A back phase:', a_back_phase)
-
-                d = rect(a_minus_modulus, a_back_phase)
-                # print('D:', d)
-
-                print(f'A:{a:25} B: {b:25} C:{c:25} D{d:25}')
-
-            quit()
-
             for starting_cell in perimeter_coordinates[direction_name]:
 
                 is_before_mirror = True
@@ -86,11 +68,11 @@ class Board:
 
                     if self.all_cells[cell] == '\\':
                         is_before_mirror = False
-                        new_direction = direction * -1j
+                        new_direction = self.mirror(direction, pi / 4)
 
                     elif self.all_cells[cell] == '/':
                         is_before_mirror = False
-                        new_direction = direction * 1j
+                        new_direction = self.mirror(direction, -pi / 4)
 
                     else:
                         paths[starting_cell]['before_mirror' if is_before_mirror else 'after_mirror'] |= {cell}
@@ -106,10 +88,6 @@ class Board:
                         q.append((new_cell, new_direction))
 
                 quit()
-
-
-
-
 
 
 def undead(house_plan: Tuple[str, ...],
