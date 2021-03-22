@@ -1,11 +1,13 @@
 from cmath import exp, pi
 from collections import defaultdict
+from copy import deepcopy
 from typing import Tuple, Dict, List
 
 
 class Board:
     EMPTY = '.'
     MIRRORS = '\\/'
+    MONSTERS = 'VGZ'
 
     @staticmethod
     def round_complex(function):
@@ -13,6 +15,7 @@ class Board:
             complex_result = function(*args, **kwargs)
             rounded_result = complex(int(complex_result.real), int(complex_result.imag))
             return rounded_result
+
         return function_with_rounding
 
     @staticmethod
@@ -36,7 +39,7 @@ class Board:
 
         return rotated_plus_angle
 
-    def __init__(self, house_plan, monsters, counts):
+    def __init__(self, house_plan, monsters_counter, target_monsters_per_path):
         plan = [row.replace(' ', '') for row in house_plan]
         [print(row) for row in plan]
         self.plan = plan
@@ -55,7 +58,49 @@ class Board:
 
         self.paths = self.calculate_paths()
 
-        print('Self paths:', self.paths)
+        self.monsters = defaultdict(set)
+        self.monsters_counter = monsters_counter
+        self.monsters_per_path = defaultdict(list)
+        self.target_monsters_per_path = target_monsters_per_path
+
+
+    def count_monsters(self):
+
+        monsters_per_path = defaultdict(list)
+
+        for direction in self.paths:
+            print('Direction:', direction)
+
+            for starting_cell in self.paths[direction]:
+                print('Starting cell:', starting_cell)
+
+                for m_index, path_part in enumerate(self.paths[direction][starting_cell]):
+                    print('Path part:', path_part)
+
+                    monster_count = 0
+                    for cell in self.paths[direction][starting_cell][path_part]:
+                        if (cell in self.monsters['Z']
+                                or cell in self.monsters['V'] and path_part == 'before_mirror'
+                                or cell in self.monsters['G'] and path_part == 'after_mirror'):
+                            monster_count += 1
+
+                    monster_count_target = self.target_monsters_per_path[direction][m_index]
+
+                    if monster_count > monster_count_target:
+                        print('Monster count exceeded:')
+                        print('Direction:', direction)
+                        print('Starting cell:', starting_cell)
+                        print('Self.monster_per_path[direction]:', self.monsters_per_path[direction])
+                        print('M index:', m_index)
+                        print('Monster count target:', monster_count_target)
+                        print('Monster count:', monster_count)
+
+                        return False
+
+                    monsters_per_path[direction].append(monster_count)
+
+        print('Monsters per path:', monsters_per_path)
+        self.monsters_per_path = monsters_per_path
 
     def calculate_paths(self):
 
@@ -91,8 +136,8 @@ class Board:
                         new_direction = self.mirror(direction, -pi / 4)
 
                     else:
-                        position = 'before_mirror' if is_before_mirror else 'after_mirror'
-                        paths[direction_name][starting_cell][position] |= {cell}
+                        path_part = 'before_mirror' if is_before_mirror else 'after_mirror'
+                        paths[direction_name][starting_cell][path_part] |= {cell}
                         new_direction = direction
 
                     new_cell = cell + new_direction
@@ -106,10 +151,26 @@ class Board:
 
         return paths
 
+
 def undead(house_plan: Tuple[str, ...],
            monsters: Dict[str, int],
            counts: Dict[str, List[int]]) -> Tuple[str, ...]:
+
     board = Board(house_plan, monsters, counts)
+
+    q = [board]
+    while q:
+        board = q.pop()
+
+        for cell in board.empty_cells:
+            for monster_type in board.MONSTERS:
+                new_board = deepcopy(board)
+                new_board.monsters[monster_type] |= cell
+                new_board.monsters_per_path = new_board.count_monsters()
+
+                if any(any(count for count in counts) for countsdirection in new_board.target_monsters_per_path)
+
+
 
     return house_plan
 
