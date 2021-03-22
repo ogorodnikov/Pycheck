@@ -53,6 +53,12 @@ class Board:
         self.mirror_cells = {cell for cell in self.all_cells
                              if self.all_cells[cell] in self.MIRRORS}
 
+        self.paths = self.calculate_paths()
+
+        print('Self paths:', self.paths)
+
+    def calculate_paths(self):
+
         perimeter_coordinates = {'N': [complex(0, x) for x in range(self.width)],
                                  'W': [complex(y, 0) for y in range(self.height)],
                                  'S': [complex(self.height - 1, x) for x in range(self.width)],
@@ -85,21 +91,20 @@ class Board:
                         new_direction = self.mirror(direction, -pi / 4)
 
                     else:
-                        paths[direction_name][starting_cell]['before_mirror' if is_before_mirror else 'after_mirror'] |= {cell}
+                        position = 'before_mirror' if is_before_mirror else 'after_mirror'
+                        paths[direction_name][starting_cell][position] |= {cell}
                         new_direction = direction
 
                     new_cell = cell + new_direction
 
-                    print('New direction:', new_direction)
-                    print('New cell:', new_cell)
-                    print()
+                    # print('New direction:', new_direction)
+                    # print('New cell:', new_cell)
+                    # print()
 
                     if new_cell in self.all_cells:
                         q.append((new_cell, new_direction))
 
-        print('Paths:', paths)
-        quit()
-
+        return paths
 
 def undead(house_plan: Tuple[str, ...],
            monsters: Dict[str, int],
