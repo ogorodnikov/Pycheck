@@ -58,6 +58,8 @@ class Board:
 
         self.paths = self.calculate_paths()
 
+        self.possible_monsters = {cell: set(self.MONSTERS) for cell in self.empty_cells}
+
         self.monsters = defaultdict(set)
         self.monsters_per_path = defaultdict(list)
         self.target_monsters_per_path = target_monsters_per_path
@@ -86,19 +88,16 @@ class Board:
 
     def count_monsters_per_path(self):
 
-        monsters_per_path = defaultdict(list)
-
         # self.monsters['Z'] |= {1 + 1j}
 
+        monsters_per_path = defaultdict(list)
+
         for direction in self.paths:
-            # print('Direction:', direction)
 
             for m_index, starting_cell in enumerate(self.paths[direction]):
-                # print('Starting cell:', starting_cell)
 
                 monster_count = 0
                 for path_part in self.paths[direction][starting_cell]:
-                    # print('Path part:', path_part)
 
                     for cell in self.paths[direction][starting_cell][path_part]:
                         if cell in self.monsters['Z']:
@@ -110,28 +109,18 @@ class Board:
 
                 monster_count_target = self.target_monsters_per_path[direction][m_index]
 
-                # print('Direction:', direction)
-                # print('Starting cell:', starting_cell)
-                # print('Self.monster_per_path[direction]:', self.monsters_per_path[direction])
-                # print('M index:', m_index)
-                # print('Monster count target:', monster_count_target)
-                # print('Monster count:', monster_count)
-
                 if monster_count > monster_count_target:
-                    print('---- Monster count exceeded:')
-                    print('Direction:', direction)
-                    print('Starting cell:', starting_cell)
-                    print('Self.monster_per_path[direction]:', self.monsters_per_path[direction])
-                    print('M index:', m_index)
-                    print('Monster count target:', monster_count_target)
-                    print('Monster count:', monster_count)
+                    # print('---- Monster count exceeded:')
+                    # print('Direction:', direction)
+                    # print('Starting cell:', starting_cell)
+                    # print('Self.monster_per_path[direction]:', self.monsters_per_path[direction])
+                    # print('M index:', m_index)
+                    # print('Monster count target:', monster_count_target)
+                    # print('Monster count:', monster_count)
                     self.is_monster_count_exceeded = True
                     return
 
                 monsters_per_path[direction].append(monster_count)
-
-        # [print(row) for row in self.output]
-        # print('Monsters per path:', monsters_per_path)
 
         self.monsters_per_path = monsters_per_path
 
@@ -191,12 +180,15 @@ def undead(house_plan: Tuple[str, ...],
 
     board = Board(house_plan, counts)
 
+    tick = 0
     q = [board]
     while q:
         board = q.pop()
 
         for cell in board.empty_cells:
-            for monster_type in board.MONSTERS:
+            for monster_type in board.possible_monsters[cell]:
+                print('Tick:', tick)
+                tick += 1
                 new_board = deepcopy(board)
                 new_board.monsters[monster_type] |= {cell}
                 new_board.empty_cells -= {cell}
@@ -204,7 +196,6 @@ def undead(house_plan: Tuple[str, ...],
 
                 [print(row) for row in new_board.output]
                 print('New board monsters per path:', new_board.monsters_per_path)
-                # quit()
 
                 if new_board.is_monster_count_exceeded:
                     continue
@@ -224,40 +215,40 @@ def undead(house_plan: Tuple[str, ...],
 
 if __name__ == '__main__':
     TESTS = (
-        (
-            ('. \\ . /',
-             '\\ . . .',
-             '/ \\ . \\',
-             '. \\ / .'),
-            {'ghost': 2, 'vampire': 2, 'zombie': 4},
-            {'E': [0, 3, 0, 1],
-             'N': [3, 0, 3, 0],
-             'S': [2, 1, 1, 4],
-             'W': [4, 0, 0, 0]},
-            ('Z \\ V /',
-             '\\ Z G V',
-             '/ \\ Z \\',
-             'G \\ / Z'),
-        ),
         # (
-        #     ('\\ . . .',
-        #      '. . \\ /',
+        #     ('. \\ . /',
+        #      '\\ . . .',
         #      '/ \\ . \\',
-        #      '/ . \\ \\',
-        #      '. . . .',
-        #      '/ / . /'),
-        #     {'ghost': 3, 'vampire': 5, 'zombie': 4},
-        #     {'E': [1, 0, 0, 3, 4, 0],
-        #      'N': [2, 1, 2, 0],
-        #      'S': [0, 3, 3, 0],
-        #      'W': [0, 3, 0, 0, 4, 2]},
-        #     ('\\ G V G',
-        #      'V G \\ /',
+        #      '. \\ / .'),
+        #     {'ghost': 2, 'vampire': 2, 'zombie': 4},
+        #     {'E': [0, 3, 0, 1],
+        #      'N': [3, 0, 3, 0],
+        #      'S': [2, 1, 1, 4],
+        #      'W': [4, 0, 0, 0]},
+        #     ('Z \\ V /',
+        #      '\\ Z G V',
         #      '/ \\ Z \\',
-        #      '/ V \\ \\',
-        #      'Z V Z Z',
-        #      '/ / V /'),
+        #      'G \\ / Z'),
         # ),
+        (
+            ('\\ . . .',
+             '. . \\ /',
+             '/ \\ . \\',
+             '/ . \\ \\',
+             '. . . .',
+             '/ / . /'),
+            {'ghost': 3, 'vampire': 5, 'zombie': 4},
+            {'E': [1, 0, 0, 3, 4, 0],
+             'N': [2, 1, 2, 0],
+             'S': [0, 3, 3, 0],
+             'W': [0, 3, 0, 0, 4, 2]},
+            ('\\ G V G',
+             'V G \\ /',
+             '/ \\ Z \\',
+             '/ V \\ \\',
+             'Z V Z Z',
+             '/ / V /'),
+        ),
         # (
         #     ('. . . / . . /',
         #      '. . \\ / . . .',
