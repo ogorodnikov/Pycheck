@@ -82,38 +82,50 @@ class Board:
 
         monsters_per_path = defaultdict(list)
 
+        # self.monsters['Z'] |= {1 + 1j}
+
         for direction in self.paths:
             print('Direction:', direction)
 
-            for starting_cell in self.paths[direction]:
+            for m_index, starting_cell in enumerate(self.paths[direction]):
                 print('Starting cell:', starting_cell)
 
-                for m_index, path_part in enumerate(self.paths[direction][starting_cell]):
+                monster_count = 0
+                for path_part in self.paths[direction][starting_cell]:
                     print('Path part:', path_part)
 
-                    monster_count = 0
                     for cell in self.paths[direction][starting_cell][path_part]:
-                        if (cell in self.monsters['Z']
-                                or cell in self.monsters['V'] and path_part == 'before_mirror'
-                                or cell in self.monsters['G'] and path_part == 'after_mirror'):
+                        if cell in self.monsters['Z']:
+                            monster_count += 1
+                        if cell in self.monsters['V'] and path_part == 'before_mirror':
+                            monster_count += 1
+                        if cell in self.monsters['G'] and path_part == 'after_mirror':
                             monster_count += 1
 
-                    monster_count_target = self.target_monsters_per_path[direction][m_index]
+                monster_count_target = self.target_monsters_per_path[direction][m_index]
 
-                    if monster_count > monster_count_target:
-                        print('Monster count exceeded:')
-                        print('Direction:', direction)
-                        print('Starting cell:', starting_cell)
-                        print('Self.monster_per_path[direction]:', self.monsters_per_path[direction])
-                        print('M index:', m_index)
-                        print('Monster count target:', monster_count_target)
-                        print('Monster count:', monster_count)
-                        self.is_monster_count_exceeded = True
-                        return
+                print('Direction:', direction)
+                print('Starting cell:', starting_cell)
+                print('Self.monster_per_path[direction]:', self.monsters_per_path[direction])
+                print('M index:', m_index)
+                print('Monster count target:', monster_count_target)
+                print('Monster count:', monster_count)
 
-                    monsters_per_path[direction].append(monster_count)
+                if monster_count > monster_count_target:
+                    print('---- Monster count exceeded:')
+                    print('Direction:', direction)
+                    print('Starting cell:', starting_cell)
+                    print('Self.monster_per_path[direction]:', self.monsters_per_path[direction])
+                    print('M index:', m_index)
+                    print('Monster count target:', monster_count_target)
+                    print('Monster count:', monster_count)
+                    self.is_monster_count_exceeded = True
+                    return
+
+                monsters_per_path[direction].append(monster_count)
 
         print('Monsters per path:', monsters_per_path)
+        quit()
         self.monsters_per_path = monsters_per_path
 
     def calculate_paths(self):
@@ -126,7 +138,7 @@ class Board:
         paths = defaultdict(dict)
 
         for starting_direction, direction_name in zip((-1j, 1, -1, 1j), 'ENSW'):
-            print('Direction name starting direction:', direction_name, starting_direction)
+            # print('Direction name starting direction:', direction_name, starting_direction)
 
             for starting_cell in perimeter_coordinates[direction_name]:
 
@@ -137,9 +149,9 @@ class Board:
                 while q:
                     cell, direction = q.pop()
 
-                    print('Cell:', cell)
-                    print('Direction:', direction)
-                    print('Value:', self.all_cells[cell])
+                    # print('Cell:', cell)
+                    # print('Direction:', direction)
+                    # print('Value:', self.all_cells[cell])
 
                     if self.all_cells[cell] == '\\':
                         is_before_mirror = False
@@ -179,22 +191,20 @@ def undead(house_plan: Tuple[str, ...],
         for cell in board.empty_cells:
             for monster_type in board.MONSTERS:
                 new_board = deepcopy(board)
-                new_board.monsters[monster_type] |= cell
+                new_board.monsters[monster_type] |= {cell}
+                new_board.empty_cells -= {cell}
                 new_board.count_monsters()
 
                 if new_board.is_monster_count_exceeded:
                     continue
                 if new_board.monsters_per_path == new_board.target_monsters_per_path:
                     print('==== Matched')
-                    new_board.output
-                    return
+                    print('New board output:', new_board.output)
+                    return new_board.output
 
+                q.append(new_board)
 
-
-
-
-
-    return house_plan
+    raise ValueError
 
 
 if __name__ == '__main__':
