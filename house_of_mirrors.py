@@ -65,6 +65,8 @@ class Board:
         self.target_monsters_per_path = target_monsters_per_path
         self.is_monster_count_exceeded = False
 
+        self.check_zeroes()
+
     @property
     def output(self):
         output_list = []
@@ -85,6 +87,21 @@ class Board:
                 for value, monster_type 
                 in zip('vampire ghost zombie'.split(), self.MONSTERS)}
 
+    def check_zeroes(self):
+
+        for direction in self.paths:
+            for m_index, starting_cell in enumerate(self.paths[direction]):
+
+                if self.target_monsters_per_path[direction][m_index] > 0:
+                    continue
+
+                for path_part in self.paths[direction][starting_cell]:
+                    for cell in self.paths[direction][starting_cell][path_part]:
+                        if path_part == 'before_mirror':
+                            self.possible_monsters[cell] -= {'Z', 'V'}
+                        if path_part == 'after_mirror':
+                            self.possible_monsters[cell] -= {'Z', 'G'}
+
 
     def count_monsters_per_path(self):
 
@@ -93,7 +110,6 @@ class Board:
         monsters_per_path = defaultdict(list)
 
         for direction in self.paths:
-
             for m_index, starting_cell in enumerate(self.paths[direction]):
 
                 monster_count = 0
@@ -192,6 +208,7 @@ def undead(house_plan: Tuple[str, ...],
                 new_board = deepcopy(board)
                 new_board.monsters[monster_type] |= {cell}
                 new_board.empty_cells -= {cell}
+                new_board.possible_monsters.pop(cell)
                 new_board.count_monsters_per_path()
 
                 [print(row) for row in new_board.output]
