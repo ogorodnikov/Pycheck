@@ -62,7 +62,21 @@ class Board:
         self.monsters_counter = monsters_counter
         self.monsters_per_path = defaultdict(list)
         self.target_monsters_per_path = target_monsters_per_path
+        self.is_monster_count_exceeded = False
 
+    @property
+    def output(self):
+        output_list = []
+        for y in range(self.height):
+            row = ''
+            for x in range(self.width):
+                letter = self.plan[y][x]
+                for monster_type in self.monsters:
+                    if complex(y, x) in self.monsters[monster_type]:
+                        letter = monster_type
+                row += letter
+            output_list.append(' '.join(row.split()))
+        return output_list
 
     def count_monsters(self):
 
@@ -94,8 +108,8 @@ class Board:
                         print('M index:', m_index)
                         print('Monster count target:', monster_count_target)
                         print('Monster count:', monster_count)
-
-                        return False
+                        self.is_monster_count_exceeded = True
+                        return
 
                     monsters_per_path[direction].append(monster_count)
 
@@ -166,9 +180,17 @@ def undead(house_plan: Tuple[str, ...],
             for monster_type in board.MONSTERS:
                 new_board = deepcopy(board)
                 new_board.monsters[monster_type] |= cell
-                new_board.monsters_per_path = new_board.count_monsters()
+                new_board.count_monsters()
 
-                if any(any(count for count in counts) for countsdirection in new_board.target_monsters_per_path)
+                if new_board.is_monster_count_exceeded:
+                    continue
+                if new_board.monsters_per_path == new_board.target_monsters_per_path:
+                    print('==== Matched')
+                    new_board.output
+                    return
+
+
+
 
 
 
