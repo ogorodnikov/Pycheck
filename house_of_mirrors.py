@@ -50,7 +50,7 @@ class Board:
                           for y in range(self.height)
                           for x in range(self.width)}
 
-        self._room_cells = {cell for cell in self.all_cells
+        self.room_cells = {cell for cell in self.all_cells
                             if self.all_cells[cell] in self.EMPTY}
 
         self.mirror_cells = {cell for cell in self.all_cells
@@ -58,9 +58,8 @@ class Board:
 
         self.paths = self.calculate_paths()
 
-        self.new_monsters = {cell: set(self.MONSTERS) for cell in self._room_cells}
+        self.monsters = {cell: set(self.MONSTERS) for cell in self.room_cells}
 
-        self._monsters = defaultdict(set)
         self.monsters_per_path = defaultdict(list)
         self.target_monsters_per_path = target_monsters_per_path
         self.is_monster_count_exceeded = False
@@ -68,18 +67,18 @@ class Board:
         self.check_zeroes()
 
     def set_monster(self, cell, monster_type):
-        self.new_monsters[cell] = {monster_type}
+        self.monsters[cell] = {monster_type}
 
     def remove_monster(self, cell, monster_type):
-        self.new_monsters[cell] -= {monster_type}
+        self.monsters[cell] -= {monster_type}
 
     @property
     def undefined_cells(self):
-        return {cell for cell in self._room_cells if len(self.new_monsters[cell]) > 1}
+        return {cell for cell, monsters in self.monsters.items() if len(monsters) > 1}
 
     @property
     def defined_cells(self):
-        return {cell for cell in self._room_cells if len(self.new_monsters[cell]) == 1}
+        return {cell for cell, monsters in self.monsters.items() if len(monsters) == 1}
 
     @property
     def output(self):
@@ -89,15 +88,18 @@ class Board:
             for x in range(self.width):
                 letter = self.plan[y][x]
                 cell = complex(y, x)
-                if cell in self.defined_cells:
-                    letter = self.new_monsters[cell].copy().pop()
+                try:
+                    if len(self.monsters[cell]) == 1:
+                        letter = next(iter(self.monsters[cell]))
+                except KeyError:
+                    pass
                 row += letter
             output_list.append(' '.join(list(row)))
         return output_list
 
     @property
     def monsters_counter(self):
-        monsters_counts = Counter(next(iter(monster)) for cell, monster in self.new_monsters.items()
+        monsters_counts = Counter(next(iter(monster)) for cell, monster in self.monsters.items()
                                   if cell in self.defined_cells)
         return {value: monsters_counts[monster_type]
                 for value, monster_type
@@ -133,11 +135,11 @@ class Board:
                 for path_part in self.paths[direction][starting_cell]:
 
                     for cell in self.paths[direction][starting_cell][path_part]:
-                        if self.new_monsters[cell] == {'Z'}:
+                        if self.monsters[cell] == {'Z'}:
                             monster_count += 1
-                        if self.new_monsters[cell] == {'V'} and path_part == 'before_mirror':
+                        if self.monsters[cell] == {'V'} and path_part == 'before_mirror':
                             monster_count += 1
-                        if self.new_monsters[cell] == {'G'} and path_part == 'after_mirror':
+                        if self.monsters[cell] == {'G'} and path_part == 'after_mirror':
                             monster_count += 1
 
                 monster_count_target = self.target_monsters_per_path[direction][m_index]
@@ -218,7 +220,7 @@ def undead(house_plan: Tuple[str, ...],
         board = q.pop()
 
         for cell in board.undefined_cells:
-            for monster_type in board.new_monsters[cell]:
+            for monster_type in board.monsters[cell]:
                 print('Tick:', tick)
                 tick += 1
                 new_board = deepcopy(board)
