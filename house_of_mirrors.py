@@ -1,6 +1,5 @@
 from cmath import exp, pi
 from collections import defaultdict, Counter
-from copy import deepcopy
 from typing import Tuple, Dict, List
 
 
@@ -151,6 +150,7 @@ class Board:
         for direction in self.paths:
             for m_index, starting_cell in enumerate(self.paths[direction]):
 
+                full_path = set()
                 monster_count = 0
                 for path_part in self.paths[direction][starting_cell]:
 
@@ -161,6 +161,13 @@ class Board:
                             monster_count += 1
                         if self.monsters[cell] == {'G'} and path_part == 'after_mirror':
                             monster_count += 1
+
+                        full_path |= {cell}
+
+                if full_path <= self.defined_cells:
+                    print('Full path:', full_path)
+                    print('Self defined cells:', self.defined_cells)
+                    # quit()
 
                 monster_count_target = self.target_monsters_per_path[direction][m_index]
 
@@ -241,16 +248,18 @@ def undead(house_plan: Tuple[str, ...],
 
         for cell in board.undefined_cells:
             for monster_type in board.monsters[cell]:
+
+                # if not tick % 100000:
                 print('Tick:', tick)
                 tick += 1
+
                 new_board = board.copy()
-                # new_board = deepcopy(board)
 
                 new_board.set_monster(cell, monster_type)
                 new_board.count_monsters_per_path()
 
-                # [print(row) for row in new_board.output]
-                # print('New board monsters per path:', new_board.monsters_per_path)
+                [print(row) for row in new_board.output]
+                print('New board monsters per path:', new_board.monsters_per_path)
 
                 if new_board.is_monster_count_exceeded:
                     continue
@@ -285,42 +294,42 @@ if __name__ == '__main__':
         #      '/ \\ Z \\',
         #      'G \\ / Z'),
         # ),
-        (
-            ('\\ . . .',
-             '. . \\ /',
-             '/ \\ . \\',
-             '/ . \\ \\',
-             '. . . .',
-             '/ / . /'),
-            {'ghost': 3, 'vampire': 5, 'zombie': 4},
-            {'E': [1, 0, 0, 3, 4, 0],
-             'N': [2, 1, 2, 0],
-             'S': [0, 3, 3, 0],
-             'W': [0, 3, 0, 0, 4, 2]},
-            ('\\ G V G',
-             'V G \\ /',
-             '/ \\ Z \\',
-             '/ V \\ \\',
-             'Z V Z Z',
-             '/ / V /'),
-        ),
         # (
-        #     ('. . . / . . /',
-        #      '. . \\ / . . .',
-        #      '. . . . . . .',
-        #      '. \\ . . . / \\',
-        #      '. / . \\ . . \\'),
-        #     {'ghost': 6, 'vampire': 10, 'zombie': 9},
-        #     {'E': [0, 4, 6, 0, 1],
-        #      'N': [3, 5, 0, 3, 3, 7, 1],
-        #      'S': [3, 0, 5, 0, 3, 0, 3],
-        #      'W': [2, 4, 6, 0, 2]},
-        #     ('Z Z G / V V /',
-        #      'Z Z \\ / G V V',
-        #      'G Z Z V Z Z V',
-        #      'G \\ Z V V / \\',
-        #      'V / V \\ G G \\'),
+        #     ('\\ . . .',
+        #      '. . \\ /',
+        #      '/ \\ . \\',
+        #      '/ . \\ \\',
+        #      '. . . .',
+        #      '/ / . /'),
+        #     {'ghost': 3, 'vampire': 5, 'zombie': 4},
+        #     {'E': [1, 0, 0, 3, 4, 0],
+        #      'N': [2, 1, 2, 0],
+        #      'S': [0, 3, 3, 0],
+        #      'W': [0, 3, 0, 0, 4, 2]},
+        #     ('\\ G V G',
+        #      'V G \\ /',
+        #      '/ \\ Z \\',
+        #      '/ V \\ \\',
+        #      'Z V Z Z',
+        #      '/ / V /'),
         # ),
+        (
+            ('. . . / . . /',
+             '. . \\ / . . .',
+             '. . . . . . .',
+             '. \\ . . . / \\',
+             '. / . \\ . . \\'),
+            {'ghost': 6, 'vampire': 10, 'zombie': 9},
+            {'E': [0, 4, 6, 0, 1],
+             'N': [3, 5, 0, 3, 3, 7, 1],
+             'S': [3, 0, 5, 0, 3, 0, 3],
+             'W': [2, 4, 6, 0, 2]},
+            ('Z Z G / V V /',
+             'Z Z \\ / G V V',
+             'G Z Z V Z Z V',
+             'G \\ Z V V / \\',
+             'V / V \\ G G \\'),
+        ),
     )
 
     for test_nb, (house_plan, monsters, counts, answer) in enumerate(TESTS, 1):
