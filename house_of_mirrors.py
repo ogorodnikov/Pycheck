@@ -132,14 +132,13 @@ class Board:
                 if self.target_monsters_per_path[direction][m_index] > 0:
                     continue
 
-                for path_part in self.paths[direction][starting_cell]:
-                    for cell in self.paths[direction][starting_cell][path_part]:
-                        if path_part == 'before_mirror':
-                            self.remove_monster(cell, 'Z')
-                            self.remove_monster(cell, 'V')
-                        if path_part == 'after_mirror':
-                            self.remove_monster(cell, 'Z')
-                            self.remove_monster(cell, 'G')
+                for cell in self.paths[direction][starting_cell]['before_mirror']:
+                    self.remove_monster(cell, 'Z')
+                    self.remove_monster(cell, 'V')
+
+                for cell in self.paths[direction][starting_cell]['after_mirror']:
+                    self.remove_monster(cell, 'Z')
+                    self.remove_monster(cell, 'G')
 
     def count_monsters_per_path(self):
 
@@ -150,27 +149,22 @@ class Board:
         for direction in self.paths:
             for m_index, starting_cell in enumerate(self.paths[direction]):
 
+                if self.paths[direction][starting_cell]['is_calculated']:
+                    # print('---- Already calculated')
+                    continue
+
                 full_path = set()
                 monster_count = 0
 
                 for cell in self.paths[direction][starting_cell]['before_mirror']:
-                    if self.monsters[cell] == {'Z'}:
-                        monster_count += 1
-                    if self.monsters[cell] == {'V'}:
+                    if self.monsters[cell] in ({'Z'}, {'V'}):
                         monster_count += 1
                     full_path |= {cell}
 
                 for cell in self.paths[direction][starting_cell]['after_mirror']:
-                    if self.monsters[cell] == {'Z'}:
-                        monster_count += 1
-                    if self.monsters[cell] == {'G'}:
+                    if self.monsters[cell] in ({'Z'}, {'G'}):
                         monster_count += 1
                     full_path |= {cell}
-
-                # if full_path <= self.defined_cells:
-                #     print('Full path:', full_path)
-                #     print('Self defined cells:', self.defined_cells)
-                #     quit()
 
                 monster_count_target = self.target_monsters_per_path[direction][m_index]
 
@@ -185,7 +179,14 @@ class Board:
                     self.is_monster_count_exceeded = True
                     return
 
+                # todo: adjust for already calculated case
                 monsters_per_path[direction].append(monster_count)
+
+                if full_path <= self.defined_cells:
+                    # print('Full path:', full_path)
+                    # print('Self defined cells:', self.defined_cells)
+                    self.paths[direction][starting_cell]['is_calculated'] = True
+                    # print('Self paths direction starting cell :', self.paths[direction][starting_cell])
 
         self.monsters_per_path = monsters_per_path
 
@@ -204,7 +205,9 @@ class Board:
             for starting_cell in perimeter_coordinates[direction_name]:
 
                 is_before_mirror = True
-                paths[direction_name][starting_cell] = {'before_mirror': set(), 'after_mirror': set()}
+                paths[direction_name][starting_cell] = {'before_mirror': set(),
+                                                        'after_mirror': set(),
+                                                        'is_calculated': False}
                 q = [(starting_cell, starting_direction)]
 
                 while q:
@@ -261,8 +264,8 @@ def undead(house_plan: Tuple[str, ...],
                 new_board.set_monster(cell, monster_type)
                 new_board.count_monsters_per_path()
 
-                [print(row) for row in new_board.output]
-                print('New board monsters per path:', new_board.monsters_per_path)
+                # [print(row) for row in new_board.output]
+                # print('New board monsters per path:', new_board.monsters_per_path)
 
                 if new_board.is_monster_count_exceeded:
                     continue
@@ -282,21 +285,21 @@ def undead(house_plan: Tuple[str, ...],
 
 if __name__ == '__main__':
     TESTS = (
-        # (
-        #     ('. \\ . /',
-        #      '\\ . . .',
-        #      '/ \\ . \\',
-        #      '. \\ / .'),
-        #     {'ghost': 2, 'vampire': 2, 'zombie': 4},
-        #     {'E': [0, 3, 0, 1],
-        #      'N': [3, 0, 3, 0],
-        #      'S': [2, 1, 1, 4],
-        #      'W': [4, 0, 0, 0]},
-        #     ('Z \\ V /',
-        #      '\\ Z G V',
-        #      '/ \\ Z \\',
-        #      'G \\ / Z'),
-        # ),
+        (
+            ('. \\ . /',
+             '\\ . . .',
+             '/ \\ . \\',
+             '. \\ / .'),
+            {'ghost': 2, 'vampire': 2, 'zombie': 4},
+            {'E': [0, 3, 0, 1],
+             'N': [3, 0, 3, 0],
+             'S': [2, 1, 1, 4],
+             'W': [4, 0, 0, 0]},
+            ('Z \\ V /',
+             '\\ Z G V',
+             '/ \\ Z \\',
+             'G \\ / Z'),
+        ),
         # (
         #     ('\\ . . .',
         #      '. . \\ /',
@@ -316,23 +319,23 @@ if __name__ == '__main__':
         #      'Z V Z Z',
         #      '/ / V /'),
         # ),
-        (
-            ('. . . / . . /',
-             '. . \\ / . . .',
-             '. . . . . . .',
-             '. \\ . . . / \\',
-             '. / . \\ . . \\'),
-            {'ghost': 6, 'vampire': 10, 'zombie': 9},
-            {'E': [0, 4, 6, 0, 1],
-             'N': [3, 5, 0, 3, 3, 7, 1],
-             'S': [3, 0, 5, 0, 3, 0, 3],
-             'W': [2, 4, 6, 0, 2]},
-            ('Z Z G / V V /',
-             'Z Z \\ / G V V',
-             'G Z Z V Z Z V',
-             'G \\ Z V V / \\',
-             'V / V \\ G G \\'),
-        ),
+        # (
+        #     ('. . . / . . /',
+        #      '. . \\ / . . .',
+        #      '. . . . . . .',
+        #      '. \\ . . . / \\',
+        #      '. / . \\ . . \\'),
+        #     {'ghost': 6, 'vampire': 10, 'zombie': 9},
+        #     {'E': [0, 4, 6, 0, 1],
+        #      'N': [3, 5, 0, 3, 3, 7, 1],
+        #      'S': [3, 0, 5, 0, 3, 0, 3],
+        #      'W': [2, 4, 6, 0, 2]},
+        #     ('Z Z G / V V /',
+        #      'Z Z \\ / G V V',
+        #      'G Z Z V Z Z V',
+        #      'G \\ Z V V / \\',
+        #      'V / V \\ G G \\'),
+        # ),
     )
 
     for test_nb, (house_plan, monsters, counts, answer) in enumerate(TESTS, 1):
