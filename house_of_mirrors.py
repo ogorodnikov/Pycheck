@@ -50,7 +50,7 @@ class Board:
                           for x in range(self.width)}
 
         self.room_cells = {cell for cell in self.all_cells
-                            if self.all_cells[cell] in self.EMPTY}
+                           if self.all_cells[cell] in self.EMPTY}
 
         self.mirror_cells = {cell for cell in self.all_cells
                              if self.all_cells[cell] in self.MIRRORS}
@@ -152,22 +152,25 @@ class Board:
 
                 full_path = set()
                 monster_count = 0
-                for path_part in self.paths[direction][starting_cell]:
 
-                    for cell in self.paths[direction][starting_cell][path_part]:
-                        if self.monsters[cell] == {'Z'}:
-                            monster_count += 1
-                        if self.monsters[cell] == {'V'} and path_part == 'before_mirror':
-                            monster_count += 1
-                        if self.monsters[cell] == {'G'} and path_part == 'after_mirror':
-                            monster_count += 1
+                for cell in self.paths[direction][starting_cell]['before_mirror']:
+                    if self.monsters[cell] == {'Z'}:
+                        monster_count += 1
+                    if self.monsters[cell] == {'V'}:
+                        monster_count += 1
+                    full_path |= {cell}
 
-                        full_path |= {cell}
+                for cell in self.paths[direction][starting_cell]['after_mirror']:
+                    if self.monsters[cell] == {'Z'}:
+                        monster_count += 1
+                    if self.monsters[cell] == {'G'}:
+                        monster_count += 1
+                    full_path |= {cell}
 
-                if full_path <= self.defined_cells:
-                    print('Full path:', full_path)
-                    print('Self defined cells:', self.defined_cells)
-                    # quit()
+                # if full_path <= self.defined_cells:
+                #     print('Full path:', full_path)
+                #     print('Self defined cells:', self.defined_cells)
+                #     quit()
 
                 monster_count_target = self.target_monsters_per_path[direction][m_index]
 
