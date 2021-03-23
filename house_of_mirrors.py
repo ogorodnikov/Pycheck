@@ -85,7 +85,6 @@ class Board:
 
         return new_board
 
-
     def set_monster(self, cell, monster_type):
         self.monsters[cell] = {monster_type}
 
@@ -244,7 +243,8 @@ def undead(house_plan: Tuple[str, ...],
             for monster_type in board.monsters[cell]:
                 print('Tick:', tick)
                 tick += 1
-                new_board = deepcopy(board)
+                new_board = board.copy()
+                # new_board = deepcopy(board)
 
                 new_board.set_monster(cell, monster_type)
                 new_board.count_monsters_per_path()
