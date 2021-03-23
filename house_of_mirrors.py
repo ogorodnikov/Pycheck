@@ -1,5 +1,5 @@
 from cmath import exp, pi
-from collections import defaultdict
+from collections import defaultdict, Counter
 from copy import deepcopy
 from typing import Tuple, Dict, List
 
@@ -50,7 +50,7 @@ class Board:
                           for y in range(self.height)
                           for x in range(self.width)}
 
-        self.empty_cells = {cell for cell in self.all_cells
+        self._room_cells = {cell for cell in self.all_cells
                             if self.all_cells[cell] in self.EMPTY}
 
         self.mirror_cells = {cell for cell in self.all_cells
@@ -58,14 +58,28 @@ class Board:
 
         self.paths = self.calculate_paths()
 
-        self.possible_monsters = {cell: set(self.MONSTERS) for cell in self.empty_cells}
+        self.new_monsters = {cell: set(self.MONSTERS) for cell in self._room_cells}
 
-        self.monsters = defaultdict(set)
+        self._monsters = defaultdict(set)
         self.monsters_per_path = defaultdict(list)
         self.target_monsters_per_path = target_monsters_per_path
         self.is_monster_count_exceeded = False
 
         self.check_zeroes()
+
+    def set_monster(self, cell, monster_type):
+        self.new_monsters[cell] = {monster_type}
+
+    def remove_monster(self, cell, monster_type):
+        self.new_monsters[cell] -= {monster_type}
+
+    @property
+    def undefined_cells(self):
+        return {cell for cell in self._room_cells if len(self.new_monsters[cell]) > 1}
+
+    @property
+    def defined_cells(self):
+        return {cell for cell in self._room_cells if len(self.new_monsters[cell]) == 1}
 
     @property
     def output(self):
@@ -74,17 +88,19 @@ class Board:
             row = ''
             for x in range(self.width):
                 letter = self.plan[y][x]
-                for monster_type in self.monsters:
-                    if complex(y, x) in self.monsters[monster_type]:
-                        letter = monster_type
+                cell = complex(y, x)
+                if cell in self.defined_cells:
+                    letter = self.new_monsters[cell].copy().pop()
                 row += letter
             output_list.append(' '.join(list(row)))
         return output_list
 
     @property
     def monsters_counter(self):
-        return {value: len(self.monsters[monster_type])
-                for value, monster_type 
+        monsters_counts = Counter(next(iter(monster)) for cell, monster in self.new_monsters.items()
+                                  if cell in self.defined_cells)
+        return {value: monsters_counts[monster_type]
+                for value, monster_type
                 in zip('vampire ghost zombie'.split(), self.MONSTERS)}
 
     def check_zeroes(self):
@@ -98,10 +114,11 @@ class Board:
                 for path_part in self.paths[direction][starting_cell]:
                     for cell in self.paths[direction][starting_cell][path_part]:
                         if path_part == 'before_mirror':
-                            self.possible_monsters[cell] -= {'Z', 'V'}
+                            self.remove_monster(cell, 'Z')
+                            self.remove_monster(cell, 'V')
                         if path_part == 'after_mirror':
-                            self.possible_monsters[cell] -= {'Z', 'G'}
-
+                            self.remove_monster(cell, 'Z')
+                            self.remove_monster(cell, 'G')
 
     def count_monsters_per_path(self):
 
@@ -116,11 +133,11 @@ class Board:
                 for path_part in self.paths[direction][starting_cell]:
 
                     for cell in self.paths[direction][starting_cell][path_part]:
-                        if cell in self.monsters['Z']:
+                        if self.new_monsters[cell] == {'Z'}:
                             monster_count += 1
-                        if cell in self.monsters['V'] and path_part == 'before_mirror':
+                        if self.new_monsters[cell] == {'V'} and path_part == 'before_mirror':
                             monster_count += 1
-                        if cell in self.monsters['G'] and path_part == 'after_mirror':
+                        if self.new_monsters[cell] == {'G'} and path_part == 'after_mirror':
                             monster_count += 1
 
                 monster_count_target = self.target_monsters_per_path[direction][m_index]
@@ -193,7 +210,6 @@ class Board:
 def undead(house_plan: Tuple[str, ...],
            monsters: Dict[str, int],
            counts: Dict[str, List[int]]) -> Tuple[str, ...]:
-
     board = Board(house_plan, counts)
 
     tick = 0
@@ -201,14 +217,13 @@ def undead(house_plan: Tuple[str, ...],
     while q:
         board = q.pop()
 
-        for cell in board.empty_cells:
-            for monster_type in board.possible_monsters[cell]:
+        for cell in board.undefined_cells:
+            for monster_type in board.new_monsters[cell]:
                 print('Tick:', tick)
                 tick += 1
                 new_board = deepcopy(board)
-                new_board.monsters[monster_type] |= {cell}
-                new_board.empty_cells -= {cell}
-                new_board.possible_monsters.pop(cell)
+
+                new_board.set_monster(cell, monster_type)
                 new_board.count_monsters_per_path()
 
                 [print(row) for row in new_board.output]
@@ -232,40 +247,40 @@ def undead(house_plan: Tuple[str, ...],
 
 if __name__ == '__main__':
     TESTS = (
-        # (
-        #     ('. \\ . /',
-        #      '\\ . . .',
-        #      '/ \\ . \\',
-        #      '. \\ / .'),
-        #     {'ghost': 2, 'vampire': 2, 'zombie': 4},
-        #     {'E': [0, 3, 0, 1],
-        #      'N': [3, 0, 3, 0],
-        #      'S': [2, 1, 1, 4],
-        #      'W': [4, 0, 0, 0]},
-        #     ('Z \\ V /',
-        #      '\\ Z G V',
-        #      '/ \\ Z \\',
-        #      'G \\ / Z'),
-        # ),
         (
-            ('\\ . . .',
-             '. . \\ /',
+            ('. \\ . /',
+             '\\ . . .',
              '/ \\ . \\',
-             '/ . \\ \\',
-             '. . . .',
-             '/ / . /'),
-            {'ghost': 3, 'vampire': 5, 'zombie': 4},
-            {'E': [1, 0, 0, 3, 4, 0],
-             'N': [2, 1, 2, 0],
-             'S': [0, 3, 3, 0],
-             'W': [0, 3, 0, 0, 4, 2]},
-            ('\\ G V G',
-             'V G \\ /',
+             '. \\ / .'),
+            {'ghost': 2, 'vampire': 2, 'zombie': 4},
+            {'E': [0, 3, 0, 1],
+             'N': [3, 0, 3, 0],
+             'S': [2, 1, 1, 4],
+             'W': [4, 0, 0, 0]},
+            ('Z \\ V /',
+             '\\ Z G V',
              '/ \\ Z \\',
-             '/ V \\ \\',
-             'Z V Z Z',
-             '/ / V /'),
+             'G \\ / Z'),
         ),
+        # (
+        #     ('\\ . . .',
+        #      '. . \\ /',
+        #      '/ \\ . \\',
+        #      '/ . \\ \\',
+        #      '. . . .',
+        #      '/ / . /'),
+        #     {'ghost': 3, 'vampire': 5, 'zombie': 4},
+        #     {'E': [1, 0, 0, 3, 4, 0],
+        #      'N': [2, 1, 2, 0],
+        #      'S': [0, 3, 3, 0],
+        #      'W': [0, 3, 0, 0, 4, 2]},
+        #     ('\\ G V G',
+        #      'V G \\ /',
+        #      '/ \\ Z \\',
+        #      '/ V \\ \\',
+        #      'Z V Z Z',
+        #      '/ / V /'),
+        # ),
         # (
         #     ('. . . / . . /',
         #      '. . \\ / . . .',
