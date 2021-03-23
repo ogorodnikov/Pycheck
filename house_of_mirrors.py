@@ -150,27 +150,27 @@ class Board:
                 if len(before_mirror) - len(visible_before_mirror) + len(after_mirror) - len(visible_after_mirror) \
                         == monster_count_target:
 
-                    [print(row) for row in self.output]
-
-                    print('Direction:', direction)
-                    print('Starting cell:', starting_cell)
-                    print('self.paths[direction][starting_cell]:', self.paths[direction][starting_cell])
-                    print()
-                    print('Defined:', defined)
+                    # [print(row) for row in self.output]
+                    #
+                    # print('Direction:', direction)
+                    # print('Starting cell:', starting_cell)
+                    # print('self.paths[direction][starting_cell]:', self.paths[direction][starting_cell])
+                    # print()
+                    # print('Defined:', defined)
 
                     for cell in before_mirror - visible_before_mirror - defined:
-                        print('    Remove:', cell, 'G')
-                        print('        Before:', self.monsters[cell])
+                        # print('    Remove:', cell, 'G')
+                        # print('        Before:', self.monsters[cell])
                         self.remove_monster(cell, 'G')
-                        print('        After:', self.monsters[cell])
+                        # print('        After:', self.monsters[cell])
 
                     for cell in after_mirror - visible_after_mirror - defined:
-                        print('    Remove:', cell, 'V')
-                        print('        Before:', self.monsters[cell])
+                        # print('    Remove:', cell, 'V')
+                        # print('        Before:', self.monsters[cell])
                         self.remove_monster(cell, 'V')
-                        print('        After:', self.monsters[cell])
+                        # print('        After:', self.monsters[cell])
 
-                    print()
+                    # print()
                     # input()
 
 
@@ -314,25 +314,25 @@ if __name__ == '__main__':
              '/ \\ Z \\',
              'G \\ / Z'),
         ),
-        # (
-        #     ('\\ . . .',
-        #      '. . \\ /',
-        #      '/ \\ . \\',
-        #      '/ . \\ \\',
-        #      '. . . .',
-        #      '/ / . /'),
-        #     {'ghost': 3, 'vampire': 5, 'zombie': 4},
-        #     {'E': [1, 0, 0, 3, 4, 0],
-        #      'N': [2, 1, 2, 0],
-        #      'S': [0, 3, 3, 0],
-        #      'W': [0, 3, 0, 0, 4, 2]},
-        #     ('\\ G V G',
-        #      'V G \\ /',
-        #      '/ \\ Z \\',
-        #      '/ V \\ \\',
-        #      'Z V Z Z',
-        #      '/ / V /'),
-        # ),
+        (
+            ('\\ . . .',
+             '. . \\ /',
+             '/ \\ . \\',
+             '/ . \\ \\',
+             '. . . .',
+             '/ / . /'),
+            {'ghost': 3, 'vampire': 5, 'zombie': 4},
+            {'E': [1, 0, 0, 3, 4, 0],
+             'N': [2, 1, 2, 0],
+             'S': [0, 3, 3, 0],
+             'W': [0, 3, 0, 0, 4, 2]},
+            ('\\ G V G',
+             'V G \\ /',
+             '/ \\ Z \\',
+             '/ V \\ \\',
+             'Z V Z Z',
+             '/ / V /'),
+        ),
         # (
         #     ('. . . / . . /',
         #      '. . \\ / . . .',
