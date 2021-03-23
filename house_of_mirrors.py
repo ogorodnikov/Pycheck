@@ -66,6 +66,26 @@ class Board:
 
         self.check_zeroes()
 
+    def copy(self):
+        new_board = Board.__new__(Board)
+
+        new_board.plan = self.plan
+        new_board.height = self.height
+        new_board.width = self.width
+
+        new_board.all_cells = self.all_cells.copy()
+        new_board.room_cells = self.room_cells.copy()
+        new_board.mirror_cells = self.mirror_cells.copy()
+
+        new_board.paths = self.paths.copy()
+        new_board.monsters = self.monsters.copy()
+        new_board.monsters_per_path = self.monsters_per_path.copy()
+        new_board.target_monsters_per_path = self.target_monsters_per_path.copy()
+        new_board.is_monster_count_exceeded = self.is_monster_count_exceeded
+
+        return new_board
+
+
     def set_monster(self, cell, monster_type):
         self.monsters[cell] = {monster_type}
 
@@ -89,8 +109,9 @@ class Board:
                 letter = self.plan[y][x]
                 cell = complex(y, x)
                 try:
-                    if len(self.monsters[cell]) == 1:
-                        letter = next(iter(self.monsters[cell]))
+                    monsters = self.monsters[cell]
+                    if len(monsters) == 1:
+                        letter = next(iter(monsters))
                 except KeyError:
                     pass
                 row += letter
@@ -228,8 +249,8 @@ def undead(house_plan: Tuple[str, ...],
                 new_board.set_monster(cell, monster_type)
                 new_board.count_monsters_per_path()
 
-                [print(row) for row in new_board.output]
-                print('New board monsters per path:', new_board.monsters_per_path)
+                # [print(row) for row in new_board.output]
+                # print('New board monsters per path:', new_board.monsters_per_path)
 
                 if new_board.is_monster_count_exceeded:
                     continue
@@ -249,40 +270,40 @@ def undead(house_plan: Tuple[str, ...],
 
 if __name__ == '__main__':
     TESTS = (
-        (
-            ('. \\ . /',
-             '\\ . . .',
-             '/ \\ . \\',
-             '. \\ / .'),
-            {'ghost': 2, 'vampire': 2, 'zombie': 4},
-            {'E': [0, 3, 0, 1],
-             'N': [3, 0, 3, 0],
-             'S': [2, 1, 1, 4],
-             'W': [4, 0, 0, 0]},
-            ('Z \\ V /',
-             '\\ Z G V',
-             '/ \\ Z \\',
-             'G \\ / Z'),
-        ),
         # (
-        #     ('\\ . . .',
-        #      '. . \\ /',
+        #     ('. \\ . /',
+        #      '\\ . . .',
         #      '/ \\ . \\',
-        #      '/ . \\ \\',
-        #      '. . . .',
-        #      '/ / . /'),
-        #     {'ghost': 3, 'vampire': 5, 'zombie': 4},
-        #     {'E': [1, 0, 0, 3, 4, 0],
-        #      'N': [2, 1, 2, 0],
-        #      'S': [0, 3, 3, 0],
-        #      'W': [0, 3, 0, 0, 4, 2]},
-        #     ('\\ G V G',
-        #      'V G \\ /',
+        #      '. \\ / .'),
+        #     {'ghost': 2, 'vampire': 2, 'zombie': 4},
+        #     {'E': [0, 3, 0, 1],
+        #      'N': [3, 0, 3, 0],
+        #      'S': [2, 1, 1, 4],
+        #      'W': [4, 0, 0, 0]},
+        #     ('Z \\ V /',
+        #      '\\ Z G V',
         #      '/ \\ Z \\',
-        #      '/ V \\ \\',
-        #      'Z V Z Z',
-        #      '/ / V /'),
+        #      'G \\ / Z'),
         # ),
+        (
+            ('\\ . . .',
+             '. . \\ /',
+             '/ \\ . \\',
+             '/ . \\ \\',
+             '. . . .',
+             '/ / . /'),
+            {'ghost': 3, 'vampire': 5, 'zombie': 4},
+            {'E': [1, 0, 0, 3, 4, 0],
+             'N': [2, 1, 2, 0],
+             'S': [0, 3, 3, 0],
+             'W': [0, 3, 0, 0, 4, 2]},
+            ('\\ G V G',
+             'V G \\ /',
+             '/ \\ Z \\',
+             '/ V \\ \\',
+             'Z V Z Z',
+             '/ / V /'),
+        ),
         # (
         #     ('. . . / . . /',
         #      '. . \\ / . . .',
