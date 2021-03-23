@@ -1,6 +1,7 @@
 from cmath import exp, pi
 from collections import defaultdict, Counter
 from copy import deepcopy
+from timeit import timeit
 from typing import Tuple, Dict, List
 
 
@@ -10,34 +11,13 @@ class Board:
     MONSTERS = 'VGZ'
 
     @staticmethod
-    def round_complex(function):
-        def function_with_rounding(*args, **kwargs):
-            complex_result = function(*args, **kwargs)
-            rounded_result = complex(int(complex_result.real), int(complex_result.imag))
-            return rounded_result
-
-        return function_with_rounding
-
-    @staticmethod
-    @round_complex.__get__(...)
     def mirror(vector, mirror_angle):
-
         rotated_minus_angle = vector * exp(1j * -mirror_angle)
         conjugated = rotated_minus_angle.conjugate()
         rotated_plus_angle = conjugated * exp(1j * mirror_angle)
-
-        # rotated_minus_angle = vector * (cos(-mirror_angle) + 1j * sin(-mirror_angle))
-        # conjugated = rotated_minus_angle.conjugate()
-        # rotated_plus_angle = conjugated * (cos(mirror_angle) + 1j * sin(mirror_angle))
-        #
-        # rotated_minus_angle = rect(abs(vector), phase(vector) - mirror_angle)
-        # conjugated = rotated_minus_angle.conjugate()
-        # rotated_minus_angle = rect(abs(conjugated), phase(conjugated) + mirror_angle)
-
-        # rounded = complex(int(rotated_plus_angle.real), int(rotated_plus_angle.imag))
-        # return rounded
-
-        return rotated_plus_angle
+        rounded_result = complex(int(rotated_plus_angle.real),
+                                 int(rotated_plus_angle.imag))
+        return rounded_result
 
     def __init__(self, house_plan, target_monsters_per_path):
         plan = [row.replace(' ', '') for row in house_plan]
@@ -144,9 +124,57 @@ class Board:
                     self.remove_monster(cell, 'Z')
                     self.remove_monster(cell, 'G')
 
-    def count_monsters_per_path(self):
+    def check_maximum(self):
 
-        # self.monsters['Z'] |= {1 + 1j}
+        for direction in self.paths:
+            for m_index, starting_cell in enumerate(self.paths[direction]):
+
+                if self.paths[direction][starting_cell]['is_calculated']:
+                    # print('---- Already calculated')
+                    continue
+
+                monster_count_target = self.target_monsters_per_path[direction][m_index]
+
+                before_mirror = self.paths[direction][starting_cell]['before_mirror']
+                after_mirror = self.paths[direction][starting_cell]['after_mirror']
+
+                visible_before_mirror = {cell for cell in before_mirror
+                                         if self.monsters[cell] in ({'Z'}, {'V'})}
+                visible_after_mirror = {cell for cell in after_mirror
+                                        if self.monsters[cell] in ({'Z'}, {'G'})}
+
+                defined = {cell for cell in before_mirror | after_mirror
+                           if len(self.monsters[cell]) == 1}
+
+                if len(before_mirror) - len(visible_before_mirror) + len(after_mirror) - len(visible_after_mirror) \
+                        == monster_count_target:
+
+                    [print(row) for row in self.output]
+
+                    print('Direction:', direction)
+                    print('Starting cell:', starting_cell)
+                    print('M index:', m_index)
+                    print('self.paths[direction][starting_cell]:', self.paths[direction][starting_cell])
+                    print()
+                    print('Defined:', defined)
+
+                    for cell in before_mirror - visible_before_mirror - defined:
+                        print('    Before:', self.monsters[cell])
+                        print('    Remove:', cell, 'G')
+                        self.remove_monster(cell, 'G')
+                        print('    After:', self.monsters[cell])
+
+                    for cell in after_mirror - visible_after_mirror - defined:
+                        print('    Before:', self.monsters[cell])
+                        print('    Remove:', cell, 'V')
+                        self.remove_monster(cell, 'V')
+                        print('    After:', self.monsters[cell])
+
+                    print()
+
+                    input()
+
+    def count_monsters_per_path(self):
 
         monsters_per_path = defaultdict(list)
 
@@ -154,13 +182,9 @@ class Board:
             for m_index, starting_cell in enumerate(self.paths[direction]):
 
                 if self.paths[direction][starting_cell]['is_calculated']:
-                    print('Self paths:', self.paths)
-                    quit()
-
+                    # print('>>>> Already calculated')
                     old_monster_count = self.monsters_per_path[direction][m_index]
                     monsters_per_path[direction].append(old_monster_count)
-
-
                     continue
 
                 full_path = set()
@@ -176,27 +200,16 @@ class Board:
                         monster_count += 1
                     full_path |= {cell}
 
+                if full_path <= self.defined_cells:
+                    self.paths[direction][starting_cell]['is_calculated'] = True
+
                 monster_count_target = self.target_monsters_per_path[direction][m_index]
 
                 if monster_count > monster_count_target:
-                    # print('---- Monster count exceeded:')
-                    # print('Direction:', direction)
-                    # print('Starting cell:', starting_cell)
-                    # print('Self.monster_per_path[direction]:', self.monsters_per_path[direction])
-                    # print('M index:', m_index)
-                    # print('Monster count target:', monster_count_target)
-                    # print('Monster count:', monster_count)
                     self.is_monster_count_exceeded = True
                     return
 
-                # todo: adjust for already calculated case
                 monsters_per_path[direction].append(monster_count)
-
-                if full_path <= self.defined_cells:
-                    # print('Self paths:', self.paths)
-                    # print('Monsters per path:', monsters_per_path)
-
-                    self.paths[direction][starting_cell]['is_calculated'] = True
 
         self.monsters_per_path = monsters_per_path
 
@@ -262,6 +275,7 @@ def undead(house_plan: Tuple[str, ...],
                 new_board = board.copy()
 
                 new_board.set_monster(cell, monster_type)
+                new_board.check_maximum()
                 new_board.count_monsters_per_path()
 
                 # [print(row) for row in new_board.output]
