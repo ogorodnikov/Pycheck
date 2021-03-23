@@ -61,7 +61,8 @@ class Board:
                                        for starting_cell in self.paths[direction]}
                            for direction in self.paths}
 
-        new_board.monsters = self.monsters.copy()
+        new_board.monsters = {cell: monsters.copy() for cell, monsters in self.monsters.items()}
+
         new_board.monsters_per_path = self.monsters_per_path.copy()
         new_board.target_monsters_per_path = self.target_monsters_per_path.copy()
         new_board.is_monster_count_exceeded = self.is_monster_count_exceeded
@@ -153,26 +154,25 @@ class Board:
 
                     print('Direction:', direction)
                     print('Starting cell:', starting_cell)
-                    print('M index:', m_index)
                     print('self.paths[direction][starting_cell]:', self.paths[direction][starting_cell])
                     print()
                     print('Defined:', defined)
 
                     for cell in before_mirror - visible_before_mirror - defined:
-                        print('    Before:', self.monsters[cell])
                         print('    Remove:', cell, 'G')
+                        print('        Before:', self.monsters[cell])
                         self.remove_monster(cell, 'G')
-                        print('    After:', self.monsters[cell])
+                        print('        After:', self.monsters[cell])
 
                     for cell in after_mirror - visible_after_mirror - defined:
-                        print('    Before:', self.monsters[cell])
                         print('    Remove:', cell, 'V')
+                        print('        Before:', self.monsters[cell])
                         self.remove_monster(cell, 'V')
-                        print('    After:', self.monsters[cell])
+                        print('        After:', self.monsters[cell])
 
                     print()
+                    # input()
 
-                    input()
 
     def count_monsters_per_path(self):
 
