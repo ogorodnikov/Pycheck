@@ -1,5 +1,6 @@
 from cmath import exp, pi
 from collections import defaultdict, Counter
+from copy import deepcopy
 from typing import Tuple, Dict, List
 
 
@@ -76,7 +77,10 @@ class Board:
         new_board.room_cells = self.room_cells.copy()
         new_board.mirror_cells = self.mirror_cells.copy()
 
-        new_board.paths = self.paths.copy()
+        new_board.paths = {direction: {starting_cell: self.paths[direction][starting_cell].copy()
+                                       for starting_cell in self.paths[direction]}
+                           for direction in self.paths}
+
         new_board.monsters = self.monsters.copy()
         new_board.monsters_per_path = self.monsters_per_path.copy()
         new_board.target_monsters_per_path = self.target_monsters_per_path.copy()
@@ -150,7 +154,13 @@ class Board:
             for m_index, starting_cell in enumerate(self.paths[direction]):
 
                 if self.paths[direction][starting_cell]['is_calculated']:
-                    # print('---- Already calculated')
+                    print('Self paths:', self.paths)
+                    quit()
+
+                    old_monster_count = self.monsters_per_path[direction][m_index]
+                    monsters_per_path[direction].append(old_monster_count)
+
+
                     continue
 
                 full_path = set()
@@ -183,10 +193,10 @@ class Board:
                 monsters_per_path[direction].append(monster_count)
 
                 if full_path <= self.defined_cells:
-                    # print('Full path:', full_path)
-                    # print('Self defined cells:', self.defined_cells)
+                    # print('Self paths:', self.paths)
+                    # print('Monsters per path:', monsters_per_path)
+
                     self.paths[direction][starting_cell]['is_calculated'] = True
-                    # print('Self paths direction starting cell :', self.paths[direction][starting_cell])
 
         self.monsters_per_path = monsters_per_path
 
@@ -200,7 +210,6 @@ class Board:
         paths = defaultdict(dict)
 
         for starting_direction, direction_name in zip((-1j, 1, -1, 1j), 'ENSW'):
-            # print('Direction name starting direction:', direction_name, starting_direction)
 
             for starting_cell in perimeter_coordinates[direction_name]:
 
@@ -212,10 +221,6 @@ class Board:
 
                 while q:
                     cell, direction = q.pop()
-
-                    # print('Cell:', cell)
-                    # print('Direction:', direction)
-                    # print('Value:', self.all_cells[cell])
 
                     if self.all_cells[cell] == '\\':
                         is_before_mirror = False
@@ -231,10 +236,6 @@ class Board:
                         new_direction = direction
 
                     new_cell = cell + new_direction
-
-                    # print('New direction:', new_direction)
-                    # print('New cell:', new_cell)
-                    # print()
 
                     if new_cell in self.all_cells:
                         q.append((new_cell, new_direction))
@@ -255,7 +256,6 @@ def undead(house_plan: Tuple[str, ...],
         for cell in board.undefined_cells:
             for monster_type in board.monsters[cell]:
 
-                # if not tick % 100000:
                 print('Tick:', tick)
                 tick += 1
 
