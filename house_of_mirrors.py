@@ -22,7 +22,6 @@ class Board:
 
     def __init__(self, house_plan, target_monsters_per_path):
         plan = [row.replace(' ', '') for row in house_plan]
-        [print(row) for row in plan]
         self.plan = plan
         self.height = len(plan)
         self.width = len(plan[0])
@@ -163,35 +162,37 @@ class Board:
                         self.remove_monster(cell, 'V')
                         # print('        After:', self.monsters[cell])
 
-                # todo: fill with invisible monsters if visible quota is used
-                # if len(before_mirror) - len(visible_before_mirror) == monster_count_target:
-                #
-                #     [print(row) for row in self.output]
-                #
-                #     print('Direction:', direction)
-                #     print('Starting cell:', starting_cell)
-                #     print('self.paths[direction][starting_cell]:', self.paths[direction][starting_cell])
-                #     print('Len before mirror :', len(before_mirror))
-                #     print('Len visible before mirror :', len(visible_before_mirror))
-                #     print('Monsters:', [(cell, self.monsters[cell]) for cell in before_mirror | after_mirror])
-                #     print()
-                #     print('Self monsters 3 3 j :', self.monsters[(3+3j)])
-                #     print('Visible before mirror:', visible_before_mirror)
-                #     print()
-                #
-                #     for cell in before_mirror - visible_before_mirror - defined:
-                #         print('    Set:', cell, 'G')
-                #         print('        Before:', self.monsters[cell])
-                #         self.set_monster(cell, 'G')
-                #         print('        After:', self.monsters[cell])
-                #
-                #     for cell in after_mirror - visible_after_mirror - defined:
-                #         print('    Set:', cell, 'V')
-                #         print('        Before:', self.monsters[cell])
-                #         self.set_monster(cell, 'V')
-                #         print('        After:', self.monsters[cell])
-                #
-                #     input()
+                new_visible_before_mirror = {cell for cell in before_mirror
+                                             if self.monsters[cell] in ({'Z'}, {'V'}, {'Z', 'V'})}
+                new_visible_after_mirror = {cell for cell in after_mirror
+                                            if self.monsters[cell] in ({'Z'}, {'G'}, {'Z', 'G'})}
+
+                if len(new_visible_before_mirror) + len(new_visible_after_mirror) == monster_count_target:
+
+                    [print(row) for row in self.output]
+                    print()
+                    print('0000 Fill invisible:')
+                    print('Direction:', direction)
+                    print('Starting cell:', starting_cell)
+                    print('    Before mirror:', [(cell, self.monsters[cell]) for cell in before_mirror], len(before_mirror))
+                    print('    Visible:', new_visible_before_mirror, len(new_visible_before_mirror))
+                    print('    After mirror:', [(cell, self.monsters[cell]) for cell in after_mirror], len(after_mirror))
+                    print('    Visible:', new_visible_after_mirror, len(new_visible_after_mirror))
+                    print()
+
+                    for cell in before_mirror - new_visible_before_mirror:
+                        print('    Set:', cell, 'G')
+                        print('        Before:', self.monsters[cell])
+                        self.set_monster(cell, 'G')
+                        print('        After:', self.monsters[cell])
+
+                    for cell in after_mirror - new_visible_after_mirror:
+                        print('    Set:', cell, 'V')
+                        print('        Before:', self.monsters[cell])
+                        self.set_monster(cell, 'V')
+                        print('        After:', self.monsters[cell])
+
+                    # input()
 
     def count_monsters_per_path(self):
 
