@@ -44,7 +44,6 @@ class Board:
         self.target_monsters_per_path = target_monsters_per_path
         self.is_monster_count_mismatched = False
 
-        self.check_zeroes()
 
     def copy(self):
         new_board = Board.__new__(Board)
@@ -108,22 +107,6 @@ class Board:
         return {value: monsters_counts[monster_type]
                 for value, monster_type
                 in zip('vampire ghost zombie'.split(), self.MONSTERS)}
-
-    def check_zeroes(self):
-
-        for direction in self.paths:
-            for m_index, starting_cell in enumerate(self.paths[direction]):
-
-                if self.target_monsters_per_path[direction][m_index] > 0:
-                    continue
-
-                for cell in self.paths[direction][starting_cell]['before_mirror']:
-                    self.remove_monster(cell, 'Z')
-                    self.remove_monster(cell, 'V')
-
-                for cell in self.paths[direction][starting_cell]['after_mirror']:
-                    self.remove_monster(cell, 'Z')
-                    self.remove_monster(cell, 'G')
 
     def check_maximum(self):
 
