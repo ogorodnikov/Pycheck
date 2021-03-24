@@ -2,7 +2,6 @@ from cmath import exp, pi
 from collections import defaultdict, Counter
 from copy import deepcopy
 from heapq import heappop, heappush
-from timeit import timeit
 from typing import Tuple, Dict, List
 
 
@@ -122,60 +121,70 @@ class Board:
                 before_mirror = self.paths[direction][starting_cell]['before_mirror']
                 after_mirror = self.paths[direction][starting_cell]['after_mirror']
 
-                visible_before_mirror = {cell for cell in before_mirror
-                                         if self.monsters[cell] in ({'Z'}, {'V'})}
-                visible_after_mirror = {cell for cell in after_mirror
-                                        if self.monsters[cell] in ({'Z'}, {'G'})}
-
-                defined = {cell for cell in before_mirror | after_mirror
-                           if len(self.monsters[cell]) == 1}
-
-                if len(before_mirror) - len(visible_before_mirror) + len(after_mirror) - len(visible_after_mirror) \
-                        == monster_count_target:
-
-                    for cell in before_mirror - visible_before_mirror - defined:
-                        # print('    Remove:', cell, 'G')
-                        # print('        Before:', self.monsters[cell])
-                        self.remove_monster(cell, 'G')
-                        # print('        After:', self.monsters[cell])
-
-                    for cell in after_mirror - visible_after_mirror - defined:
-                        # print('    Remove:', cell, 'V')
-                        # print('        Before:', self.monsters[cell])
-                        self.remove_monster(cell, 'V')
-                        # print('        After:', self.monsters[cell])
+                # visible_before_mirror = {cell for cell in before_mirror
+                #                          if self.monsters[cell] in ({'Z'}, {'V'})}
+                # visible_after_mirror = {cell for cell in after_mirror
+                #                         if self.monsters[cell] in ({'Z'}, {'G'})}
+                #
+                # defined = {cell for cell in before_mirror | after_mirror
+                #            if len(self.monsters[cell]) == 1}
+                #
+                # if len(before_mirror) - len(visible_before_mirror) + len(after_mirror) - len(visible_after_mirror) \
+                #         == monster_count_target:
+                #
+                #     for cell in before_mirror - visible_before_mirror - defined:
+                #         self.remove_monster(cell, 'G')
+                #
+                #     for cell in after_mirror - visible_after_mirror - defined:
+                #         self.remove_monster(cell, 'V')
 
                 new_visible_before_mirror = {cell for cell in before_mirror
                                              if self.monsters[cell] in ({'Z'}, {'V'}, {'Z', 'V'})}
                 new_visible_after_mirror = {cell for cell in after_mirror
                                             if self.monsters[cell] in ({'Z'}, {'G'}, {'Z', 'G'})}
 
-                if len(new_visible_before_mirror) + len(new_visible_after_mirror) == monster_count_target:
+                invisible_before_mirror = {cell for cell in before_mirror
+                                             if self.monsters[cell] == {'G'}}
+                invisible_after_mirror = {cell for cell in after_mirror
+                                            if self.monsters[cell] == {'V'}}
+
+                if len(before_mirror) - len(invisible_before_mirror) + len(after_mirror) - len(invisible_after_mirror) \
+                        == monster_count_target:
 
                     [print(row) for row in self.output]
                     print()
-                    print('0000 Fill invisible:')
+                    print('XXXX Fill visible:')
                     print('Direction:', direction)
                     print('Starting cell:', starting_cell)
                     print('    Before mirror:', [(cell, self.monsters[cell]) for cell in before_mirror], len(before_mirror))
-                    print('    Visible:', new_visible_before_mirror, len(new_visible_before_mirror))
+                    print('    Invisible:', invisible_before_mirror, len(invisible_before_mirror))
                     print('    After mirror:', [(cell, self.monsters[cell]) for cell in after_mirror], len(after_mirror))
-                    print('    Visible:', new_visible_after_mirror, len(new_visible_after_mirror))
+                    print('    Invisible:', invisible_after_mirror, len(invisible_after_mirror))
                     print()
 
-                    for cell in before_mirror - new_visible_before_mirror:
-                        print('    Set:', cell, 'G')
+                    for cell in before_mirror - invisible_before_mirror:
+                        print('    Remove:', cell, 'G')
                         print('        Before:', self.monsters[cell])
-                        self.set_monster(cell, 'G')
+                        self.remove_monster(cell, 'G')
                         print('        After:', self.monsters[cell])
+
+                    for cell in after_mirror - invisible_after_mirror:
+                        print('    Remove:', cell, 'V')
+                        print('        Before:', self.monsters[cell])
+                        self.remove_monster(cell, 'V')
+                        print('        After:', self.monsters[cell])
+
+                    input()
+
+                if len(new_visible_before_mirror) + len(new_visible_after_mirror) == monster_count_target:
+
+                    for cell in before_mirror - new_visible_before_mirror:
+                        self.set_monster(cell, 'G')
 
                     for cell in after_mirror - new_visible_after_mirror:
-                        print('    Set:', cell, 'V')
-                        print('        Before:', self.monsters[cell])
                         self.set_monster(cell, 'V')
-                        print('        After:', self.monsters[cell])
 
-                    # input()
+
 
     def count_monsters_per_path(self):
 
@@ -309,57 +318,57 @@ def undead(house_plan: Tuple[str, ...],
 
 if __name__ == '__main__':
     TESTS = (
-        (
-            ('. \\ . /',
-             '\\ . . .',
-             '/ \\ . \\',
-             '. \\ / .'),
-            {'ghost': 2, 'vampire': 2, 'zombie': 4},
-            {'E': [0, 3, 0, 1],
-             'N': [3, 0, 3, 0],
-             'S': [2, 1, 1, 4],
-             'W': [4, 0, 0, 0]},
-            ('Z \\ V /',
-             '\\ Z G V',
-             '/ \\ Z \\',
-             'G \\ / Z'),
-        ),
-        (
-            ('\\ . . .',
-             '. . \\ /',
-             '/ \\ . \\',
-             '/ . \\ \\',
-             '. . . .',
-             '/ / . /'),
-            {'ghost': 3, 'vampire': 5, 'zombie': 4},
-            {'E': [1, 0, 0, 3, 4, 0],
-             'N': [2, 1, 2, 0],
-             'S': [0, 3, 3, 0],
-             'W': [0, 3, 0, 0, 4, 2]},
-            ('\\ G V G',
-             'V G \\ /',
-             '/ \\ Z \\',
-             '/ V \\ \\',
-             'Z V Z Z',
-             '/ / V /'),
-        ),
         # (
-        #     ('. . . / . . /',
-        #      '. . \\ / . . .',
-        #      '. . . . . . .',
-        #      '. \\ . . . / \\',
-        #      '. / . \\ . . \\'),
-        #     {'ghost': 6, 'vampire': 10, 'zombie': 9},
-        #     {'E': [0, 4, 6, 0, 1],
-        #      'N': [3, 5, 0, 3, 3, 7, 1],
-        #      'S': [3, 0, 5, 0, 3, 0, 3],
-        #      'W': [2, 4, 6, 0, 2]},
-        #     ('Z Z G / V V /',
-        #      'Z Z \\ / G V V',
-        #      'G Z Z V Z Z V',
-        #      'G \\ Z V V / \\',
-        #      'V / V \\ G G \\'),
+        #     ('. \\ . /',
+        #      '\\ . . .',
+        #      '/ \\ . \\',
+        #      '. \\ / .'),
+        #     {'ghost': 2, 'vampire': 2, 'zombie': 4},
+        #     {'E': [0, 3, 0, 1],
+        #      'N': [3, 0, 3, 0],
+        #      'S': [2, 1, 1, 4],
+        #      'W': [4, 0, 0, 0]},
+        #     ('Z \\ V /',
+        #      '\\ Z G V',
+        #      '/ \\ Z \\',
+        #      'G \\ / Z'),
         # ),
+        # (
+        #     ('\\ . . .',
+        #      '. . \\ /',
+        #      '/ \\ . \\',
+        #      '/ . \\ \\',
+        #      '. . . .',
+        #      '/ / . /'),
+        #     {'ghost': 3, 'vampire': 5, 'zombie': 4},
+        #     {'E': [1, 0, 0, 3, 4, 0],
+        #      'N': [2, 1, 2, 0],
+        #      'S': [0, 3, 3, 0],
+        #      'W': [0, 3, 0, 0, 4, 2]},
+        #     ('\\ G V G',
+        #      'V G \\ /',
+        #      '/ \\ Z \\',
+        #      '/ V \\ \\',
+        #      'Z V Z Z',
+        #      '/ / V /'),
+        # ),
+        (
+            ('. . . / . . /',
+             '. . \\ / . . .',
+             '. . . . . . .',
+             '. \\ . . . / \\',
+             '. / . \\ . . \\'),
+            {'ghost': 6, 'vampire': 10, 'zombie': 9},
+            {'E': [0, 4, 6, 0, 1],
+             'N': [3, 5, 0, 3, 3, 7, 1],
+             'S': [3, 0, 5, 0, 3, 0, 3],
+             'W': [2, 4, 6, 0, 2]},
+            ('Z Z G / V V /',
+             'Z Z \\ / G V V',
+             'G Z Z V Z Z V',
+             'G \\ Z V V / \\',
+             'V / V \\ G G \\'),
+        ),
     )
 
     for test_nb, (house_plan, monsters, counts, answer) in enumerate(TESTS, 1):
