@@ -128,8 +128,8 @@ class Board:
             for starting_cell in perimeter_coordinates[direction_name]:
 
                 is_before_mirror = True
-                paths[direction_name][starting_cell] = {'before_mirror': set(),
-                                                        'after_mirror': set(),
+                paths[direction_name][starting_cell] = {'before_mirror': list(),
+                                                        'after_mirror': list(),
                                                         'is_calculated': False}
                 q = [(starting_cell, starting_direction)]
 
@@ -146,7 +146,7 @@ class Board:
 
                     else:
                         path_part = 'before_mirror' if is_before_mirror else 'after_mirror'
-                        paths[direction_name][starting_cell][path_part] |= {cell}
+                        paths[direction_name][starting_cell][path_part].append(cell)
                         new_direction = direction
 
                     new_cell = cell + new_direction
@@ -224,15 +224,15 @@ class Board:
                 before_mirror = self.paths[direction][starting_cell]['before_mirror']
                 after_mirror = self.paths[direction][starting_cell]['after_mirror']
 
-                visible_before_mirror = {cell for cell in before_mirror
-                                         if self.monsters[cell] in ({'Z'}, {'V'}, {'Z', 'V'})}
-                visible_after_mirror = {cell for cell in after_mirror
-                                        if self.monsters[cell] in ({'Z'}, {'G'}, {'Z', 'G'})}
+                visible_before_mirror = [cell for cell in before_mirror
+                                         if self.monsters[cell] in ({'Z'}, {'V'}, {'Z', 'V'})]
+                visible_after_mirror = [cell for cell in after_mirror
+                                        if self.monsters[cell] in ({'Z'}, {'G'}, {'Z', 'G'})]
 
-                invisible_before_mirror = {cell for cell in before_mirror
-                                           if self.monsters[cell] == {'G'}}
-                invisible_after_mirror = {cell for cell in after_mirror
-                                          if self.monsters[cell] == {'V'}}
+                invisible_before_mirror = [cell for cell in before_mirror
+                                           if self.monsters[cell] == {'G'}]
+                invisible_after_mirror = [cell for cell in after_mirror
+                                          if self.monsters[cell] == {'V'}]
 
                 if len(before_mirror) - len(invisible_before_mirror) + len(after_mirror) - len(invisible_after_mirror) \
                         == monster_count_target:
@@ -248,18 +248,26 @@ class Board:
                     # print('    Invisible:', invisible_after_mirror, len(invisible_after_mirror))
                     # print()
 
-                    for cell in before_mirror - invisible_before_mirror:
+                    for cell in before_mirror:
+                        if cell in invisible_before_mirror:
+                            continue
                         self.remove_monster(cell, 'G')
 
-                    for cell in after_mirror - invisible_after_mirror:
+                    for cell in after_mirror:
+                        if cell in invisible_after_mirror:
+                            continue
                         self.remove_monster(cell, 'V')
 
                 if len(visible_before_mirror) + len(visible_after_mirror) == monster_count_target:
 
-                    for cell in before_mirror - visible_before_mirror:
+                    for cell in before_mirror:
+                        if cell in visible_before_mirror:
+                            continue
                         self.set_monster(cell, 'G')
 
-                    for cell in after_mirror - visible_after_mirror:
+                    for cell in after_mirror:
+                        if cell in visible_after_mirror:
+                            continue
                         self.set_monster(cell, 'V')
 
 
@@ -340,57 +348,57 @@ def undead(house_plan, monsters, counts):
 
 if __name__ == '__main__':
     TESTS = (
-        # (
-        #     ('. \\ . /',
-        #      '\\ . . .',
-        #      '/ \\ . \\',
-        #      '. \\ / .'),
-        #     {'ghost': 2, 'vampire': 2, 'zombie': 4},
-        #     {'E': [0, 3, 0, 1],
-        #      'N': [3, 0, 3, 0],
-        #      'S': [2, 1, 1, 4],
-        #      'W': [4, 0, 0, 0]},
-        #     ('Z \\ V /',
-        #      '\\ Z G V',
-        #      '/ \\ Z \\',
-        #      'G \\ / Z'),
-        # ),
-        # (
-        #     ('\\ . . .',
-        #      '. . \\ /',
-        #      '/ \\ . \\',
-        #      '/ . \\ \\',
-        #      '. . . .',
-        #      '/ / . /'),
-        #     {'ghost': 3, 'vampire': 5, 'zombie': 4},
-        #     {'E': [1, 0, 0, 3, 4, 0],
-        #      'N': [2, 1, 2, 0],
-        #      'S': [0, 3, 3, 0],
-        #      'W': [0, 3, 0, 0, 4, 2]},
-        #     ('\\ G V G',
-        #      'V G \\ /',
-        #      '/ \\ Z \\',
-        #      '/ V \\ \\',
-        #      'Z V Z Z',
-        #      '/ / V /'),
-        # ),
-        # (
-        #     ('. . . / . . /',
-        #      '. . \\ / . . .',
-        #      '. . . . . . .',
-        #      '. \\ . . . / \\',
-        #      '. / . \\ . . \\'),
-        #     {'ghost': 6, 'vampire': 10, 'zombie': 9},
-        #     {'E': [0, 4, 6, 0, 1],
-        #      'N': [3, 5, 0, 3, 3, 7, 1],
-        #      'S': [3, 0, 5, 0, 3, 0, 3],
-        #      'W': [2, 4, 6, 0, 2]},
-        #     ('Z Z G / V V /',
-        #      'Z Z \\ / G V V',
-        #      'G Z Z V Z Z V',
-        #      'G \\ Z V V / \\',
-        #      'V / V \\ G G \\'),
-        # ),
+        (
+            ('. \\ . /',
+             '\\ . . .',
+             '/ \\ . \\',
+             '. \\ / .'),
+            {'ghost': 2, 'vampire': 2, 'zombie': 4},
+            {'E': [0, 3, 0, 1],
+             'N': [3, 0, 3, 0],
+             'S': [2, 1, 1, 4],
+             'W': [4, 0, 0, 0]},
+            ('Z \\ V /',
+             '\\ Z G V',
+             '/ \\ Z \\',
+             'G \\ / Z'),
+        ),
+        (
+            ('\\ . . .',
+             '. . \\ /',
+             '/ \\ . \\',
+             '/ . \\ \\',
+             '. . . .',
+             '/ / . /'),
+            {'ghost': 3, 'vampire': 5, 'zombie': 4},
+            {'E': [1, 0, 0, 3, 4, 0],
+             'N': [2, 1, 2, 0],
+             'S': [0, 3, 3, 0],
+             'W': [0, 3, 0, 0, 4, 2]},
+            ('\\ G V G',
+             'V G \\ /',
+             '/ \\ Z \\',
+             '/ V \\ \\',
+             'Z V Z Z',
+             '/ / V /'),
+        ),
+        (
+            ('. . . / . . /',
+             '. . \\ / . . .',
+             '. . . . . . .',
+             '. \\ . . . / \\',
+             '. / . \\ . . \\'),
+            {'ghost': 6, 'vampire': 10, 'zombie': 9},
+            {'E': [0, 4, 6, 0, 1],
+             'N': [3, 5, 0, 3, 3, 7, 1],
+             'S': [3, 0, 5, 0, 3, 0, 3],
+             'W': [2, 4, 6, 0, 2]},
+            ('Z Z G / V V /',
+             'Z Z \\ / G V V',
+             'G Z Z V Z Z V',
+             'G \\ Z V V / \\',
+             'V / V \\ G G \\'),
+        ),
         (
             (". / . \\",
              "/ . / .",
