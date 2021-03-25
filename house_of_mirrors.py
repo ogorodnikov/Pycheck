@@ -1,7 +1,6 @@
 from cmath import exp, pi
 from collections import defaultdict, Counter
 from heapq import heappop, heappush
-from typing import Tuple, Dict, List
 
 
 class Board:
@@ -183,6 +182,28 @@ class Board:
                 if (monster_count > monster_count_target or
                         monster_count < monster_count_target and is_path_defined):
                     self.is_monster_count_mismatched = True
+
+                    if self.output == ['V / Z \\', '/ V / Z', '\\ V \\ /', 'G Z \\ /', 'V V V V', 'Z / G V', 'Z / V /']:
+
+                        before_mirror = self.paths[direction][starting_cell]['before_mirror']
+                        after_mirror = self.paths[direction][starting_cell]['after_mirror']
+
+                        print('Self is monster count mismatched:', self.is_monster_count_mismatched)
+                        print('Self output:', self.output)
+                        print()
+                        print('Direction:', direction)
+                        print('Starting cell:', starting_cell)
+                        print('Self paths direction :', self.paths[direction][m_index])
+                        print('Before mirror:', before_mirror)
+                        print('After mirror:', after_mirror)
+                        print()
+                        print([(cell, self.monsters[cell]) for cell in before_mirror | after_mirror])
+                        print()
+                        print('Monster count:', monster_count)
+                        print('Monster count target:', monster_count_target)
+                        print('Is path defined:', is_path_defined)
+                        quit()
+
                     return
 
                 if is_path_defined:
@@ -251,38 +272,29 @@ def undead(house_plan, monsters, counts):
 
     while q:
         *_, board = heappop(q)
-
+        
         board.check_maximum()
+
+        before = board.copy()
+
         board.count_monsters_per_path()
 
-        # print('Board output:', board.output)
-        # if board.output == ['Z \\ V /',
-        #                     '\\ Z G V',
-        #                     '/ \\ Z \\',
-        #                     'G \\ / Z']:
-        if board.output == ["V / Z \\",
-                            "/ V / Z",
-                            "\\ V \\ /",
-                            "G Z \\ /",
-                            "V V V V",
-                            "Z / G V",
-                            "Z / V /"]:
-            print('Board output:', board.output)
-            print('Tick:', tick)
+        # if board.output == ["V / Z \\",
+        #                     "/ V / Z",
+        #                     "\\ V \\ /",
+        #                     "G Z \\ /",
+        #                     "V V V V",
+        #                     "Z / G V",
+        #                     "Z / V /"]:
+        #     print('Before output:', before.output)
+        #     print('Before is monster count mismatched:', before.is_monster_count_mismatched)
+        #     print('Board output:', board.output)
+        #     print('Board is monster count mismatched:', board.is_monster_count_mismatched)
+        #     print('Tick:', tick)
+        #     raise
 
-        # if board.is_monster_count_mismatched:
-        #
-        #     if board.output == ["V / Z \\",
-        #                         "/ V / Z",
-        #                         "\\ V \\ /",
-        #                         "G Z \\ /",
-        #                         "V V V V",
-        #                         "Z / G V",
-        #                         "Z / V /"]:
-        #         print('Board is monster count mismatched:', board.is_monster_count_mismatched)
-        #         raise
-        #
-        #     continue
+        if board.is_monster_count_mismatched:
+            continue
 
         if board.monsters_per_path == board.target_monsters_per_path:
             # print('New board monsters counter:', new_board.monsters_counter)
@@ -392,7 +404,13 @@ if __name__ == '__main__':
              "S": [3, 0, 4, 0],
              "W": [1, 0, 3, 2, 4, 5, 2],
              "E": [0, 5, 1, 0, 4, 2, 0]},
-            (),
+            ("V / Z \\",
+             "/ V / Z",
+             "\\ V \\ /",
+             "G Z \\ /",
+             "V V V V",
+             "Z / G V",
+             "Z / V /"),
         ),
     )
 
