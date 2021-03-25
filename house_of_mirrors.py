@@ -255,6 +255,7 @@ def undead(house_plan: Tuple[str, ...],
     board = Board(house_plan, counts)
 
     tick = 0
+    hashes = []
     q = [(0, tick, board)]
 
     while q:
@@ -277,6 +278,7 @@ def undead(house_plan: Tuple[str, ...],
 
                 if new_board.is_monster_count_mismatched:
                     continue
+
                 if new_board.monsters_per_path == new_board.target_monsters_per_path:
                     # print('New board monsters counter:', new_board.monsters_counter)
                     # print('Monsters:', monsters)
@@ -286,6 +288,19 @@ def undead(house_plan: Tuple[str, ...],
                     print('Tick:', tick)
                     print('New board output:', new_board.output)
                     return new_board.output
+
+                monsters_per_path_hash = hash(tuple(hash((hash(k), hash(tuple(v))))
+                                                    for k, v in new_board.monsters_per_path.items()))
+
+                monsters_hash = hash(tuple(hash((hash(k), hash(tuple(v))))
+                                           for k, v in new_board.monsters.items()))
+
+                total_hash = hash((monsters_per_path_hash, monsters_hash))
+
+                if total_hash in hashes:
+                    # print('---- Hash already there')
+                    continue
+                hashes.append(total_hash)
 
                 priority = -len(new_board.defined_cells)
                 # priority = sum(len(new_board.monsters[cell]) for cell in new_board.room_cells)
