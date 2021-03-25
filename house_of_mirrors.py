@@ -108,6 +108,8 @@ class Board:
 
     def check_maximum(self):
 
+        is_changed = False
+
         for direction in self.paths:
             for m_index, starting_cell in enumerate(self.paths[direction]):
 
@@ -147,13 +149,19 @@ class Board:
                     for cell in before_mirror - invisible_before_mirror:
                         # print('    Remove:', cell, 'G')
                         # print('        Before:', self.monsters[cell])
+                        before = self.monsters[cell]
                         self.remove_monster(cell, 'G')
+                        if self.monsters[cell] != before:
+                            is_changed = True
                         # print('        After:', self.monsters[cell])
 
                     for cell in after_mirror - invisible_after_mirror:
                         # print('    Remove:', cell, 'V')
                         # print('        Before:', self.monsters[cell])
+                        before = self.monsters[cell]
                         self.remove_monster(cell, 'V')
+                        if self.monsters[cell] != before:
+                            is_changed = True
                         # print('        After:', self.monsters[cell])
 
                     # input()
@@ -161,10 +169,18 @@ class Board:
                 if len(visible_before_mirror) + len(visible_after_mirror) == monster_count_target:
 
                     for cell in before_mirror - visible_before_mirror:
+                        before = self.monsters[cell]
                         self.set_monster(cell, 'G')
+                        if self.monsters[cell] != before:
+                            is_changed = True
 
                     for cell in after_mirror - visible_after_mirror:
+                        before = self.monsters[cell]
                         self.set_monster(cell, 'V')
+                        if self.monsters[cell] != before:
+                            is_changed = True
+
+        return is_changed
 
     def count_monsters_per_path(self):
 
@@ -267,7 +283,10 @@ def undead(house_plan: Tuple[str, ...],
 
                 new_board = board.copy()
                 new_board.set_monster(cell, monster_type)
-                new_board.check_maximum()
+
+                while new_board.check_maximum():
+                    pass
+
                 new_board.count_monsters_per_path()
 
                 if not tick % 10000:
@@ -312,72 +331,72 @@ def undead(house_plan: Tuple[str, ...],
 
 if __name__ == '__main__':
     TESTS = (
-        # (
-        #     ('. \\ . /',
-        #      '\\ . . .',
-        #      '/ \\ . \\',
-        #      '. \\ / .'),
-        #     {'ghost': 2, 'vampire': 2, 'zombie': 4},
-        #     {'E': [0, 3, 0, 1],
-        #      'N': [3, 0, 3, 0],
-        #      'S': [2, 1, 1, 4],
-        #      'W': [4, 0, 0, 0]},
-        #     ('Z \\ V /',
-        #      '\\ Z G V',
-        #      '/ \\ Z \\',
-        #      'G \\ / Z'),
-        # ),
-        # (
-        #     ('\\ . . .',
-        #      '. . \\ /',
-        #      '/ \\ . \\',
-        #      '/ . \\ \\',
-        #      '. . . .',
-        #      '/ / . /'),
-        #     {'ghost': 3, 'vampire': 5, 'zombie': 4},
-        #     {'E': [1, 0, 0, 3, 4, 0],
-        #      'N': [2, 1, 2, 0],
-        #      'S': [0, 3, 3, 0],
-        #      'W': [0, 3, 0, 0, 4, 2]},
-        #     ('\\ G V G',
-        #      'V G \\ /',
-        #      '/ \\ Z \\',
-        #      '/ V \\ \\',
-        #      'Z V Z Z',
-        #      '/ / V /'),
-        # ),
-        # (
-        #     ('. . . / . . /',
-        #      '. . \\ / . . .',
-        #      '. . . . . . .',
-        #      '. \\ . . . / \\',
-        #      '. / . \\ . . \\'),
-        #     {'ghost': 6, 'vampire': 10, 'zombie': 9},
-        #     {'E': [0, 4, 6, 0, 1],
-        #      'N': [3, 5, 0, 3, 3, 7, 1],
-        #      'S': [3, 0, 5, 0, 3, 0, 3],
-        #      'W': [2, 4, 6, 0, 2]},
-        #     ('Z Z G / V V /',
-        #      'Z Z \\ / G V V',
-        #      'G Z Z V Z Z V',
-        #      'G \\ Z V V / \\',
-        #      'V / V \\ G G \\'),
-        # ),
         (
-            (". / . \\",
-             "/ . / .",
-             "\\ . \\ /",
-             ". . \\ /",
-             ". . . .",
-             ". / . .",
-             ". / . /"),
-            {"ghost": 2, "vampire": 9, "zombie": 5},
-            {"N": [1, 0, 1, 0],
-             "S": [3, 0, 4, 0],
-             "W": [1, 0, 3, 2, 4, 5, 2],
-             "E": [0, 5, 1, 0, 4, 2, 0]},
-            (),
+            ('. \\ . /',
+             '\\ . . .',
+             '/ \\ . \\',
+             '. \\ / .'),
+            {'ghost': 2, 'vampire': 2, 'zombie': 4},
+            {'E': [0, 3, 0, 1],
+             'N': [3, 0, 3, 0],
+             'S': [2, 1, 1, 4],
+             'W': [4, 0, 0, 0]},
+            ('Z \\ V /',
+             '\\ Z G V',
+             '/ \\ Z \\',
+             'G \\ / Z'),
         ),
+        (
+            ('\\ . . .',
+             '. . \\ /',
+             '/ \\ . \\',
+             '/ . \\ \\',
+             '. . . .',
+             '/ / . /'),
+            {'ghost': 3, 'vampire': 5, 'zombie': 4},
+            {'E': [1, 0, 0, 3, 4, 0],
+             'N': [2, 1, 2, 0],
+             'S': [0, 3, 3, 0],
+             'W': [0, 3, 0, 0, 4, 2]},
+            ('\\ G V G',
+             'V G \\ /',
+             '/ \\ Z \\',
+             '/ V \\ \\',
+             'Z V Z Z',
+             '/ / V /'),
+        ),
+        (
+            ('. . . / . . /',
+             '. . \\ / . . .',
+             '. . . . . . .',
+             '. \\ . . . / \\',
+             '. / . \\ . . \\'),
+            {'ghost': 6, 'vampire': 10, 'zombie': 9},
+            {'E': [0, 4, 6, 0, 1],
+             'N': [3, 5, 0, 3, 3, 7, 1],
+             'S': [3, 0, 5, 0, 3, 0, 3],
+             'W': [2, 4, 6, 0, 2]},
+            ('Z Z G / V V /',
+             'Z Z \\ / G V V',
+             'G Z Z V Z Z V',
+             'G \\ Z V V / \\',
+             'V / V \\ G G \\'),
+        ),
+        # (
+        #     (". / . \\",
+        #      "/ . / .",
+        #      "\\ . \\ /",
+        #      ". . \\ /",
+        #      ". . . .",
+        #      ". / . .",
+        #      ". / . /"),
+        #     {"ghost": 2, "vampire": 9, "zombie": 5},
+        #     {"N": [1, 0, 1, 0],
+        #      "S": [3, 0, 4, 0],
+        #      "W": [1, 0, 3, 2, 4, 5, 2],
+        #      "E": [0, 5, 1, 0, 4, 2, 0]},
+        #     (),
+        # ),
     )
 
     for test_nb, (house_plan, monsters, counts, answer) in enumerate(TESTS, 1):
