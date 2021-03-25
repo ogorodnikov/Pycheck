@@ -1,6 +1,5 @@
 from cmath import exp, pi
 from collections import defaultdict, Counter
-from copy import deepcopy
 from heapq import heappop, heappush
 from typing import Tuple, Dict, List
 
@@ -81,6 +80,15 @@ class Board:
         return {cell for cell, monsters in self.monsters.items() if len(monsters) == 1}
 
     @property
+    def hash(self):
+        # monsters_per_path_hash = hash(tuple(hash((hash(k), hash(tuple(v))))
+        #                                     for k, v in new_board.monsters_per_path.items()))
+        # total_hash = hash((monsters_per_path_hash, monsters_hash))
+
+        return hash(tuple(hash((hash(k), hash(tuple(v))))
+                          for k, v in self.monsters.items()))
+
+    @property
     def output(self):
         output_list = []
         for y in range(self.height):
@@ -106,81 +114,46 @@ class Board:
                 for value, monster_type
                 in zip('vampire ghost zombie'.split(), self.MONSTERS)}
 
-    def check_maximum(self):
+    def calculate_paths(self):
 
-        is_changed = False
+        perimeter_coordinates = {'N': [complex(0, x) for x in range(self.width)],
+                                 'W': [complex(y, 0) for y in range(self.height)],
+                                 'S': [complex(self.height - 1, x) for x in range(self.width)],
+                                 'E': [complex(y, self.width - 1) for y in range(self.height)]}
 
-        for direction in self.paths:
-            for m_index, starting_cell in enumerate(self.paths[direction]):
+        paths = defaultdict(dict)
 
-                if self.paths[direction][starting_cell]['is_calculated']:
-                    # print('---- Already calculated')
-                    continue
+        for starting_direction, direction_name in zip((-1j, 1, -1, 1j), 'ENSW'):
 
-                monster_count_target = self.target_monsters_per_path[direction][m_index]
+            for starting_cell in perimeter_coordinates[direction_name]:
 
-                before_mirror = self.paths[direction][starting_cell]['before_mirror']
-                after_mirror = self.paths[direction][starting_cell]['after_mirror']
+                is_before_mirror = True
+                paths[direction_name][starting_cell] = {'before_mirror': set(),
+                                                        'after_mirror': set(),
+                                                        'is_calculated': False}
+                q = [(starting_cell, starting_direction)]
 
-                visible_before_mirror = {cell for cell in before_mirror
-                                         if self.monsters[cell] in ({'Z'}, {'V'}, {'Z', 'V'})}
-                visible_after_mirror = {cell for cell in after_mirror
-                                        if self.monsters[cell] in ({'Z'}, {'G'}, {'Z', 'G'})}
+                while q:
+                    cell, direction = q.pop()
 
-                invisible_before_mirror = {cell for cell in before_mirror
-                                           if self.monsters[cell] == {'G'}}
-                invisible_after_mirror = {cell for cell in after_mirror
-                                          if self.monsters[cell] == {'V'}}
+                    if self.all_cells[cell] == '\\':
+                        is_before_mirror = False
+                        new_direction = self.mirror(direction, pi / 4)
 
-                if len(before_mirror) - len(invisible_before_mirror) + len(after_mirror) - len(invisible_after_mirror) \
-                        == monster_count_target:
+                    elif self.all_cells[cell] == '/':
+                        is_before_mirror = False
+                        new_direction = self.mirror(direction, -pi / 4)
 
-                    # [print(row) for row in self.output]
-                    # print()
-                    # print('XXXX Fill visible:')
-                    # print('Direction:', direction)
-                    # print('Starting cell:', starting_cell)
-                    # print('    Before mirror:', [(cell, self.monsters[cell]) for cell in before_mirror], len(before_mirror))
-                    # print('    Invisible:', invisible_before_mirror, len(invisible_before_mirror))
-                    # print('    After mirror:', [(cell, self.monsters[cell]) for cell in after_mirror], len(after_mirror))
-                    # print('    Invisible:', invisible_after_mirror, len(invisible_after_mirror))
-                    # print()
+                    else:
+                        path_part = 'before_mirror' if is_before_mirror else 'after_mirror'
+                        paths[direction_name][starting_cell][path_part] |= {cell}
+                        new_direction = direction
 
-                    for cell in before_mirror - invisible_before_mirror:
-                        # print('    Remove:', cell, 'G')
-                        # print('        Before:', self.monsters[cell])
-                        before = self.monsters[cell]
-                        self.remove_monster(cell, 'G')
-                        if self.monsters[cell] != before:
-                            is_changed = True
-                        # print('        After:', self.monsters[cell])
+                    new_cell = cell + new_direction
 
-                    for cell in after_mirror - invisible_after_mirror:
-                        # print('    Remove:', cell, 'V')
-                        # print('        Before:', self.monsters[cell])
-                        before = self.monsters[cell]
-                        self.remove_monster(cell, 'V')
-                        if self.monsters[cell] != before:
-                            is_changed = True
-                        # print('        After:', self.monsters[cell])
-
-                    # input()
-
-                if len(visible_before_mirror) + len(visible_after_mirror) == monster_count_target:
-
-                    for cell in before_mirror - visible_before_mirror:
-                        before = self.monsters[cell]
-                        self.set_monster(cell, 'G')
-                        if self.monsters[cell] != before:
-                            is_changed = True
-
-                    for cell in after_mirror - visible_after_mirror:
-                        before = self.monsters[cell]
-                        self.set_monster(cell, 'V')
-                        if self.monsters[cell] != before:
-                            is_changed = True
-
-        return is_changed
+                    if new_cell in self.all_cells:
+                        q.append((new_cell, new_direction))
+        return paths
 
     def count_monsters_per_path(self):
 
@@ -222,52 +195,59 @@ class Board:
 
         self.monsters_per_path = monsters_per_path
 
-    def calculate_paths(self):
+    def check_maximum(self):
 
-        perimeter_coordinates = {'N': [complex(0, x) for x in range(self.width)],
-                                 'W': [complex(y, 0) for y in range(self.height)],
-                                 'S': [complex(self.height - 1, x) for x in range(self.width)],
-                                 'E': [complex(y, self.width - 1) for y in range(self.height)]}
+        for direction in self.paths:
+            for m_index, starting_cell in enumerate(self.paths[direction]):
 
-        paths = defaultdict(dict)
+                if self.paths[direction][starting_cell]['is_calculated']:
+                    continue
 
-        for starting_direction, direction_name in zip((-1j, 1, -1, 1j), 'ENSW'):
+                monster_count_target = self.target_monsters_per_path[direction][m_index]
 
-            for starting_cell in perimeter_coordinates[direction_name]:
+                before_mirror = self.paths[direction][starting_cell]['before_mirror']
+                after_mirror = self.paths[direction][starting_cell]['after_mirror']
 
-                is_before_mirror = True
-                paths[direction_name][starting_cell] = {'before_mirror': set(),
-                                                        'after_mirror': set(),
-                                                        'is_calculated': False}
-                q = [(starting_cell, starting_direction)]
+                visible_before_mirror = {cell for cell in before_mirror
+                                         if self.monsters[cell] in ({'Z'}, {'V'}, {'Z', 'V'})}
+                visible_after_mirror = {cell for cell in after_mirror
+                                        if self.monsters[cell] in ({'Z'}, {'G'}, {'Z', 'G'})}
 
-                while q:
-                    cell, direction = q.pop()
+                invisible_before_mirror = {cell for cell in before_mirror
+                                           if self.monsters[cell] == {'G'}}
+                invisible_after_mirror = {cell for cell in after_mirror
+                                          if self.monsters[cell] == {'V'}}
 
-                    if self.all_cells[cell] == '\\':
-                        is_before_mirror = False
-                        new_direction = self.mirror(direction, pi / 4)
+                if len(before_mirror) - len(invisible_before_mirror) + len(after_mirror) - len(invisible_after_mirror) \
+                        == monster_count_target:
 
-                    elif self.all_cells[cell] == '/':
-                        is_before_mirror = False
-                        new_direction = self.mirror(direction, -pi / 4)
+                    # [print(row) for row in self.output]
+                    # print()
+                    # print('XXXX Fill visible:')
+                    # print('Direction:', direction)
+                    # print('Starting cell:', starting_cell)
+                    # print('    Before mirror:', [(cell, self.monsters[cell]) for cell in before_mirror], len(before_mirror))
+                    # print('    Invisible:', invisible_before_mirror, len(invisible_before_mirror))
+                    # print('    After mirror:', [(cell, self.monsters[cell]) for cell in after_mirror], len(after_mirror))
+                    # print('    Invisible:', invisible_after_mirror, len(invisible_after_mirror))
+                    # print()
 
-                    else:
-                        path_part = 'before_mirror' if is_before_mirror else 'after_mirror'
-                        paths[direction_name][starting_cell][path_part] |= {cell}
-                        new_direction = direction
+                    for cell in before_mirror - invisible_before_mirror:
+                        self.remove_monster(cell, 'G')
 
-                    new_cell = cell + new_direction
+                    for cell in after_mirror - invisible_after_mirror:
+                        self.remove_monster(cell, 'V')
 
-                    if new_cell in self.all_cells:
-                        q.append((new_cell, new_direction))
+                if len(visible_before_mirror) + len(visible_after_mirror) == monster_count_target:
 
-        return paths
+                    for cell in before_mirror - visible_before_mirror:
+                        self.set_monster(cell, 'G')
+
+                    for cell in after_mirror - visible_after_mirror:
+                        self.set_monster(cell, 'V')
 
 
-def undead(house_plan: Tuple[str, ...],
-           monsters: Dict[str, int],
-           counts: Dict[str, List[int]]) -> Tuple[str, ...]:
+def undead(house_plan, monsters, counts):
     board = Board(house_plan, counts)
 
     tick = 0
@@ -284,9 +264,7 @@ def undead(house_plan: Tuple[str, ...],
                 new_board = board.copy()
                 new_board.set_monster(cell, monster_type)
 
-                while new_board.check_maximum():
-                    pass
-
+                new_board.check_maximum()
                 new_board.count_monsters_per_path()
 
                 if not tick % 10000:
@@ -308,18 +286,11 @@ def undead(house_plan: Tuple[str, ...],
                     print('New board output:', new_board.output)
                     return new_board.output
 
-                monsters_per_path_hash = hash(tuple(hash((hash(k), hash(tuple(v))))
-                                                    for k, v in new_board.monsters_per_path.items()))
-
-                monsters_hash = hash(tuple(hash((hash(k), hash(tuple(v))))
-                                           for k, v in new_board.monsters.items()))
-
-                total_hash = hash((monsters_per_path_hash, monsters_hash))
-
-                if total_hash in hashes:
+                monster_hash = new_board.hash
+                if monster_hash in hashes:
                     # print('---- Hash already there')
                     continue
-                hashes.append(total_hash)
+                hashes.append(monster_hash)
 
                 priority = -len(new_board.defined_cells)
                 # priority = sum(len(new_board.monsters[cell]) for cell in new_board.room_cells)
@@ -382,21 +353,21 @@ if __name__ == '__main__':
              'G \\ Z V V / \\',
              'V / V \\ G G \\'),
         ),
-        # (
-        #     (". / . \\",
-        #      "/ . / .",
-        #      "\\ . \\ /",
-        #      ". . \\ /",
-        #      ". . . .",
-        #      ". / . .",
-        #      ". / . /"),
-        #     {"ghost": 2, "vampire": 9, "zombie": 5},
-        #     {"N": [1, 0, 1, 0],
-        #      "S": [3, 0, 4, 0],
-        #      "W": [1, 0, 3, 2, 4, 5, 2],
-        #      "E": [0, 5, 1, 0, 4, 2, 0]},
-        #     (),
-        # ),
+        (
+            (". / . \\",
+             "/ . / .",
+             "\\ . \\ /",
+             ". . \\ /",
+             ". . . .",
+             ". / . .",
+             ". / . /"),
+            {"ghost": 2, "vampire": 9, "zombie": 5},
+            {"N": [1, 0, 1, 0],
+             "S": [3, 0, 4, 0],
+             "W": [1, 0, 3, 2, 4, 5, 2],
+             "E": [0, 5, 1, 0, 4, 2, 0]},
+            (),
+        ),
     )
 
     for test_nb, (house_plan, monsters, counts, answer) in enumerate(TESTS, 1):
