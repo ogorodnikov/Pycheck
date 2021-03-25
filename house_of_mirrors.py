@@ -114,6 +114,14 @@ class Board:
                 for value, monster_type
                 in zip('vampire ghost zombie'.split(), self.MONSTERS)}
 
+    def check_monster_counts(self):
+
+        if any(self.monsters_counter[monster] > monsters[monster] for monster in monsters):
+            print('Monster mismatch')
+            self.is_monster_count_mismatched = True
+            return
+
+
     def calculate_paths(self):
 
         perimeter_coordinates = {'N': [complex(0, x) for x in range(self.width)],
@@ -182,27 +190,6 @@ class Board:
                 if (monster_count > monster_count_target or
                         monster_count < monster_count_target and is_path_defined):
                     self.is_monster_count_mismatched = True
-
-                    # if self.output == ['V / Z \\', '/ V / Z', '\\ V \\ /', 'G Z \\ /', 'V V V V', 'Z / G V', 'Z / V /']:
-                    #
-                    #     before_mirror = self.paths[direction][starting_cell]['before_mirror']
-                    #     after_mirror = self.paths[direction][starting_cell]['after_mirror']
-                    #
-                    #     print('Self is monster count mismatched:', self.is_monster_count_mismatched)
-                    #     print('Self output:', self.output)
-                    #     print()
-                    #     print('Direction:', direction)
-                    #     print('Starting cell:', starting_cell)
-                    #     print('Self paths direction :', self.paths[direction][m_index])
-                    #     print('Before mirror:', before_mirror)
-                    #     print('After mirror:', after_mirror)
-                    #     print()
-                    #     print([(cell, self.monsters[cell]) for cell in before_mirror | after_mirror])
-                    #     print()
-                    #     print('Monster count:', monster_count)
-                    #     print('Monster count target:', monster_count_target)
-                    #     print('Is path defined:', is_path_defined)
-                    #     quit()
 
                     return
 
@@ -282,24 +269,19 @@ def undead(house_plan, monsters, counts):
         *_, board = heappop(q)
 
         board.check_maximum()
-
-        before = board.copy()
-
         board.count_monsters_per_path()
 
-        # if board.output == ["V / Z \\",
-        #                     "/ V / Z",
-        #                     "\\ V \\ /",
-        #                     "G Z \\ /",
-        #                     "V V V V",
-        #                     "Z / G V",
-        #                     "Z / V /"]:
-        #     print('Before output:', before.output)
-        #     print('Before is monster count mismatched:', before.is_monster_count_mismatched)
-        #     print('Board output:', board.output)
-        #     print('Board is monster count mismatched:', board.is_monster_count_mismatched)
-        #     print('Tick:', tick)
-        #     raise
+        # if board.output == ['Z Z \\ V V / V',
+        #                     'Z G Z Z \\ V /',
+        #                     'Z Z \\ \\ / / Z',
+        #                     'Z V \\ \\ / V /',
+        #                     '/ \\ G G G \\ \\',
+        #                     '\\ Z V V G \\ V',
+        #                     'V G \\ V G V \\']:
+        #     [print(row) for row in board.output]
+        #     print('>>>> Detected')
+
+        board.check_monster_counts()
 
         if board.is_monster_count_mismatched:
             continue
@@ -326,11 +308,7 @@ def undead(house_plan, monsters, counts):
             continue
         hashes.append(monster_hash)
 
-        # if any(board.monsters_counter[monster] > monsters[monster] for monster in monsters):
-        #     # print('Monsters:', board.monsters_counter)
-        #     # print('Target:  ', monsters)
-        #     # print()
-        #     continue
+
 
         for cell in board.undefined_cells:
             for monster_type in board.monsters[cell]:
@@ -343,15 +321,12 @@ def undead(house_plan, monsters, counts):
                     print('Tick:', tick)
                     [print(row) for row in new_board.output]
                     print('Monsters per path:', new_board.monsters_per_path)
+                    print('Monsters:', board.monsters_counter)
+                    print('Target:  ', monsters)
                     print()
 
-                # priority = -len(new_board.defined_cells)
-                priority = sum(len(new_board.monsters[cell]) for cell in new_board.room_cells)
-
-                # if all(new_board.monsters[cell] == {'V'} for cell in (4, 4+1j, 4+2j, 4+3j)):
-                #     [print(row) for row in new_board.output]
-                #     print('Monsters per path:', new_board.monsters_per_path)
-                #     input()
+                priority = -len(new_board.defined_cells)
+                # priority = sum(len(new_board.monsters[cell]) for cell in new_board.room_cells)
 
                 heappush(q, (priority, tick, new_board))
 
@@ -444,9 +419,21 @@ if __name__ == '__main__':
             {"ghost": 7, "vampire": 12, "zombie": 10},
             {"N": [4, 6, 0, 6, 1, 0, 1], "S": [1, 3, 1, 4, 1, 5, 3],
              "W": [3, 4, 3, 4, 4, 0, 1], "E": [4, 4, 1, 0, 0, 7, 1]},
-            ('Z Z \\ V V / V', 'Z G Z Z \\ V /', 'Z Z \\ \\ / / Z', 'Z V \\ \\ / V /', '/ \\ G G G \\ \\',
-             '\\ Z V V G \\ V', 'V G \\ V G V \\'),
+            ('Z Z \\ V V / V',
+             'Z G Z Z \\ V /',
+             'Z Z \\ \\ / / Z',
+             'Z V \\ \\ / V /',
+             '/ \\ G G G \\ \\',
+             '\\ Z V V G \\ V',
+             'V G \\ V G V \\'),
         ),
+        # (
+        #     [". . . . . . .", ". . . \\ . \\ /", ". . . . . / \\", ". . . . / \\ \\", ". \\ \\ . \\ / .",
+        #      "\\ . . . \\ / \\", ". \\ . . . . /"],
+        #     {"ghost": 13, "vampire": 16, "zombie": 2},
+        #     {"N": [4, 0, 4, 4, 4, 0, 2], "S": [0, 1, 6, 5, 5, 1, 0], "W": [4, 3, 4, 5, 1, 1, 0],
+        #      "E": [4, 0, 0, 0, 1, 0, 0]}
+        # ),
     )
 
     for test_nb, (house_plan, monsters, counts, answer) in enumerate(TESTS, 1):
