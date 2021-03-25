@@ -89,10 +89,6 @@ class Board:
 
     @property
     def hash(self):
-        # monsters_per_path_hash = hash(tuple(hash((hash(k), hash(tuple(v))))
-        #                                     for k, v in new_board.monsters_per_path.items()))
-        # total_hash = hash((monsters_per_path_hash, monsters_hash))
-
         return hash(tuple(hash((hash(k), hash(tuple(v))))
                           for k, v in self.monsters.items()))
 
@@ -119,25 +115,19 @@ class Board:
         return Counter(next(iter(monster)) for cell, monster in self.monsters.items()
                        if cell in self.defined_cells)
 
-        # return {value: monsters_counts[monster_type]
-        #         for value, monster_type
-        #         in zip('vampire ghost zombie'.split(), self.MONSTERS)}
-
     def check_monster_counts(self):
 
         monster_counter = defaultdict(int)
 
         for cell in self.defined_cells:
-            monster_type = self.monsters[cell]
+            monster_type = next(iter(self.monsters[cell]))
             monster_counter[monster_type] += 1
             if monster_counter[monster_type] > self.monster_counter_target[monster_type]:
+                # print('>>>> Monster count exceeded')
                 self.is_monster_count_mismatched = True
                 return
 
-        # if any(self.monsters_counter[monster] > monsters[monster] for monster in monsters):
-        #     print('Monster mismatch')
-        #     self.is_monster_count_mismatched = True
-        #     return
+        # todo: if all monsters of a type are placed - remove from other cells
 
     def calculate_paths(self):
 
@@ -185,8 +175,8 @@ class Board:
         for direction in self.paths:
             for m_index, starting_cell in enumerate(self.paths[direction]):
 
-                # if self.paths[direction][starting_cell]['is_calculated']:
-                #     continue
+                if self.paths[direction][starting_cell]['is_calculated']:
+                    continue
 
                 full_path = set()
                 monster_count = 0
@@ -220,10 +210,8 @@ class Board:
         for direction in self.paths:
             for m_index, starting_cell in enumerate(self.paths[direction]):
 
-                # if self.paths[direction][starting_cell]['is_calculated']:
-                #     continue
-
-                monster_count_target = self.target_monsters_per_path[direction][m_index]
+                if self.paths[direction][starting_cell]['is_calculated']:
+                    continue
 
                 before_mirror = self.paths[direction][starting_cell]['before_mirror']
                 after_mirror = self.paths[direction][starting_cell]['after_mirror']
@@ -238,41 +226,28 @@ class Board:
                 invisible_after_mirror = [cell for cell in after_mirror
                                           if self.monsters[cell] == {'V'}]
 
+                monster_count_target = self.target_monsters_per_path[direction][m_index]
+
                 if len(before_mirror) - len(invisible_before_mirror) + len(after_mirror) - len(invisible_after_mirror) \
                         == monster_count_target:
 
-                    # [print(row) for row in self.output]
-                    # print()
-                    # print('XXXX Fill visible:')
-                    # print('Direction:', direction)
-                    # print('Starting cell:', starting_cell)
-                    # print('    Before mirror:', [(cell, self.monsters[cell]) for cell in before_mirror], len(before_mirror))
-                    # print('    Invisible:', invisible_before_mirror, len(invisible_before_mirror))
-                    # print('    After mirror:', [(cell, self.monsters[cell]) for cell in after_mirror], len(after_mirror))
-                    # print('    Invisible:', invisible_after_mirror, len(invisible_after_mirror))
-                    # print()
-
                     for cell in before_mirror:
-                        if cell in invisible_before_mirror:
-                            continue
-                        self.remove_monster(cell, 'G')
+                        if cell not in invisible_before_mirror:
+                            self.remove_monster(cell, 'G')
 
                     for cell in after_mirror:
-                        if cell in invisible_after_mirror:
-                            continue
-                        self.remove_monster(cell, 'V')
+                        if cell not in invisible_after_mirror:
+                            self.remove_monster(cell, 'V')
 
                 if len(visible_before_mirror) + len(visible_after_mirror) == monster_count_target:
 
                     for cell in before_mirror:
-                        if cell in visible_before_mirror:
-                            continue
-                        self.set_monster(cell, 'G')
+                        if cell not in visible_before_mirror:
+                            self.set_monster(cell, 'G')
 
                     for cell in after_mirror:
-                        if cell in visible_after_mirror:
-                            continue
-                        self.set_monster(cell, 'V')
+                        if cell not in visible_after_mirror:
+                            self.set_monster(cell, 'V')
 
 
 def undead(house_plan, monsters, counts):
@@ -298,7 +273,7 @@ def undead(house_plan, monsters, counts):
         #     [print(row) for row in board.output]
         #     print('>>>> Detected')
 
-        # board.check_monster_counts()
+        board.check_monster_counts()
 
         if board.is_monster_count_mismatched:
             continue
@@ -309,13 +284,6 @@ def undead(house_plan, monsters, counts):
                 print('Tick:', tick)
                 print('New board output:', board.output)
                 return board.output
-
-        # print('Tick:', tick)
-        # [print(row) for row in board.output]
-        # print('Monsters per path:', board.monsters_per_path)
-        # print('Board is monster count mismatched:', board.is_monster_count_mismatched)
-        # print()
-        # quit()
 
         monster_hash = board.hash
         if monster_hash in hashes:
