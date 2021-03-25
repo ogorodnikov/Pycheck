@@ -38,7 +38,8 @@ class Board:
 
         self.monsters = {cell: set(self.MONSTERS) for cell in self.room_cells}
 
-        self.monsters_per_path = defaultdict(list)
+        self.monsters_per_path = {'E': [0] * self.height, 'W': [0] * self.height,
+                                  'S': [0] * self.width, 'N': [0] * self.width}
         self.target_monsters_per_path = target_monsters_per_path
         self.is_monster_count_mismatched = False
 
@@ -157,14 +158,10 @@ class Board:
 
     def count_monsters_per_path(self):
 
-        monsters_per_path = defaultdict(list)
-
         for direction in self.paths:
             for m_index, starting_cell in enumerate(self.paths[direction]):
 
                 if self.paths[direction][starting_cell]['is_calculated']:
-                    old_monster_count = self.monsters_per_path[direction][m_index]
-                    monsters_per_path[direction].append(old_monster_count)
                     continue
 
                 full_path = set()
@@ -191,9 +188,7 @@ class Board:
                 if is_path_defined:
                     self.paths[direction][starting_cell]['is_calculated'] = True
 
-                monsters_per_path[direction].append(monster_count)
-
-        self.monsters_per_path = monsters_per_path
+                self.monsters_per_path[direction][m_index] = monster_count
 
     def check_maximum(self):
 
@@ -250,12 +245,18 @@ class Board:
 def undead(house_plan, monsters, counts):
     board = Board(house_plan, counts)
 
+    board.check_maximum()
+    board.count_monsters_per_path()
+
     tick = 0
     hashes = []
     q = [(0, tick, board)]
 
     while q:
         *_, board = heappop(q)
+
+        board.check_maximum()
+        board.count_monsters_per_path()
 
         for cell in board.undefined_cells:
             for monster_type in board.monsters[cell]:
