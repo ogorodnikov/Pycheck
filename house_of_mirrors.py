@@ -6,8 +6,8 @@ from heapq import heappop, heappush
 class Board:
     EMPTY = '.'
     MIRRORS = '\\/'
-    MONSTERS = 'VGZ'
-    INPUT_MONSTERS = 'vampire', 'ghost', 'zombie'
+    MONSTER_TYPES = 'VGZ'
+    INPUT_MONSTER_TYPES = 'vampire', 'ghost', 'zombie'
 
     @staticmethod
     def mirror(vector, mirror_angle):
@@ -36,7 +36,7 @@ class Board:
 
         self.paths = self.calculate_paths()
 
-        self.monsters = {cell: set(self.MONSTERS) for cell in self.room_cells}
+        self.monsters = {cell: set(self.MONSTER_TYPES) for cell in self.room_cells}
 
         self.monsters_per_path = {'E': [0] * self.height, 'W': [0] * self.height,
                                   'S': [0] * self.width, 'N': [0] * self.width}
@@ -45,7 +45,7 @@ class Board:
 
         self.monster_counter_target = {monster_type: input_monsters[input_monster_type]
                                        for monster_type, input_monster_type
-                                       in zip(self.MONSTERS, self.INPUT_MONSTERS)}
+                                       in zip(self.MONSTER_TYPES, self.INPUT_MONSTER_TYPES)}
 
         self.is_monster_count_mismatched = False
 
@@ -117,17 +117,23 @@ class Board:
 
     def check_monster_counts(self):
 
-        monster_counter = defaultdict(int)
+        monster_counter = self.monster_counter
 
-        for cell in self.defined_cells:
-            monster_type = next(iter(self.monsters[cell]))
-            monster_counter[monster_type] += 1
+        for monster_type in self.MONSTER_TYPES:
             if monster_counter[monster_type] > self.monster_counter_target[monster_type]:
                 # print('>>>> Monster count exceeded')
                 self.is_monster_count_mismatched = True
                 return
 
-        # todo: if all monsters of a type are placed - remove from other cells
+            if monster_counter[monster_type] == self.monster_counter_target[monster_type]:
+                for cell in self.undefined_cells:
+                    # [print(row) for row in self.output]
+                    # print('Cell:', cell)
+                    # print('Monster type:', monster_type)
+                    # print('Before:', self.monsters[cell])
+                    self.remove_monster(cell, monster_type)
+                    # print('After:', self.monsters[cell])
+                    # input()
 
     def calculate_paths(self):
 
@@ -261,6 +267,7 @@ def undead(house_plan, monsters, counts):
         *_, board = heappop(q)
 
         board.check_maximum()
+        board.check_monster_counts()
         board.count_monsters_per_path()
 
         # if board.output == ['Z Z \\ V V / V',
@@ -273,17 +280,15 @@ def undead(house_plan, monsters, counts):
         #     [print(row) for row in board.output]
         #     print('>>>> Detected')
 
-        board.check_monster_counts()
-
         if board.is_monster_count_mismatched:
             continue
 
-        if board.monsters_per_path == board.target_monsters_per_path:
-            if board.monster_counter == board.monster_counter_target:
-                print('==== Matched')
-                print('Tick:', tick)
-                print('New board output:', board.output)
-                return board.output
+        if board.monsters_per_path == board.target_monsters_per_path \
+                and board.monster_counter == board.monster_counter_target:
+            print('==== Matched')
+            print('Tick:', tick)
+            print('New board output:', board.output)
+            return board.output
 
         monster_hash = board.hash
         if monster_hash in hashes:
@@ -302,8 +307,8 @@ def undead(house_plan, monsters, counts):
                     print('Tick:', tick)
                     [print(row) for row in new_board.output]
                     print('Monsters per path:', new_board.monsters_per_path)
-                    print('Monsters:', board.monsters_counter)
-                    print('Target:  ', monsters)
+                    print('Monsters:', board.monster_counter)
+                    print('Target:  ', board.monster_counter_target)
                     print()
 
                 priority = -len(new_board.defined_cells)
@@ -410,13 +415,15 @@ if __name__ == '__main__':
         #      'V G \\ V G V \\'),
         # ),
 
-        # (
-        #     [". . . . . . .", ". . . \\ . \\ /", ". . . . . / \\", ". . . . / \\ \\", ". \\ \\ . \\ / .",
-        #      "\\ . . . \\ / \\", ". \\ . . . . /"],
-        #     {"ghost": 13, "vampire": 16, "zombie": 2},
-        #     {"N": [4, 0, 4, 4, 4, 0, 2], "S": [0, 1, 6, 5, 5, 1, 0], "W": [4, 3, 4, 5, 1, 1, 0],
-        #      "E": [4, 0, 0, 0, 1, 0, 0]}
-        # ),
+        (
+            [". . . . . . .", ". . . \\ . \\ /", ". . . . . / \\", ". . . . / \\ \\", ". \\ \\ . \\ / .",
+             "\\ . . . \\ / \\", ". \\ . . . . /"],
+            {"ghost": 13, "vampire": 16, "zombie": 2},
+            {"N": [4, 0, 4, 4, 4, 0, 2], "S": [0, 1, 6, 5, 5, 1, 0], "W": [4, 3, 4, 5, 1, 1, 0],
+             "E": [4, 0, 0, 0, 1, 0, 0]},
+            ('V G V G Z G V', 'G G V \\ G \\ /', 'G G V V G / \\', 'Z G V G / \\ \\', 'V \\ \\ V \\ / V',
+             '\\ V V G \\ / \\', 'G \\ V V V V /')
+        ),
     )
 
     for test_nb, (house_plan, monsters, counts, answer) in enumerate(TESTS, 1):
