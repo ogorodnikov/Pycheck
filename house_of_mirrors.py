@@ -262,19 +262,18 @@ def undead(house_plan: Tuple[str, ...],
 
         for cell in board.undefined_cells:
             for monster_type in board.monsters[cell]:
-
-                if not tick % 10000 and tick > 0:
-                    print('Tick:', tick)
-                    [print(row) for row in new_board.output]
-                    print('New board monsters per path:', new_board.monsters_per_path)
-                    print()
                 tick += 1
 
                 new_board = board.copy()
-
                 new_board.set_monster(cell, monster_type)
                 new_board.check_maximum()
                 new_board.count_monsters_per_path()
+
+                if not tick % 10000:
+                    print('Tick:', tick)
+                    [print(row) for row in new_board.output]
+                    print('Monsters per path:', new_board.monsters_per_path)
+                    print()
 
                 if new_board.is_monster_count_mismatched:
                     continue
