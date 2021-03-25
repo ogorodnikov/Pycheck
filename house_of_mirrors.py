@@ -7,6 +7,7 @@ class Board:
     EMPTY = '.'
     MIRRORS = '\\/'
     MONSTERS = 'VGZ'
+    INPUT_MONSTERS = 'vampire', 'ghost', 'zombie'
 
     @staticmethod
     def mirror(vector, mirror_angle):
@@ -17,7 +18,7 @@ class Board:
                                  int(rotated_plus_angle.imag))
         return rounded_result
 
-    def __init__(self, house_plan, target_monsters_per_path):
+    def __init__(self, house_plan, input_monsters, target_monsters_per_path):
         plan = [row.replace(' ', '') for row in house_plan]
         self.plan = plan
         self.height = len(plan)
@@ -39,7 +40,13 @@ class Board:
 
         self.monsters_per_path = {'E': [0] * self.height, 'W': [0] * self.height,
                                   'S': [0] * self.width, 'N': [0] * self.width}
+
         self.target_monsters_per_path = target_monsters_per_path
+
+        self.monster_counter_target = {monster_type: input_monsters[input_monster_type]
+                                       for monster_type, input_monster_type
+                                       in zip(self.MONSTERS, self.INPUT_MONSTERS)}
+
         self.is_monster_count_mismatched = False
 
     def copy(self):
@@ -61,6 +68,7 @@ class Board:
 
         new_board.monsters_per_path = self.monsters_per_path.copy()
         new_board.target_monsters_per_path = self.target_monsters_per_path.copy()
+        new_board.monster_counter_target = self.monster_counter_target
         new_board.is_monster_count_mismatched = self.is_monster_count_mismatched
 
         return new_board
@@ -107,20 +115,29 @@ class Board:
         return output_list
 
     @property
-    def monsters_counter(self):
-        monsters_counts = Counter(next(iter(monster)) for cell, monster in self.monsters.items()
-                                  if cell in self.defined_cells)
-        return {value: monsters_counts[monster_type]
-                for value, monster_type
-                in zip('vampire ghost zombie'.split(), self.MONSTERS)}
+    def monster_counter(self):
+        return Counter(next(iter(monster)) for cell, monster in self.monsters.items()
+                       if cell in self.defined_cells)
+
+        # return {value: monsters_counts[monster_type]
+        #         for value, monster_type
+        #         in zip('vampire ghost zombie'.split(), self.MONSTERS)}
 
     def check_monster_counts(self):
 
-        if any(self.monsters_counter[monster] > monsters[monster] for monster in monsters):
-            print('Monster mismatch')
-            self.is_monster_count_mismatched = True
-            return
+        monster_counter = defaultdict(int)
 
+        for cell in self.defined_cells:
+            monster_type = self.monsters[cell]
+            monster_counter[monster_type] += 1
+            if monster_counter[monster_type] > self.monster_counter_target[monster_type]:
+                self.is_monster_count_mismatched = True
+                return
+
+        # if any(self.monsters_counter[monster] > monsters[monster] for monster in monsters):
+        #     print('Monster mismatch')
+        #     self.is_monster_count_mismatched = True
+        #     return
 
     def calculate_paths(self):
 
@@ -259,7 +276,7 @@ class Board:
 
 
 def undead(house_plan, monsters, counts):
-    board = Board(house_plan, counts)
+    board = Board(house_plan, monsters, counts)
 
     tick = 0
     hashes = []
@@ -281,15 +298,13 @@ def undead(house_plan, monsters, counts):
         #     [print(row) for row in board.output]
         #     print('>>>> Detected')
 
-        board.check_monster_counts()
+        # board.check_monster_counts()
 
         if board.is_monster_count_mismatched:
             continue
 
         if board.monsters_per_path == board.target_monsters_per_path:
-            # print('New board monsters counter:', new_board.monsters_counter)
-            # print('Monsters:', monsters)
-            if board.monsters_counter == monsters:
+            if board.monster_counter == board.monster_counter_target:
                 print('==== Matched')
                 print('Tick:', tick)
                 print('New board output:', board.output)
@@ -307,8 +322,6 @@ def undead(house_plan, monsters, counts):
             # print('---- Hash already there')
             continue
         hashes.append(monster_hash)
-
-
 
         for cell in board.undefined_cells:
             for monster_type in board.monsters[cell]:
@@ -335,98 +348,100 @@ def undead(house_plan, monsters, counts):
 
 if __name__ == '__main__':
     TESTS = (
-        # (
-        #     ('. \\ . /',
-        #      '\\ . . .',
-        #      '/ \\ . \\',
-        #      '. \\ / .'),
-        #     {'ghost': 2, 'vampire': 2, 'zombie': 4},
-        #     {'E': [0, 3, 0, 1],
-        #      'N': [3, 0, 3, 0],
-        #      'S': [2, 1, 1, 4],
-        #      'W': [4, 0, 0, 0]},
-        #     ('Z \\ V /',
-        #      '\\ Z G V',
-        #      '/ \\ Z \\',
-        #      'G \\ / Z'),
-        # ),
-        # (
-        #     ('\\ . . .',
-        #      '. . \\ /',
-        #      '/ \\ . \\',
-        #      '/ . \\ \\',
-        #      '. . . .',
-        #      '/ / . /'),
-        #     {'ghost': 3, 'vampire': 5, 'zombie': 4},
-        #     {'E': [1, 0, 0, 3, 4, 0],
-        #      'N': [2, 1, 2, 0],
-        #      'S': [0, 3, 3, 0],
-        #      'W': [0, 3, 0, 0, 4, 2]},
-        #     ('\\ G V G',
-        #      'V G \\ /',
-        #      '/ \\ Z \\',
-        #      '/ V \\ \\',
-        #      'Z V Z Z',
-        #      '/ / V /'),
-        # ),
-        # (
-        #     ('. . . / . . /',
-        #      '. . \\ / . . .',
-        #      '. . . . . . .',
-        #      '. \\ . . . / \\',
-        #      '. / . \\ . . \\'),
-        #     {'ghost': 6, 'vampire': 10, 'zombie': 9},
-        #     {'E': [0, 4, 6, 0, 1],
-        #      'N': [3, 5, 0, 3, 3, 7, 1],
-        #      'S': [3, 0, 5, 0, 3, 0, 3],
-        #      'W': [2, 4, 6, 0, 2]},
-        #     ('Z Z G / V V /',
-        #      'Z Z \\ / G V V',
-        #      'G Z Z V Z Z V',
-        #      'G \\ Z V V / \\',
-        #      'V / V \\ G G \\'),
-        # ),
-        # (
-        #     ["\\ . . .", ". / \\ .", "/ \\ . \\", ". . \\ /"],
-        #     {"ghost": 5, "vampire": 1, "zombie": 2},
-        #     {"N": [3, 0, 1, 0], "S": [2, 2, 2, 0], "W": [0, 2, 0, 2], "E": [0, 1, 2, 0]},
-        #     ('\\ G G G', 'V / \\ G', '/ \\ G \\', 'Z Z \\ /'),
-        # ),
-        # (
-        #     (". / . \\",
-        #      "/ . / .",
-        #      "\\ . \\ /",
-        #      ". . \\ /",
-        #      ". . . .",
-        #      ". / . .",
-        #      ". / . /"),
-        #     {"ghost": 2, "vampire": 9, "zombie": 5},
-        #     {"N": [1, 0, 1, 0],
-        #      "S": [3, 0, 4, 0],
-        #      "W": [1, 0, 3, 2, 4, 5, 2],
-        #      "E": [0, 5, 1, 0, 4, 2, 0]},
-        #     ("V / Z \\",
-        #      "/ V / Z",
-        #      "\\ V \\ /",
-        #      "G Z \\ /",
-        #      "V V V V",
-        #      "Z / G V",
-        #      "Z / V /"),
-        # ),
         (
-            [". . \\ . . / .", ". . . . \\ . /", ". . \\ \\ / / .", ". . \\ \\ / . /", "/ \\ . . . \\ \\",
-             "\\ . . . . \\ .", ". . \\ . . . \\"],
-            {"ghost": 7, "vampire": 12, "zombie": 10},
-            {"N": [4, 6, 0, 6, 1, 0, 1], "S": [1, 3, 1, 4, 1, 5, 3],
-             "W": [3, 4, 3, 4, 4, 0, 1], "E": [4, 4, 1, 0, 0, 7, 1]},
-            ('Z Z \\ V V / V',
-             'Z G Z Z \\ V /',
-             'Z Z \\ \\ / / Z',
-             'Z V \\ \\ / V /',
-             '/ \\ G G G \\ \\',
-             '\\ Z V V G \\ V',
-             'V G \\ V G V \\'),
+            ('. \\ . /',
+             '\\ . . .',
+             '/ \\ . \\',
+             '. \\ / .'),
+            {'ghost': 2, 'vampire': 2, 'zombie': 4},
+            {'E': [0, 3, 0, 1],
+             'N': [3, 0, 3, 0],
+             'S': [2, 1, 1, 4],
+             'W': [4, 0, 0, 0]},
+            ('Z \\ V /',
+             '\\ Z G V',
+             '/ \\ Z \\',
+             'G \\ / Z'),
         ),
+        (
+            ('\\ . . .',
+             '. . \\ /',
+             '/ \\ . \\',
+             '/ . \\ \\',
+             '. . . .',
+             '/ / . /'),
+            {'ghost': 3, 'vampire': 5, 'zombie': 4},
+            {'E': [1, 0, 0, 3, 4, 0],
+             'N': [2, 1, 2, 0],
+             'S': [0, 3, 3, 0],
+             'W': [0, 3, 0, 0, 4, 2]},
+            ('\\ G V G',
+             'V G \\ /',
+             '/ \\ Z \\',
+             '/ V \\ \\',
+             'Z V Z Z',
+             '/ / V /'),
+        ),
+        (
+            ('. . . / . . /',
+             '. . \\ / . . .',
+             '. . . . . . .',
+             '. \\ . . . / \\',
+             '. / . \\ . . \\'),
+            {'ghost': 6, 'vampire': 10, 'zombie': 9},
+            {'E': [0, 4, 6, 0, 1],
+             'N': [3, 5, 0, 3, 3, 7, 1],
+             'S': [3, 0, 5, 0, 3, 0, 3],
+             'W': [2, 4, 6, 0, 2]},
+            ('Z Z G / V V /',
+             'Z Z \\ / G V V',
+             'G Z Z V Z Z V',
+             'G \\ Z V V / \\',
+             'V / V \\ G G \\'),
+        ),
+        (
+            ["\\ . . .", ". / \\ .", "/ \\ . \\", ". . \\ /"],
+            {"ghost": 5, "vampire": 1, "zombie": 2},
+            {"N": [3, 0, 1, 0], "S": [2, 2, 2, 0], "W": [0, 2, 0, 2], "E": [0, 1, 2, 0]},
+            ('\\ G G G', 'V / \\ G', '/ \\ G \\', 'Z Z \\ /'),
+        ),
+        (
+            (". / . \\",
+             "/ . / .",
+             "\\ . \\ /",
+             ". . \\ /",
+             ". . . .",
+             ". / . .",
+             ". / . /"),
+            {"ghost": 2, "vampire": 9, "zombie": 5},
+            {"N": [1, 0, 1, 0],
+             "S": [3, 0, 4, 0],
+             "W": [1, 0, 3, 2, 4, 5, 2],
+             "E": [0, 5, 1, 0, 4, 2, 0]},
+            ("V / Z \\",
+             "/ V / Z",
+             "\\ V \\ /",
+             "G Z \\ /",
+             "V V V V",
+             "Z / G V",
+             "Z / V /"),
+        ),
+
+        # (
+        #     [". . \\ . . / .", ". . . . \\ . /", ". . \\ \\ / / .", ". . \\ \\ / . /", "/ \\ . . . \\ \\",
+        #      "\\ . . . . \\ .", ". . \\ . . . \\"],
+        #     {"ghost": 7, "vampire": 12, "zombie": 10},
+        #     {"N": [4, 6, 0, 6, 1, 0, 1], "S": [1, 3, 1, 4, 1, 5, 3],
+        #      "W": [3, 4, 3, 4, 4, 0, 1], "E": [4, 4, 1, 0, 0, 7, 1]},
+        #     ('Z Z \\ V V / V',
+        #      'Z G Z Z \\ V /',
+        #      'Z Z \\ \\ / / Z',
+        #      'Z V \\ \\ / V /',
+        #      '/ \\ G G G \\ \\',
+        #      '\\ Z V V G \\ V',
+        #      'V G \\ V G V \\'),
+        # ),
+
         # (
         #     [". . . . . . .", ". . . \\ . \\ /", ". . . . . / \\", ". . . . / \\ \\", ". \\ \\ . \\ / .",
         #      "\\ . . . \\ / \\", ". \\ . . . . /"],
