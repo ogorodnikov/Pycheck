@@ -160,8 +160,8 @@ class Board:
         for direction in self.paths:
             for m_index, starting_cell in enumerate(self.paths[direction]):
 
-                if self.paths[direction][starting_cell]['is_calculated']:
-                    continue
+                # if self.paths[direction][starting_cell]['is_calculated']:
+                #     continue
 
                 full_path = set()
                 monster_count = 0
@@ -216,8 +216,8 @@ class Board:
         for direction in self.paths:
             for m_index, starting_cell in enumerate(self.paths[direction]):
 
-                if self.paths[direction][starting_cell]['is_calculated']:
-                    continue
+                # if self.paths[direction][starting_cell]['is_calculated']:
+                #     continue
 
                 monster_count_target = self.target_monsters_per_path[direction][m_index]
 
@@ -280,7 +280,7 @@ def undead(house_plan, monsters, counts):
 
     while q:
         *_, board = heappop(q)
-        
+
         board.check_maximum()
 
         before = board.copy()
@@ -326,6 +326,12 @@ def undead(house_plan, monsters, counts):
             continue
         hashes.append(monster_hash)
 
+        # if any(board.monsters_counter[monster] > monsters[monster] for monster in monsters):
+        #     # print('Monsters:', board.monsters_counter)
+        #     # print('Target:  ', monsters)
+        #     # print()
+        #     continue
+
         for cell in board.undefined_cells:
             for monster_type in board.monsters[cell]:
                 tick += 1
@@ -333,11 +339,11 @@ def undead(house_plan, monsters, counts):
                 new_board = board.copy()
                 new_board.set_monster(cell, monster_type)
 
-                # if not tick % 10000:
-                print('Tick:', tick)
-                [print(row) for row in new_board.output]
-                print('Monsters per path:', new_board.monsters_per_path)
-                print()
+                if not tick % 10000:
+                    print('Tick:', tick)
+                    [print(row) for row in new_board.output]
+                    print('Monsters per path:', new_board.monsters_per_path)
+                    print()
 
                 # priority = -len(new_board.defined_cells)
                 priority = sum(len(new_board.monsters[cell]) for cell in new_board.room_cells)
@@ -405,12 +411,12 @@ if __name__ == '__main__':
         #      'G \\ Z V V / \\',
         #      'V / V \\ G G \\'),
         # ),
-        (
-            ["\\ . . .", ". / \\ .", "/ \\ . \\", ". . \\ /"],
-            {"ghost": 5, "vampire": 1, "zombie": 2},
-            {"N": [3, 0, 1, 0], "S": [2, 2, 2, 0], "W": [0, 2, 0, 2], "E": [0, 1, 2, 0]},
-            ('\\ G G G', 'V / \\ G', '/ \\ G \\', 'Z Z \\ /'),
-        ),
+        # (
+        #     ["\\ . . .", ". / \\ .", "/ \\ . \\", ". . \\ /"],
+        #     {"ghost": 5, "vampire": 1, "zombie": 2},
+        #     {"N": [3, 0, 1, 0], "S": [2, 2, 2, 0], "W": [0, 2, 0, 2], "E": [0, 1, 2, 0]},
+        #     ('\\ G G G', 'V / \\ G', '/ \\ G \\', 'Z Z \\ /'),
+        # ),
         # (
         #     (". / . \\",
         #      "/ . / .",
@@ -432,6 +438,15 @@ if __name__ == '__main__':
         #      "Z / G V",
         #      "Z / V /"),
         # ),
+        (
+            [". . \\ . . / .", ". . . . \\ . /", ". . \\ \\ / / .", ". . \\ \\ / . /", "/ \\ . . . \\ \\",
+             "\\ . . . . \\ .", ". . \\ . . . \\"],
+            {"ghost": 7, "vampire": 12, "zombie": 10},
+            {"N": [4, 6, 0, 6, 1, 0, 1], "S": [1, 3, 1, 4, 1, 5, 3],
+             "W": [3, 4, 3, 4, 4, 0, 1], "E": [4, 4, 1, 0, 0, 7, 1]},
+            ('Z Z \\ V V / V', 'Z G Z Z \\ V /', 'Z Z \\ \\ / / Z', 'Z V \\ \\ / V /', '/ \\ G G G \\ \\',
+             '\\ Z V V G \\ V', 'V G \\ V G V \\'),
+        ),
     )
 
     for test_nb, (house_plan, monsters, counts, answer) in enumerate(TESTS, 1):
