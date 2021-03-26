@@ -8,6 +8,7 @@ class Board:
     MIRRORS = '\\/'
     MONSTER_TYPES = 'ZVG'
     INPUT_MONSTER_TYPES = 'zombie', 'vampire', 'ghost'
+    DELTAS = list(zip((-1j, 1, -1, 1j), 'ENSW'))
 
     @staticmethod
     def mirror(vector, mirror_angle):
@@ -121,19 +122,12 @@ class Board:
 
         for monster_type in self.MONSTER_TYPES:
             if monster_counter[monster_type] > self.monster_counter_target[monster_type]:
-                # print('>>>> Monster count exceeded')
                 self.is_monster_count_mismatched = True
                 return
 
             if monster_counter[monster_type] == self.monster_counter_target[monster_type]:
                 for cell in self.undefined_cells:
-                    # [print(row) for row in self.output]
-                    # print('Cell:', cell)
-                    # print('Monster type:', monster_type)
-                    # print('Before:', self.monsters[cell])
                     self.remove_monster(cell, monster_type)
-                    # print('After:', self.monsters[cell])
-                    # input()
 
     def calculate_paths(self):
 
@@ -144,7 +138,7 @@ class Board:
 
         paths = defaultdict(dict)
 
-        for starting_direction, direction_name in zip((-1j, 1, -1, 1j), 'ENSW'):
+        for starting_direction, direction_name in self.DELTAS:
 
             for starting_cell in perimeter_coordinates[direction_name]:
 
@@ -255,16 +249,36 @@ class Board:
                         if cell not in visible_after_mirror:
                             self.set_monster(cell, 'V')
 
-                if starting_cell == (6 + 5j):
-                    [print(row) for row in self.output]
-                    print('Direction:', direction)
-                    print('Starting cell:', starting_cell)
-                    print('Before mirror:', before_mirror)
-                    print('After mirror:', after_mirror)
-                    print('Before monsters:', [(cell, self.monsters[cell]) for cell in before_mirror])
-                    print('After monsters:', [(cell, self.monsters[cell]) for cell in after_mirror])
-                    quit()
+                total_counter = Counter(before_mirror) + Counter(after_mirror)
+                looped_cells = [cell for cell, count in total_counter.items() if count > 1]
 
+                for cell in looped_cells:
+
+                    if monster_count_target == 1:
+
+                        print('Direction:', direction)
+                        print('Starting cell:', starting_cell)
+                        print('Looped cells:', looped_cells)
+                        print('Total counter:', total_counter)
+                        print('Before:', self.monsters[cell])
+
+                        self.remove_monster(cell, 'Z')
+
+                        print('After:', self.monsters[cell])
+                        input()
+
+                        if cell not in before_mirror:
+
+                            print('Direction:', direction)
+                            print('Starting cell:', starting_cell)
+                            print('Looped cells:', looped_cells)
+                            print('Total counter:', total_counter)
+                            print('Before:', self.monsters[cell])
+
+                            self.remove_monster(cell, 'G')
+
+                            print('After:', self.monsters[cell])
+                            input()
 
 def undead(house_plan, monsters, counts):
     board = Board(house_plan, monsters, counts)
@@ -279,23 +293,6 @@ def undead(house_plan, monsters, counts):
         board.check_maximum()
         board.check_monster_counts()
         board.count_monsters_per_path()
-
-        # [print(row) for row in board.output]
-        # print('Monsters per path:', board.monsters_per_path)
-        # print('Monsters:', board.monster_counter)
-        # print('Target:  ', board.monster_counter_target)
-        # print()
-        # quit()
-
-        # if board.output == ['Z Z \\ V V / V',
-        #                     'Z G Z Z \\ V /',
-        #                     'Z Z \\ \\ / / Z',
-        #                     'Z V \\ \\ / V /',
-        #                     '/ \\ G G G \\ \\',
-        #                     '\\ Z V V G \\ V',
-        #                     'V G \\ V G V \\']:
-        #     [print(row) for row in board.output]
-        #     print('>>>> Detected')
 
         if board.is_monster_count_mismatched:
             continue
@@ -324,8 +321,6 @@ def undead(house_plan, monsters, counts):
                     print('Tick:', tick)
                     [print(row) for row in new_board.output]
                     print('Monsters per path:', new_board.monsters_per_path)
-                    print('Monsters:', new_board.monster_counter)
-                    print('Target:  ', new_board.monster_counter_target)
                     print()
 
                 priority = -len(new_board.defined_cells)
@@ -417,30 +412,30 @@ if __name__ == '__main__':
         #      "Z / V /"),
         # ),
 
-        # (
-        #     [". . \\ . . / .", ". . . . \\ . /", ". . \\ \\ / / .", ". . \\ \\ / . /", "/ \\ . . . \\ \\",
-        #      "\\ . . . . \\ .", ". . \\ . . . \\"],
-        #     {"ghost": 7, "vampire": 12, "zombie": 10},
-        #     {"N": [4, 6, 0, 6, 1, 0, 1], "S": [1, 3, 1, 4, 1, 5, 3],
-        #      "W": [3, 4, 3, 4, 4, 0, 1], "E": [4, 4, 1, 0, 0, 7, 1]},
-        #     ('Z Z \\ V V / V',
-        #      'Z G Z Z \\ V /',
-        #      'Z Z \\ \\ / / Z',
-        #      'Z V \\ \\ / V /',
-        #      '/ \\ G G G \\ \\',
-        #      '\\ Z V V G \\ V',
-        #      'V G \\ V G V \\'),
-        # ),
-
         (
-            [". . . . . . .", ". . . \\ . \\ /", ". . . . . / \\", ". . . . / \\ \\", ". \\ \\ . \\ / .",
-             "\\ . . . \\ / \\", ". \\ . . . . /"],
-            {"ghost": 13, "vampire": 16, "zombie": 2},
-            {"N": [4, 0, 4, 4, 4, 0, 2], "S": [0, 1, 6, 5, 5, 1, 0], "W": [4, 3, 4, 5, 1, 1, 0],
-             "E": [4, 0, 0, 0, 1, 0, 0]},
-            ('V G V G Z G V', 'G G V \\ G \\ /', 'G G V V G / \\', 'Z G V G / \\ \\', 'V \\ \\ V \\ / V',
-             '\\ V V G \\ / \\', 'G \\ V V V V /')
+            [". . \\ . . / .", ". . . . \\ . /", ". . \\ \\ / / .", ". . \\ \\ / . /", "/ \\ . . . \\ \\",
+             "\\ . . . . \\ .", ". . \\ . . . \\"],
+            {"ghost": 7, "vampire": 12, "zombie": 10},
+            {"N": [4, 6, 0, 6, 1, 0, 1], "S": [1, 3, 1, 4, 1, 5, 3],
+             "W": [3, 4, 3, 4, 4, 0, 1], "E": [4, 4, 1, 0, 0, 7, 1]},
+            ('Z Z \\ V V / V',
+             'Z G Z Z \\ V /',
+             'Z Z \\ \\ / / Z',
+             'Z V \\ \\ / V /',
+             '/ \\ G G G \\ \\',
+             '\\ Z V V G \\ V',
+             'V G \\ V G V \\'),
         ),
+
+        # (
+        #     [". . . . . . .", ". . . \\ . \\ /", ". . . . . / \\", ". . . . / \\ \\", ". \\ \\ . \\ / .",
+        #      "\\ . . . \\ / \\", ". \\ . . . . /"],
+        #     {"ghost": 13, "vampire": 16, "zombie": 2},
+        #     {"N": [4, 0, 4, 4, 4, 0, 2], "S": [0, 1, 6, 5, 5, 1, 0], "W": [4, 3, 4, 5, 1, 1, 0],
+        #      "E": [4, 0, 0, 0, 1, 0, 0]},
+        #     ('V G V G Z G V', 'G G V \\ G \\ /', 'G G V V G / \\', 'Z G V G / \\ \\', 'V \\ \\ V \\ / V',
+        #      '\\ V V G \\ / \\', 'G \\ V V V V /')
+        # ),
     )
 
     for test_nb, (house_plan, monsters, counts, answer) in enumerate(TESTS, 1):
