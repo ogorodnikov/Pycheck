@@ -99,15 +99,11 @@ class Board:
         for y in range(self.height):
             row = ''
             for x in range(self.width):
-                letter = self.plan[y][x]
                 cell = complex(y, x)
-                try:
-                    monsters = self.monsters[cell]
-                    if len(monsters) == 1:
-                        letter = next(iter(monsters))
-                except KeyError:
-                    pass
-                row += letter
+                if cell in self.defined_cells:
+                    row += next(iter(self.monsters[cell]))
+                else:
+                    row += self.plan[y][x]
             output_list.append(' '.join(list(row)))
         return output_list
 
@@ -168,6 +164,7 @@ class Board:
 
                     if new_cell in self.all_cells:
                         q.append((new_cell, new_direction))
+
         return paths
 
     def count_monsters_per_path(self):
@@ -197,7 +194,6 @@ class Board:
                 if (monster_count > monster_count_target or
                         monster_count < monster_count_target and is_path_defined):
                     self.is_monster_count_mismatched = True
-
                     return
 
                 if is_path_defined:
@@ -255,30 +251,10 @@ class Board:
                 for cell in looped_cells:
 
                     if monster_count_target == 1:
-
-                        print('Direction:', direction)
-                        print('Starting cell:', starting_cell)
-                        print('Looped cells:', looped_cells)
-                        print('Total counter:', total_counter)
-                        print('Before:', self.monsters[cell])
-
                         self.remove_monster(cell, 'Z')
 
-                        print('After:', self.monsters[cell])
-                        input()
-
                         if cell not in before_mirror:
-
-                            print('Direction:', direction)
-                            print('Starting cell:', starting_cell)
-                            print('Looped cells:', looped_cells)
-                            print('Total counter:', total_counter)
-                            print('Before:', self.monsters[cell])
-
                             self.remove_monster(cell, 'G')
-
-                            print('After:', self.monsters[cell])
-                            input()
 
 def undead(house_plan, monsters, counts):
     board = Board(house_plan, monsters, counts)
@@ -412,30 +388,30 @@ if __name__ == '__main__':
         #      "Z / V /"),
         # ),
 
-        (
-            [". . \\ . . / .", ". . . . \\ . /", ". . \\ \\ / / .", ". . \\ \\ / . /", "/ \\ . . . \\ \\",
-             "\\ . . . . \\ .", ". . \\ . . . \\"],
-            {"ghost": 7, "vampire": 12, "zombie": 10},
-            {"N": [4, 6, 0, 6, 1, 0, 1], "S": [1, 3, 1, 4, 1, 5, 3],
-             "W": [3, 4, 3, 4, 4, 0, 1], "E": [4, 4, 1, 0, 0, 7, 1]},
-            ('Z Z \\ V V / V',
-             'Z G Z Z \\ V /',
-             'Z Z \\ \\ / / Z',
-             'Z V \\ \\ / V /',
-             '/ \\ G G G \\ \\',
-             '\\ Z V V G \\ V',
-             'V G \\ V G V \\'),
-        ),
-
         # (
-        #     [". . . . . . .", ". . . \\ . \\ /", ". . . . . / \\", ". . . . / \\ \\", ". \\ \\ . \\ / .",
-        #      "\\ . . . \\ / \\", ". \\ . . . . /"],
-        #     {"ghost": 13, "vampire": 16, "zombie": 2},
-        #     {"N": [4, 0, 4, 4, 4, 0, 2], "S": [0, 1, 6, 5, 5, 1, 0], "W": [4, 3, 4, 5, 1, 1, 0],
-        #      "E": [4, 0, 0, 0, 1, 0, 0]},
-        #     ('V G V G Z G V', 'G G V \\ G \\ /', 'G G V V G / \\', 'Z G V G / \\ \\', 'V \\ \\ V \\ / V',
-        #      '\\ V V G \\ / \\', 'G \\ V V V V /')
+        #     [". . \\ . . / .", ". . . . \\ . /", ". . \\ \\ / / .", ". . \\ \\ / . /", "/ \\ . . . \\ \\",
+        #      "\\ . . . . \\ .", ". . \\ . . . \\"],
+        #     {"ghost": 7, "vampire": 12, "zombie": 10},
+        #     {"N": [4, 6, 0, 6, 1, 0, 1], "S": [1, 3, 1, 4, 1, 5, 3],
+        #      "W": [3, 4, 3, 4, 4, 0, 1], "E": [4, 4, 1, 0, 0, 7, 1]},
+        #     ('Z Z \\ V V / V',
+        #      'Z G Z Z \\ V /',
+        #      'Z Z \\ \\ / / Z',
+        #      'Z V \\ \\ / V /',
+        #      '/ \\ G G G \\ \\',
+        #      '\\ Z V V G \\ V',
+        #      'V G \\ V G V \\'),
         # ),
+
+        (
+            [". . . . . . .", ". . . \\ . \\ /", ". . . . . / \\", ". . . . / \\ \\", ". \\ \\ . \\ / .",
+             "\\ . . . \\ / \\", ". \\ . . . . /"],
+            {"ghost": 13, "vampire": 16, "zombie": 2},
+            {"N": [4, 0, 4, 4, 4, 0, 2], "S": [0, 1, 6, 5, 5, 1, 0], "W": [4, 3, 4, 5, 1, 1, 0],
+             "E": [4, 0, 0, 0, 1, 0, 0]},
+            ('V G V G Z G V', 'G G V \\ G \\ /', 'G G V V G / \\', 'Z G V G / \\ \\', 'V \\ \\ V \\ / V',
+             '\\ V V G \\ / \\', 'G \\ V V V V /')
+        ),
     )
 
     for test_nb, (house_plan, monsters, counts, answer) in enumerate(TESTS, 1):
