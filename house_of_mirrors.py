@@ -256,11 +256,12 @@ class Board:
                         if cell not in before_mirror:
                             self.remove_monster(cell, 'G')
 
+
 def undead(house_plan, monsters, counts):
     board = Board(house_plan, monsters, counts)
 
     tick = 0
-    hashes = []
+    hashes = set()
     q = [(0, tick, board)]
 
     while q:
@@ -282,9 +283,8 @@ def undead(house_plan, monsters, counts):
 
         monster_hash = board.hash
         if monster_hash in hashes:
-            # print('---- Hash already there')
             continue
-        hashes.append(monster_hash)
+        hashes.add(monster_hash)
 
         for cell in board.undefined_cells:
             for monster_type in board.monsters[cell]:
@@ -297,6 +297,7 @@ def undead(house_plan, monsters, counts):
                     print('Tick:', tick)
                     [print(row) for row in new_board.output]
                     print('Monsters per path:', new_board.monsters_per_path)
+                    print('Len hashes :', len(hashes))
                     print()
 
                 priority = -len(new_board.defined_cells)
@@ -388,20 +389,20 @@ if __name__ == '__main__':
         #      "Z / V /"),
         # ),
 
-        # (
-        #     [". . \\ . . / .", ". . . . \\ . /", ". . \\ \\ / / .", ". . \\ \\ / . /", "/ \\ . . . \\ \\",
-        #      "\\ . . . . \\ .", ". . \\ . . . \\"],
-        #     {"ghost": 7, "vampire": 12, "zombie": 10},
-        #     {"N": [4, 6, 0, 6, 1, 0, 1], "S": [1, 3, 1, 4, 1, 5, 3],
-        #      "W": [3, 4, 3, 4, 4, 0, 1], "E": [4, 4, 1, 0, 0, 7, 1]},
-        #     ('Z Z \\ V V / V',
-        #      'Z G Z Z \\ V /',
-        #      'Z Z \\ \\ / / Z',
-        #      'Z V \\ \\ / V /',
-        #      '/ \\ G G G \\ \\',
-        #      '\\ Z V V G \\ V',
-        #      'V G \\ V G V \\'),
-        # ),
+        (
+            [". . \\ . . / .", ". . . . \\ . /", ". . \\ \\ / / .", ". . \\ \\ / . /", "/ \\ . . . \\ \\",
+             "\\ . . . . \\ .", ". . \\ . . . \\"],
+            {"ghost": 7, "vampire": 12, "zombie": 10},
+            {"N": [4, 6, 0, 6, 1, 0, 1], "S": [1, 3, 1, 4, 1, 5, 3],
+             "W": [3, 4, 3, 4, 4, 0, 1], "E": [4, 4, 1, 0, 0, 7, 1]},
+            ('Z Z \\ V V / V',
+             'Z G Z Z \\ V /',
+             'Z Z \\ \\ / / Z',
+             'Z V \\ \\ / V /',
+             '/ \\ G G G \\ \\',
+             '\\ Z V V G \\ V',
+             'V G \\ V G V \\'),
+        ),
 
         (
             [". . . . . . .", ". . . \\ . \\ /", ". . . . . / \\", ". . . . / \\ \\", ". \\ \\ . \\ / .",
