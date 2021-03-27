@@ -1,6 +1,7 @@
 from typing import Tuple, Dict, Set, List
 
 Counts, Coords = List[int], Tuple[int, int]
+DIRECTIONS = {direction: delta for direction, delta in (zip('ESWN', (1j, 1, -1j, -1)))}
 
 
 def train_tracks(rows: Counts, columns: Counts,
@@ -8,19 +9,53 @@ def train_tracks(rows: Counts, columns: Counts,
                  constraints: Dict[Coords, Set[str]]) -> str:
     start_cell, end_cell = (complex(y, x) for y, x in (start, end))
 
-    all_cells = {complex(y, x): constraints[(y, x)] if (y, x) in constraints else set()
+    all_cells = {complex(y, x): {DIRECTIONS[d] for d in constraints[(y, x)]}
+                 if (y, x) in constraints else set()
                  for x in range(len(columns))
                  for y in range(len(rows))}
 
-    q = [start_cell]
+    q = [(start_cell, all_cells)]
 
     while q:
-        a = q.pop()
+        a, old_cells = q.pop()
+        cells = {cell: tile.copy() for cell, tile in old_cells.items()}
 
-        for direction, delta in (zip('ESWN', (1, 1j, -1, -1j))):
-            b = a + delta
-            print('Direction:', direction)
-            print('B:', b)
+        print('A:', a)
+        print('Cells a :', cells[a])
+
+        for a_direction, a_exit in DIRECTIONS.items():
+            print('A direction:', a_direction)
+            print('A exit:', a_exit)
+            print('A exit not in cells a :', a_exit not in cells[a])
+
+            input()
+            if a_exit not in cells[a]:
+                continue
+            b = a + a_exit
+            print('    B:', b)
+            print('    B not in cells:', b not in cells)
+            if b not in cells:
+                continue
+
+
+
+
+            for b_direction, b_exit in DIRECTIONS.items():
+                b_enter = -a_exit
+                if b_enter == a_exit:
+                    continue
+                if cells[b] and b_enter not in cells[b]:
+                    continue
+
+                print('    B direction:', b_direction)
+                print('    B exit:', b_exit)
+
+                cells[b] = {b_enter, b_exit}
+
+                quit()
+
+
+
 
 
 if __name__ == '__main__':
