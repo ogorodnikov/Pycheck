@@ -1,11 +1,26 @@
 from typing import Tuple, Dict, Set, List
+
 Counts, Coords = List[int], Tuple[int, int]
 
 
 def train_tracks(rows: Counts, columns: Counts,
                  start: Coords, end: Coords,
                  constraints: Dict[Coords, Set[str]]) -> str:
-    ...
+    start_cell, end_cell = (complex(y, x) for y, x in (start, end))
+
+    all_cells = {complex(y, x): constraints[(y, x)] if (y, x) in constraints else set()
+                 for x in range(len(columns))
+                 for y in range(len(rows))}
+
+    q = [start_cell]
+
+    while q:
+        a = q.pop()
+
+        for direction, delta in (zip('ESWN', (1, 1j, -1, -1j))):
+            b = a + delta
+            print('Direction:', direction)
+            print('B:', b)
 
 
 if __name__ == '__main__':
@@ -48,13 +63,14 @@ if __name__ == '__main__':
         assert not constraints, (f'{sum(map(len, constraints.values()))}'
                                  ' constraints not respected.')
         from collections import Counter
-        all_res_counts = (('Row',    rows,    Counter(i for i, _ in path)),
+        all_res_counts = (('Row', rows, Counter(i for i, _ in path)),
                           ('Column', columns, Counter(j for _, j in path)))
         for row_or_col, lines, res_counts in all_res_counts:
             for i, count in enumerate(lines):
                 assert res_counts[i] == count, \
                     (f'{row_or_col} {i}: you passed by {res_counts[i]} cells '
                      f'instead of {count}.')
+
 
     TESTS = (
         (
@@ -93,6 +109,7 @@ if __name__ == '__main__':
     )
 
     from copy import deepcopy
+
     for n, test in enumerate(TESTS, 1):
         user_result = train_tracks(*deepcopy(test))
         try:
