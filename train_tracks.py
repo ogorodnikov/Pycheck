@@ -14,10 +14,10 @@ def train_tracks(rows: Counts, columns: Counts,
                  for x in range(len(columns))
                  for y in range(len(rows))}
 
-    q = [(start_cell, all_cells)]
+    q = [(start_cell, all_cells, [])]
 
     while q:
-        a, old_cells = q.pop()
+        a, old_cells, path = q.pop()
         cells = {cell: tile.copy() for cell, tile in old_cells.items()}
 
         print('A:', a)
@@ -28,31 +28,36 @@ def train_tracks(rows: Counts, columns: Counts,
             print('A exit:', a_exit)
             print('A exit not in cells a :', a_exit not in cells[a])
 
-            input()
             if a_exit not in cells[a]:
                 continue
             b = a + a_exit
             print('    B:', b)
             print('    B not in cells:', b not in cells)
+            print('    path and a_exit == -path[-1]:', path and a_exit == -path[-1])
             if b not in cells:
                 continue
-
-
-
+            if path and a_exit == -path[-1]:
+                continue
 
             for b_direction, b_exit in DIRECTIONS.items():
                 b_enter = -a_exit
-                if b_enter == a_exit:
+
+                print('        B direction:', b_direction)
+                print('        B enter:    ', b_enter)
+                print('        B exit:     ', b_exit)
+                print()
+
+                if b_enter == a_exit or b_enter == b_exit:
                     continue
                 if cells[b] and b_enter not in cells[b]:
                     continue
 
-                print('    B direction:', b_direction)
-                print('    B exit:', b_exit)
-
                 cells[b] = {b_enter, b_exit}
-
+                q.append((b, cells, path + [a_exit]))
+                print('Q:', q)
                 quit()
+
+
 
 
 
