@@ -14,48 +14,47 @@ def train_tracks(rows: Counts, columns: Counts,
                  for x in range(len(columns))
                  for y in range(len(rows))}
 
-    q = [(start_cell, all_cells, [])]
+    start_cell_exit = next(iter(all_cells[start_cell]))
+    q = [([start_cell], start_cell_exit)]
 
     while q:
-        a, old_cells, path = q.pop()
-        cells = {cell: tile.copy() for cell, tile in old_cells.items()}
+        path, a_exit = q.pop()
+        a = path[-1]
+        b = a + a_exit
 
         print('A:', a)
-        print('Cells a :', cells[a])
+        print('A exit:', a_exit)
+        print('B:', b)
 
-        for a_direction, a_exit in DIRECTIONS.items():
-            print('A direction:', a_direction)
-            print('A exit:', a_exit)
-            print('A exit not in cells a :', a_exit not in cells[a])
+        if b not in all_cells:
+            print('    ---- B out of borders')
+            continue
+        if b in path:
+            print('    ---- B already in path')
+            continue
 
-            if a_exit not in cells[a]:
-                continue
-            b = a + a_exit
-            print('    B:', b)
-            print('    B not in cells:', b not in cells)
-            print('    path and a_exit == -path[-1]:', path and a_exit == -path[-1])
-            if b not in cells:
-                continue
-            if path and a_exit == -path[-1]:
-                continue
+        b_enter = -a_exit
 
-            for b_direction, b_exit in DIRECTIONS.items():
-                b_enter = -a_exit
-
-                print('        B direction:', b_direction)
-                print('        B enter:    ', b_enter)
-                print('        B exit:     ', b_exit)
-                print()
-
-                if b_enter == a_exit or b_enter == b_exit:
-                    continue
-                if cells[b] and b_enter not in cells[b]:
-                    continue
-
-                cells[b] = {b_enter, b_exit}
-                q.append((b, cells, path + [a_exit]))
-                print('Q:', q)
+        try:
+            b_deltas_saved = all_cells[b]
+            print('    >>>> B in all_cells:', all_cells[b])
+            if b_enter not in b_deltas_saved:
+                print('    >>>> But enter does not match:', b_enter)
                 quit()
+                continue
+            b_deltas = b_deltas_saved - {b_enter}
+        except KeyError:
+            b_deltas = {1j, 1, -1j, -1} - {b_enter}
+
+        print('    B deltas:', b_deltas)
+
+        for b_exit in b_deltas:
+            print('        B enter:    ', b_enter)
+            print('        B exit:     ', b_exit)
+
+            q.append((path + [b], b_exit))
+
+            # input()
 
 
 
