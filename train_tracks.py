@@ -44,9 +44,6 @@ class TrainBoard:
         self.defined_cells = {complex(y, x): {DIRECTIONS[d] for d in directions}
                               for (y, x), directions in constraints.items()}
 
-        print('Self defined cells:', self.defined_cells)
-        quit()
-
         self.cells_per_row = [0] * len(rows)
         self.cells_per_column = [0] * len(columns)
 
@@ -57,7 +54,14 @@ class TrainBoard:
         self.start_cell_exit = next(iter(self.defined_cells[self.start_cell]))
 
     def analyse_map(self):
-        pass
+        is_changed = True
+
+        while is_changed:
+            is_changed = False
+
+
+
+
 
     def find_path(self):
 
