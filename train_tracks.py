@@ -1,17 +1,12 @@
-from collections import Counter
 from heapq import heappop, heappush
-from typing import Tuple, Dict, Set, List
-
-Counts, Coords = List[int], Tuple[int, int]
 
 DELTAS = (1j, 1, -1j, -1)
 DIRECTIONS = {direction: delta for direction, delta in (zip('ESWN', DELTAS))}
 
 
-def train_tracks(rows: Counts, columns: Counts,
-                 start: Coords, end: Coords,
-                 constraints: Dict[Coords, Set[str]]) -> str:
-    def print_path(path):
+class TrainBoard:
+
+    def print_path(self, path):
 
         moves = [direction for a, b in zip(path, path[1:])
                  for direction, delta in DIRECTIONS.items()
@@ -19,126 +14,142 @@ def train_tracks(rows: Counts, columns: Counts,
 
         moves_dict = {cell: move for cell, move in zip(path, moves)}
 
-        for y in range(len(rows)):
+        for y in range(len(self.rows)):
             row = ''
-            for x in range(len(columns)):
+            for x in range(len(self.columns)):
                 cell = complex(y, x)
                 if cell in moves_dict:
                     row += moves_dict[cell].replace('E', '>').replace('N', '^').replace('W', '<').replace('S', 'v')
                 else:
                     row += '.'
-                if cell in defined_cells:
+                if cell in self.defined_cells:
                     row = row[:-1] + 'D'
-                if cell == start_cell:
+                if cell == self.start_cell:
                     row = row[:-1] + 'S'
-                if cell == end_cell:
+                if cell == self.end_cell:
                     row = row[:-1] + 'E'
             print(row)
 
+    def __init__(self, rows, columns, start, end, constraints):
 
-    start_cell, end_cell = (complex(y, x) for y, x in (start, end))
+        self.rows = rows
+        self.columns = columns
+        self.start_cell, self.end_cell = (complex(y, x) for y, x in (start, end))
 
-    all_cells = {complex(y, x) for x in range(len(columns)) for y in range(len(rows))}
+        all_cells = {complex(y, x) for x in range(len(columns)) for y in range(len(rows))}
 
-    shifted_cell_sets = ({cell + delta for cell in all_cells} for delta in DELTAS)
-    contour = set.union(*(shifted_cells - all_cells for shifted_cells in shifted_cell_sets))
+        shifted_cell_sets = ({cell + delta for cell in all_cells} for delta in DELTAS)
+        self.contour = set.union(*(shifted_cells - all_cells for shifted_cells in shifted_cell_sets))
 
-    defined_cells = {complex(y, x): {DIRECTIONS[d] for d in directions}
-                     for (y, x), directions in constraints.items()}
+        self.defined_cells = {complex(y, x): {DIRECTIONS[d] for d in directions}
+                              for (y, x), directions in constraints.items()}
 
-    initial_cells_per_row = [0] * len(rows)
-    initial_cells_per_column = [0] * len(columns)
+        self.cells_per_row = [0] * len(rows)
+        self.cells_per_column = [0] * len(columns)
 
-    for cell in defined_cells:
-        initial_cells_per_row[int(cell.real)] += 1
-        initial_cells_per_column[int(cell.imag)] += 1
+        for cell in self.defined_cells:
+            self.cells_per_row[int(cell.real)] += 1
+            self.cells_per_column[int(cell.imag)] += 1
 
-    start_cell_exit = next(iter(defined_cells[start_cell]))
+        self.start_cell_exit = next(iter(self.defined_cells[self.start_cell]))
 
-    tick = 0
-    q = [(0, tick, [start_cell], start_cell_exit,
-          initial_cells_per_row, initial_cells_per_column)]
+    def analyse_map(self):
+        pass
 
-    while q:
-        _, _, path, a_exit, cells_per_row, cells_per_column = heappop(q)
-        a = path[-1]
-        b = a + a_exit
+    def find_path(self):
 
-        if b in path or b in contour:
-            continue
+        tick = 0
+        q = [(0, tick, [self.start_cell], self.start_cell_exit,
+              self.cells_per_row, self.cells_per_column)]
 
-        row_index, column_index = int(b.real), int(b.imag)
+        while q:
 
-        if b not in defined_cells:
+            _, _, path, a_exit, cells_per_row, cells_per_column = heappop(q)
+            a = path[-1]
+            b = a + a_exit
 
-            if cells_per_row[row_index] == rows[row_index]:
-                continue
-            if cells_per_column[column_index] == columns[column_index]:
-                continue
-            cells_per_row[row_index] += 1
-            cells_per_column[column_index] += 1
-
-        b_enter = -a_exit
-
-        try:
-            b_deltas_defined = defined_cells[b]
-            if b_enter not in b_deltas_defined:
+            if b in path or b in self.contour:
                 continue
 
-            if b == end_cell:
-                final_path = path + [b]
+            row_index, column_index = int(b.real), int(b.imag)
 
-                if any(cell not in final_path for cell in defined_cells):
-                    # print('---- Defined cell not in final path')
+            if b not in self.defined_cells:
+
+                if cells_per_row[row_index] == self.rows[row_index]:
+                    continue
+                if cells_per_column[column_index] == self.columns[column_index]:
+                    continue
+                cells_per_row[row_index] += 1
+                cells_per_column[column_index] += 1
+
+            b_enter = -a_exit
+
+            try:
+                b_deltas_defined = self.defined_cells[b]
+                if b_enter not in b_deltas_defined:
                     continue
 
-                if any(sum(int(cell.real) == row_index for cell in final_path) < row_limitation
-                       for row_index, row_limitation in enumerate(rows)):
-                    # print('---- Row cell count < row limitation')
-                    continue
+                if b == self.end_cell:
+                    final_path = path + [b]
 
-                if any(sum(int(cell.imag) == column_index for cell in final_path) < column_limitation
-                       for column_index, column_limitation in enumerate(columns)):
-                    # print('---- Column cell count < column limitation')
-                    continue
+                    if any(cell not in final_path for cell in self.defined_cells):
+                        # print('---- Defined cell not in final path')
+                        continue
 
-                moves = [direction for a, b in zip(final_path, final_path[1:])
-                         for direction, delta in DIRECTIONS.items()
-                         if b - a == delta]
+                    if any(sum(int(cell.real) == row_index for cell in final_path) < row_limitation
+                           for row_index, row_limitation in enumerate(self.rows)):
+                        # print('---- Row cell count < row limitation')
+                        continue
 
-                moves_string = ''.join(moves)
+                    if any(sum(int(cell.imag) == column_index for cell in final_path) < column_limitation
+                           for column_index, column_limitation in enumerate(self.columns)):
+                        # print('---- Column cell count < column limitation')
+                        continue
 
-                print_path(final_path)
+                    moves = [direction for a, b in zip(final_path, final_path[1:])
+                             for direction, delta in DIRECTIONS.items()
+                             if b - a == delta]
 
-                print('Tick:', tick)
-                print('Final path:', final_path)
-                print('Moves string:', moves_string)
+                    moves_string = ''.join(moves)
 
-                return moves_string
+                    self.print_path(final_path)
 
-            b_deltas = b_deltas_defined - {b_enter}
+                    print('Tick:', tick)
+                    print('Final path:', final_path)
+                    print('Moves string:', moves_string)
 
-        except KeyError:
-            b_deltas = {1j, 1, -1j, -1} - {b_enter}
+                    return moves_string
 
-        for b_exit in b_deltas:
+                b_deltas = b_deltas_defined - {b_enter}
 
-            # unpassed_defined_cells = defined_cells.keys() - set(path)
-            #
-            # next_defined_cell = min(unpassed_defined_cells,
-            #                         key=lambda cell: abs(b + b_exit - cell))
-            # priority = abs(b + b_exit - next_defined_cell)
+            except KeyError:
+                b_deltas = {1j, 1, -1j, -1} - {b_enter}
 
-            if not tick % 100000:
-                print('Tick:', tick)
-                print_path(path)
-            tick += 1
+            for b_exit in b_deltas:
 
-            priority = -tick
+                # unpassed_defined_cells = defined_cells.keys() - set(path)
+                #
+                # next_defined_cell = min(unpassed_defined_cells,
+                #                         key=lambda cell: abs(b + b_exit - cell))
+                # priority = abs(b + b_exit - next_defined_cell)
 
-            heappush(q, (priority, tick, path + [b], b_exit, list(cells_per_row), list(cells_per_column)))
+                if not tick % 100000:
+                    print('Tick:', tick)
+                    self.print_path(path)
+                tick += 1
 
-    raise ValueError
+                priority = -tick
+
+                heappush(q, (priority, tick, path + [b], b_exit, list(cells_per_row), list(cells_per_column)))
+
+        raise ValueError
+
+
+def train_tracks(rows, columns, start, end, constraints):
+    board = TrainBoard(rows, columns, start, end, constraints)
+    board.analyse_map()
+    path_string = board.find_path()
+    return path_string
 
 
 if __name__ == '__main__':
