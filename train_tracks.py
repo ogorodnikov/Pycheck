@@ -1,6 +1,7 @@
 from typing import Tuple, Dict, Set, List
 
 Counts, Coords = List[int], Tuple[int, int]
+
 DIRECTIONS = {direction: delta for direction, delta in (zip('ESWN', (1j, 1, -1j, -1)))}
 
 
@@ -16,59 +17,73 @@ def train_tracks(rows: Counts, columns: Counts,
 
     start_cell_exit = next(iter(defined_cells[start_cell]))
     q = [([start_cell], start_cell_exit)]
+    tick = 0
 
     while q:
         path, a_exit = q.pop()
         a = path[-1]
         b = a + a_exit
 
-        print('A:', a)
-        print('A exit:', a_exit)
-        print('B:', b)
+        if not tick % 1000000:
+            print('Tick:', tick)
+        tick += 1
+
+        # print('A:', a)
+        # print('A exit:', a_exit)
+        # print('B:', b)
 
         if b not in all_cells:
-            print('    ---- B out of borders')
+            # print('    ---- B out of borders')
             continue
         if b in path:
-            print('    ---- B already in path')
+            # print('    ---- B already in path')
             continue
 
         b_enter = -a_exit
 
         try:
             b_deltas_defined = defined_cells[b]
-            print('    >>>> B in defined_cells:', defined_cells[b])
+            # print('    >>>> B in defined_cells:', defined_cells[b])
             if b_enter not in b_deltas_defined:
-                print('    >>>> But enter does not match:', b_enter)
+                # print('    >>>> But enter does not match:', b_enter)
                 continue
 
             if b == end_cell:
-                check_set = defined_cells.keys()
-                check_vector = [cell in path + [b] for cell in defined_cells]
+                # check_set = defined_cells.keys()
+                # check_vector = [cell in path + [b] for cell in defined_cells]
 
-                print('++++ End cell reached:', end_cell)
-                print('Path:        ', path)
-                print('Check set:   ', check_set)
-                print('Check vector:', check_vector)
+                # print('++++ End cell reached:', end_cell)
+                # print('Path:        ', path)
+                # print('Check set:   ', check_set)
+                # print('Check vector:', check_vector)
+
+                final_path = path + [b]
+                print('Final path:', final_path)
+
+                moves = ''.join(direction for a, b in zip(final_path, final_path[1:])
+                                for direction, delta in DIRECTIONS.items()
+                                if b - a == delta)
+                print('Moves:', moves)
+                return moves
+
+
 
                 if all(cell in path + [b] for cell in defined_cells):
                     return
 
-                
+
 
             b_deltas = b_deltas_defined - {b_enter}
         except KeyError:
             b_deltas = {1j, 1, -1j, -1} - {b_enter}
 
-        print('    B deltas:', b_deltas)
+        # print('    B deltas:', b_deltas)
 
         for b_exit in b_deltas:
-            print('        B enter:    ', b_enter)
-            print('        B exit:     ', b_exit)
+            # print('        B enter:    ', b_enter)
+            # print('        B exit:     ', b_exit)
 
             q.append((path + [b], b_exit))
-
-            # input()
 
 
 
