@@ -40,8 +40,22 @@ def train_tracks(rows: Counts, columns: Counts,
             print('    >>>> B in defined_cells:', defined_cells[b])
             if b_enter not in b_deltas_defined:
                 print('    >>>> But enter does not match:', b_enter)
-                quit()
                 continue
+
+            if b == end_cell:
+                check_set = defined_cells.keys()
+                check_vector = [cell in path + [b] for cell in defined_cells]
+
+                print('++++ End cell reached:', end_cell)
+                print('Path:        ', path)
+                print('Check set:   ', check_set)
+                print('Check vector:', check_vector)
+
+                if all(cell in path + [b] for cell in defined_cells):
+                    return
+
+                
+
             b_deltas = b_deltas_defined - {b_enter}
         except KeyError:
             b_deltas = {1j, 1, -1j, -1} - {b_enter}
