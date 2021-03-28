@@ -1,3 +1,4 @@
+from heapq import heappop, heappush
 from typing import Tuple, Dict, Set, List
 
 Counts, Coords = List[int], Tuple[int, int]
@@ -9,6 +10,7 @@ DIRECTIONS = {direction: delta for direction, delta in (zip('ESWN', DELTAS))}
 def train_tracks(rows: Counts, columns: Counts,
                  start: Coords, end: Coords,
                  constraints: Dict[Coords, Set[str]]) -> str:
+
     def print_path(path):
 
         moves = [direction for a, b in zip(path, path[1:])
@@ -25,6 +27,8 @@ def train_tracks(rows: Counts, columns: Counts,
                     row += moves_dict[cell].replace('E', '>').replace('N', '^').replace('W', '<').replace('S', 'v')
                 else:
                     row += '.'
+                if cell in defined_cells:
+                    row = row[:-1] + 'D'
                 if cell == start_cell:
                     row = row[:-1] + 'S'
                 if cell == end_cell:
@@ -42,17 +46,13 @@ def train_tracks(rows: Counts, columns: Counts,
                      for (y, x), directions in constraints.items()}
 
     start_cell_exit = next(iter(defined_cells[start_cell]))
-    q = [([start_cell], start_cell_exit)]
+    q = [(0, 0, [start_cell], start_cell_exit)]
     tick = 0
 
     while q:
-        path, a_exit = q.pop()
+        *_, path, a_exit = heappop(q)
         a = path[-1]
         b = a + a_exit
-
-        if not tick % 100000:
-            print('Tick:', tick)
-        tick += 1
 
         if b in path or b in contour:
             continue
@@ -60,7 +60,8 @@ def train_tracks(rows: Counts, columns: Counts,
         row_index, column_index = int(b.real), int(b.imag)
 
         cells_already_used_in_row = [cell for cell in set(path) | defined_cells.keys() if int(cell.real) == row_index]
-        cells_already_used_in_column = [cell for cell in set(path) | defined_cells.keys() if int(cell.imag) == column_index]
+        cells_already_used_in_column = [cell for cell in set(path) | defined_cells.keys() if
+                                        int(cell.imag) == column_index]
 
         already_used_in_row_count = len(cells_already_used_in_row)
         already_used_in_column_count = len(cells_already_used_in_column)
@@ -140,7 +141,26 @@ def train_tracks(rows: Counts, columns: Counts,
             # print('        B enter:    ', b_enter)
             # print('        B exit:     ', b_exit)
 
-            q.append((path + [b], b_exit))
+            if not tick % 100000:
+                print('Tick:', tick)
+                print_path(path)
+            tick += 1
+
+            unpassed_defined_cells = defined_cells.keys() - set(path)
+            # print('Unpassed defined cells:', unpassed_defined_cells)
+
+            next_defined_cell = min(unpassed_defined_cells,
+                                    key=lambda cell: abs(b + b_exit - cell))
+            # print('Next defined cell:', next_defined_cell)
+
+            priority = -tick
+            # priority = abs(b + b_exit - next_defined_cell)
+
+            # print('B b exit:', b + b_exit)
+            # print('Priority:', priority)
+            # input()
+
+            heappush(q, (priority, tick, path + [b], b_exit))
 
     raise ValueError
 
