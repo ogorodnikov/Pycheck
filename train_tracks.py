@@ -9,12 +9,12 @@ def train_tracks(rows: Counts, columns: Counts,
                  constraints: Dict[Coords, Set[str]]) -> str:
     start_cell, end_cell = (complex(y, x) for y, x in (start, end))
 
-    all_cells = {complex(y, x): {DIRECTIONS[d] for d in constraints[(y, x)]}
-                 if (y, x) in constraints else set()
-                 for x in range(len(columns))
-                 for y in range(len(rows))}
+    all_cells = {complex(y, x) for x in range(len(columns)) for y in range(len(rows))}
 
-    start_cell_exit = next(iter(all_cells[start_cell]))
+    defined_cells = {complex(y, x): {DIRECTIONS[d] for d in directions}
+                     for (y, x), directions in constraints.items()}
+
+    start_cell_exit = next(iter(defined_cells[start_cell]))
     q = [([start_cell], start_cell_exit)]
 
     while q:
@@ -36,13 +36,13 @@ def train_tracks(rows: Counts, columns: Counts,
         b_enter = -a_exit
 
         try:
-            b_deltas_saved = all_cells[b]
-            print('    >>>> B in all_cells:', all_cells[b])
-            if b_enter not in b_deltas_saved:
+            b_deltas_defined = defined_cells[b]
+            print('    >>>> B in defined_cells:', defined_cells[b])
+            if b_enter not in b_deltas_defined:
                 print('    >>>> But enter does not match:', b_enter)
                 quit()
                 continue
-            b_deltas = b_deltas_saved - {b_enter}
+            b_deltas = b_deltas_defined - {b_enter}
         except KeyError:
             b_deltas = {1j, 1, -1j, -1} - {b_enter}
 
