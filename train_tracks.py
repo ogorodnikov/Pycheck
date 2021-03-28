@@ -50,7 +50,8 @@ def train_tracks(rows: Counts, columns: Counts,
         a = path[-1]
         b = a + a_exit
 
-        if not tick % 1000000: print('Tick:', tick)
+        if not tick % 100000:
+            print('Tick:', tick)
         tick += 1
 
         if b in path or b in contour:
@@ -77,14 +78,14 @@ def train_tracks(rows: Counts, columns: Counts,
             continue
 
         if already_used_in_column_count == columns[column_index] and b not in defined_cells:
-            print('Column is full:')
-            print_path(path + [b])
-            print('B:', b)
-            print('Cells already used in column:', cells_already_used_in_column)
-            print('Already used in column count:', already_used_in_column_count)
-            print('Defined cells:', defined_cells)
-            print('Column index:', column_index)
-            print('Column value:', columns[column_index])
+            # print('Column is full:')
+            # print_path(path + [b])
+            # print('B:', b)
+            # print('Cells already used in column:', cells_already_used_in_column)
+            # print('Already used in column count:', already_used_in_column_count)
+            # print('Defined cells:', defined_cells)
+            # print('Column index:', column_index)
+            # print('Column value:', columns[column_index])
             # input()
             continue
 
@@ -101,17 +102,17 @@ def train_tracks(rows: Counts, columns: Counts,
                 final_path = path + [b]
 
                 if any(cell not in final_path for cell in defined_cells):
-                    print('---- Defined cell not in final path')
+                    # print('---- Defined cell not in final path')
                     continue
 
                 if any(sum(int(cell.real) == row_index for cell in final_path) < row_limitation
                        for row_index, row_limitation in enumerate(rows)):
-                    print('---- Row cell count < row limitation')
+                    # print('---- Row cell count < row limitation')
                     continue
 
                 if any(sum(int(cell.imag) == column_index for cell in final_path) < column_limitation
                        for column_index, column_limitation in enumerate(columns)):
-                    print('---- Column cell count < column limitation')
+                    # print('---- Column cell count < column limitation')
                     continue
 
                 moves = [direction for a, b in zip(final_path, final_path[1:])
@@ -194,22 +195,22 @@ if __name__ == '__main__':
 
 
     TESTS = (
-        (
-            [4, 6, 5, 3, 1, 3, 3, 4],
-            [4, 2, 2, 3, 4, 5, 6, 3],
-            (3, 0),
-            (7, 6),
-            {(3, 0): {'N'}, (4, 7): {'N', 'S'},
-             (6, 4): {'E', 'W'}, (7, 6): {'W'}},
-        ),
         # (
-        #     [8, 7, 7, 5, 5, 3, 2, 3],
-        #     [3, 6, 7, 5, 4, 3, 6, 6],
+        #     [4, 6, 5, 3, 1, 3, 3, 4],
+        #     [4, 2, 2, 3, 4, 5, 6, 3],
         #     (3, 0),
-        #     (7, 3),
-        #     {(1, 2): {'E', 'W'}, (1, 6): {'N', 'W'},
-        #      (3, 0): {'E'}, (7, 3): {'W'}},
+        #     (7, 6),
+        #     {(3, 0): {'N'}, (4, 7): {'N', 'S'},
+        #      (6, 4): {'E', 'W'}, (7, 6): {'W'}},
         # ),
+        (
+            [8, 7, 7, 5, 5, 3, 2, 3],
+            [3, 6, 7, 5, 4, 3, 6, 6],
+            (3, 0),
+            (7, 3),
+            {(1, 2): {'E', 'W'}, (1, 6): {'N', 'W'},
+             (3, 0): {'E'}, (7, 3): {'W'}},
+        ),
         # (
         #     [6, 7, 5, 6, 4, 3, 6, 4],
         #     [3, 2, 3, 4, 6, 6, 5, 5, 5, 2],
