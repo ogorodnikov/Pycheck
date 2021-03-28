@@ -1,3 +1,4 @@
+from collections import Counter
 from heapq import heappop, heappush
 from typing import Tuple, Dict, Set, List
 
@@ -10,7 +11,6 @@ DIRECTIONS = {direction: delta for direction, delta in (zip('ESWN', DELTAS))}
 def train_tracks(rows: Counts, columns: Counts,
                  start: Coords, end: Coords,
                  constraints: Dict[Coords, Set[str]]) -> str:
-
     def print_path(path):
 
         moves = [direction for a, b in zip(path, path[1:])
@@ -35,6 +35,7 @@ def train_tracks(rows: Counts, columns: Counts,
                     row = row[:-1] + 'E'
             print(row)
 
+
     start_cell, end_cell = (complex(y, x) for y, x in (start, end))
 
     all_cells = {complex(y, x) for x in range(len(columns)) for y in range(len(rows))}
@@ -45,12 +46,20 @@ def train_tracks(rows: Counts, columns: Counts,
     defined_cells = {complex(y, x): {DIRECTIONS[d] for d in directions}
                      for (y, x), directions in constraints.items()}
 
+    initial_cells_per_row = [0] * len(rows)
+    initial_cells_per_column = [0] * len(columns)
+
+    for cell in defined_cells:
+        initial_cells_per_row[int(cell.real)] += 1
+        initial_cells_per_column[int(cell.imag)] += 1
+
     start_cell_exit = next(iter(defined_cells[start_cell]))
-    q = [(0, 0, [start_cell], start_cell_exit)]
+    q = [(0, 0, [start_cell], start_cell_exit,
+          initial_cells_per_row, initial_cells_per_column)]
     tick = 0
 
     while q:
-        *_, path, a_exit = heappop(q)
+        _, _, path, a_exit, cells_per_row, cells_per_column = heappop(q)
         a = path[-1]
         b = a + a_exit
 
@@ -59,44 +68,40 @@ def train_tracks(rows: Counts, columns: Counts,
 
         row_index, column_index = int(b.real), int(b.imag)
 
-        cells_already_used_in_row = [cell for cell in set(path) | defined_cells.keys() if int(cell.real) == row_index]
-        cells_already_used_in_column = [cell for cell in set(path) | defined_cells.keys() if
-                                        int(cell.imag) == column_index]
+        # print_path(path + [b])
+        # print('Cells per row:', cells_per_row)
+        # print('Cells per column:', cells_per_column)
+        # input()
 
-        already_used_in_row_count = len(cells_already_used_in_row)
-        already_used_in_column_count = len(cells_already_used_in_column)
-
-        if already_used_in_row_count == rows[row_index] and b not in defined_cells:
-            # print('Row is full:')
-            # print_path(path + [b])
-            # print('B:', b)
-            # print('Cells already used in row:', cells_already_used_in_row)
-            # print('Already used in row count:', already_used_in_row_count)
-            # print('Defined cells:', defined_cells)
-            # print('Row index:', row_index)
-            # print('Row value:', rows[row_index])
-            # input()
+        if cells_per_row[row_index] == rows[row_index] and b not in defined_cells:
             continue
 
-        if already_used_in_column_count == columns[column_index] and b not in defined_cells:
-            # print('Column is full:')
-            # print_path(path + [b])
-            # print('B:', b)
-            # print('Cells already used in column:', cells_already_used_in_column)
-            # print('Already used in column count:', already_used_in_column_count)
-            # print('Defined cells:', defined_cells)
-            # print('Column index:', column_index)
-            # print('Column value:', columns[column_index])
-            # input()
+        if cells_per_column[column_index] == columns[column_index] and b not in defined_cells:
             continue
+
+        if b not in defined_cells:
+            cells_per_row[row_index] += 1
+            cells_per_column[column_index] += 1
+
+        # already_used_in_row_count = 0
+        # for cell in set(path) | defined_cells.keys():
+        #     if int(cell.real) == row_index:
+        #         already_used_in_row_count += 1
+        #
+        # already_used_in_column_count = sum(1 for cell in set(path) | defined_cells.keys() if
+        #                                    int(cell.imag) == column_index)
+        #
+        # if already_used_in_row_count == rows[row_index] and b not in defined_cells:
+        #     continue
+        #
+        # if already_used_in_column_count == columns[column_index] and b not in defined_cells:
+        #     continue
 
         b_enter = -a_exit
 
         try:
             b_deltas_defined = defined_cells[b]
-            # print('    >>>> B in defined_cells:', defined_cells[b])
             if b_enter not in b_deltas_defined:
-                # print('    >>>> But enter does not match:', b_enter)
                 continue
 
             if b == end_cell:
@@ -135,22 +140,18 @@ def train_tracks(rows: Counts, columns: Counts,
         except KeyError:
             b_deltas = {1j, 1, -1j, -1} - {b_enter}
 
-        # print('    B deltas:', b_deltas)
-
         for b_exit in b_deltas:
-            # print('        B enter:    ', b_enter)
-            # print('        B exit:     ', b_exit)
 
             if not tick % 100000:
                 print('Tick:', tick)
                 print_path(path)
             tick += 1
 
-            unpassed_defined_cells = defined_cells.keys() - set(path)
+            # unpassed_defined_cells = defined_cells.keys() - set(path)
             # print('Unpassed defined cells:', unpassed_defined_cells)
 
-            next_defined_cell = min(unpassed_defined_cells,
-                                    key=lambda cell: abs(b + b_exit - cell))
+            # next_defined_cell = min(unpassed_defined_cells,
+            #                         key=lambda cell: abs(b + b_exit - cell))
             # print('Next defined cell:', next_defined_cell)
 
             priority = -tick
@@ -160,7 +161,7 @@ def train_tracks(rows: Counts, columns: Counts,
             # print('Priority:', priority)
             # input()
 
-            heappush(q, (priority, tick, path + [b], b_exit))
+            heappush(q, (priority, tick, path + [b], b_exit, list(cells_per_row), list(cells_per_column)))
 
     raise ValueError
 
@@ -215,22 +216,22 @@ if __name__ == '__main__':
 
 
     TESTS = (
-        # (
-        #     [4, 6, 5, 3, 1, 3, 3, 4],
-        #     [4, 2, 2, 3, 4, 5, 6, 3],
-        #     (3, 0),
-        #     (7, 6),
-        #     {(3, 0): {'N'}, (4, 7): {'N', 'S'},
-        #      (6, 4): {'E', 'W'}, (7, 6): {'W'}},
-        # ),
         (
-            [8, 7, 7, 5, 5, 3, 2, 3],
-            [3, 6, 7, 5, 4, 3, 6, 6],
+            [4, 6, 5, 3, 1, 3, 3, 4],
+            [4, 2, 2, 3, 4, 5, 6, 3],
             (3, 0),
-            (7, 3),
-            {(1, 2): {'E', 'W'}, (1, 6): {'N', 'W'},
-             (3, 0): {'E'}, (7, 3): {'W'}},
+            (7, 6),
+            {(3, 0): {'N'}, (4, 7): {'N', 'S'},
+             (6, 4): {'E', 'W'}, (7, 6): {'W'}},
         ),
+        # (
+        #     [8, 7, 7, 5, 5, 3, 2, 3],
+        #     [3, 6, 7, 5, 4, 3, 6, 6],
+        #     (3, 0),
+        #     (7, 3),
+        #     {(1, 2): {'E', 'W'}, (1, 6): {'N', 'W'},
+        #      (3, 0): {'E'}, (7, 3): {'W'}},
+        # ),
         # (
         #     [6, 7, 5, 6, 4, 3, 6, 4],
         #     [3, 2, 3, 4, 6, 6, 5, 5, 5, 2],
