@@ -98,23 +98,20 @@ def train_tracks(rows: Counts, columns: Counts,
                 continue
 
             if b == end_cell:
-                # check_set = defined_cells.keys()
-                # check_vector = [cell in path + [b] for cell in defined_cells]
-
-                # print('++++ End cell reached:', end_cell)
-                # print('Path:        ', path)
-                # print('Check set:   ', check_set)
-                # print('Check vector:', check_vector)
-
                 final_path = path + [b]
 
                 if any(cell not in final_path for cell in defined_cells):
-                    print('Defined cell not in final path')
+                    print('---- Defined cell not in final path')
                     continue
 
                 if any(sum(int(cell.real) == row_index for cell in final_path) < row_limitation
                        for row_index, row_limitation in enumerate(rows)):
-                    print('Row cell count < row limitation')
+                    print('---- Row cell count < row limitation')
+                    continue
+
+                if any(sum(int(cell.imag) == column_index for cell in final_path) < column_limitation
+                       for column_index, column_limitation in enumerate(columns)):
+                    print('---- Column cell count < column limitation')
                     continue
 
                 moves = [direction for a, b in zip(final_path, final_path[1:])
