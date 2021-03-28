@@ -59,17 +59,32 @@ def train_tracks(rows: Counts, columns: Counts,
         row_index, column_index = int(b.real), int(b.imag)
 
         cells_already_used_in_row = [cell for cell in set(path) | defined_cells.keys() if int(cell.real) == row_index]
+        cells_already_used_in_column = [cell for cell in set(path) | defined_cells.keys() if int(cell.imag) == column_index]
+
         already_used_in_row_count = len(cells_already_used_in_row)
+        already_used_in_column_count = len(cells_already_used_in_column)
 
         if already_used_in_row_count == rows[row_index] and b not in defined_cells:
-            print('Row is full:')
+            # print('Row is full:')
+            # print_path(path + [b])
+            # print('B:', b)
+            # print('Cells already used in row:', cells_already_used_in_row)
+            # print('Already used in row count:', already_used_in_row_count)
+            # print('Defined cells:', defined_cells)
+            # print('Row index:', row_index)
+            # print('Row value:', rows[row_index])
+            # input()
+            continue
+
+        if already_used_in_column_count == columns[column_index] and b not in defined_cells:
+            print('Column is full:')
             print_path(path + [b])
             print('B:', b)
-            print('Cells already used in row:', cells_already_used_in_row)
-            print('Already used in row count:', already_used_in_row_count)
+            print('Cells already used in column:', cells_already_used_in_column)
+            print('Already used in column count:', already_used_in_column_count)
             print('Defined cells:', defined_cells)
-            print('Row index:', row_index)
-            print('Row value:', rows[row_index])
+            print('Column index:', column_index)
+            print('Column value:', columns[column_index])
             # input()
             continue
 
@@ -100,7 +115,6 @@ def train_tracks(rows: Counts, columns: Counts,
                 if any(sum(int(cell.real) == row_index for cell in final_path) < row_limitation
                        for row_index, row_limitation in enumerate(rows)):
                     print('Row cell count < row limitation')
-                    input()
                     continue
 
                 moves = [direction for a, b in zip(final_path, final_path[1:])
