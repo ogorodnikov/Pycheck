@@ -8,6 +8,24 @@ DIRECTIONS = {direction: delta for direction, delta in (zip('ESWN', (1j, 1, -1j,
 def train_tracks(rows: Counts, columns: Counts,
                  start: Coords, end: Coords,
                  constraints: Dict[Coords, Set[str]]) -> str:
+    def print_path():
+
+        moves_dict = {cell: move for cell, move in zip(path, moves)}
+
+        for y in range(len(rows)):
+            row = ''
+            for x in range(len(columns)):
+                cell = complex(y, x)
+                if cell in moves_dict:
+                    row += moves_dict[cell].replace('E', '>').replace('N', '^').replace('W', '<').replace('S', 'v')
+                else:
+                    row += '.'
+                if cell == start_cell:
+                    row = row[:-1] + 'S'
+                if cell == end_cell:
+                    row = row[:-1] + 'E'
+            print(row)
+
     start_cell, end_cell = (complex(y, x) for y, x in (start, end))
 
     all_cells = {complex(y, x) for x in range(len(columns)) for y in range(len(rows))}
@@ -58,22 +76,25 @@ def train_tracks(rows: Counts, columns: Counts,
                 # print('Check vector:', check_vector)
 
                 final_path = path + [b]
-                print('Final path:', final_path)
 
-                moves = ''.join(direction for a, b in zip(final_path, final_path[1:])
-                                for direction, delta in DIRECTIONS.items()
-                                if b - a == delta)
-                print('Moves:', moves)
-                return moves
+                if all(cell in final_path for cell in defined_cells):
 
+                    moves = [direction for a, b in zip(final_path, final_path[1:])
+                             for direction, delta in DIRECTIONS.items()
+                             if b - a == delta]
 
+                    moves_string = ''.join(moves)
 
-                if all(cell in path + [b] for cell in defined_cells):
-                    return
+                    print_path()
 
+                    print('Tick:', tick)
+                    print('Final path:', final_path)
+                    print('Moves string:', moves_string)
 
+                    return moves_string
 
             b_deltas = b_deltas_defined - {b_enter}
+
         except KeyError:
             b_deltas = {1j, 1, -1j, -1} - {b_enter}
 
@@ -84,11 +105,6 @@ def train_tracks(rows: Counts, columns: Counts,
             # print('        B exit:     ', b_exit)
 
             q.append((path + [b], b_exit))
-
-
-
-
-
 
 
 if __name__ == '__main__':
