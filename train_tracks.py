@@ -9,7 +9,11 @@ DIRECTIONS = {direction: delta for direction, delta in (zip('ESWN', DELTAS))}
 def train_tracks(rows: Counts, columns: Counts,
                  start: Coords, end: Coords,
                  constraints: Dict[Coords, Set[str]]) -> str:
-    def print_path():
+    def print_path(path):
+
+        moves = [direction for a, b in zip(path, path[1:])
+                 for direction, delta in DIRECTIONS.items()
+                 if b - a == delta]
 
         moves_dict = {cell: move for cell, move in zip(path, moves)}
 
@@ -46,16 +50,27 @@ def train_tracks(rows: Counts, columns: Counts,
         a = path[-1]
         b = a + a_exit
 
-        if not tick % 1000000:
-            print('Tick:', tick)
+        if not tick % 1000000: print('Tick:', tick)
         tick += 1
 
-        # print('A:', a)
-        # print('A exit:', a_exit)
-        # print('B:', b)
-
         if b in path or b in contour:
-            # print('    ---- B already in path | contour')
+            continue
+
+        row_index, column_index = int(b.real), int(b.imag)
+
+        cells_already_used_in_row = [cell for cell in set(path) | defined_cells.keys() if int(cell.real) == row_index]
+        already_used_in_row_count = len(cells_already_used_in_row)
+
+        if already_used_in_row_count == rows[row_index] and b not in defined_cells:
+            print('Row is full:')
+            print_path(path + [b])
+            print('B:', b)
+            print('Cells already used in row:', cells_already_used_in_row)
+            print('Already used in row count:', already_used_in_row_count)
+            print('Defined cells:', defined_cells)
+            print('Row index:', row_index)
+            print('Row value:', rows[row_index])
+            # input()
             continue
 
         b_enter = -a_exit
@@ -78,21 +93,29 @@ def train_tracks(rows: Counts, columns: Counts,
 
                 final_path = path + [b]
 
-                if all(cell in final_path for cell in defined_cells):
+                if any(cell not in final_path for cell in defined_cells):
+                    print('Defined cell not in final path')
+                    continue
 
-                    moves = [direction for a, b in zip(final_path, final_path[1:])
-                             for direction, delta in DIRECTIONS.items()
-                             if b - a == delta]
+                if any(sum(int(cell.real) == row_index for cell in final_path) < row_limitation
+                       for row_index, row_limitation in enumerate(rows)):
+                    print('Row cell count < row limitation')
+                    input()
+                    continue
 
-                    moves_string = ''.join(moves)
+                moves = [direction for a, b in zip(final_path, final_path[1:])
+                         for direction, delta in DIRECTIONS.items()
+                         if b - a == delta]
 
-                    print_path()
+                moves_string = ''.join(moves)
 
-                    print('Tick:', tick)
-                    print('Final path:', final_path)
-                    print('Moves string:', moves_string)
+                print_path(final_path)
 
-                    return moves_string
+                print('Tick:', tick)
+                print('Final path:', final_path)
+                print('Moves string:', moves_string)
+
+                return moves_string
 
             b_deltas = b_deltas_defined - {b_enter}
 
@@ -106,6 +129,8 @@ def train_tracks(rows: Counts, columns: Counts,
             # print('        B exit:     ', b_exit)
 
             q.append((path + [b], b_exit))
+
+    raise ValueError
 
 
 if __name__ == '__main__':
