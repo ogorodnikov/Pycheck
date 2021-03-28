@@ -2,7 +2,8 @@ from typing import Tuple, Dict, Set, List
 
 Counts, Coords = List[int], Tuple[int, int]
 
-DIRECTIONS = {direction: delta for direction, delta in (zip('ESWN', (1j, 1, -1j, -1)))}
+DELTAS = (1j, 1, -1j, -1)
+DIRECTIONS = {direction: delta for direction, delta in (zip('ESWN', DELTAS))}
 
 
 def train_tracks(rows: Counts, columns: Counts,
@@ -30,6 +31,9 @@ def train_tracks(rows: Counts, columns: Counts,
 
     all_cells = {complex(y, x) for x in range(len(columns)) for y in range(len(rows))}
 
+    shifted_cell_sets = ({cell + delta for cell in all_cells} for delta in DELTAS)
+    contour = set.union(*(shifted_cells - all_cells for shifted_cells in shifted_cell_sets))
+
     defined_cells = {complex(y, x): {DIRECTIONS[d] for d in directions}
                      for (y, x), directions in constraints.items()}
 
@@ -50,11 +54,8 @@ def train_tracks(rows: Counts, columns: Counts,
         # print('A exit:', a_exit)
         # print('B:', b)
 
-        if b not in all_cells:
-            # print('    ---- B out of borders')
-            continue
-        if b in path:
-            # print('    ---- B already in path')
+        if b in path or b in contour:
+            # print('    ---- B already in path | contour')
             continue
 
         b_enter = -a_exit
