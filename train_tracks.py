@@ -54,9 +54,10 @@ def train_tracks(rows: Counts, columns: Counts,
         initial_cells_per_column[int(cell.imag)] += 1
 
     start_cell_exit = next(iter(defined_cells[start_cell]))
-    q = [(0, 0, [start_cell], start_cell_exit,
-          initial_cells_per_row, initial_cells_per_column)]
+
     tick = 0
+    q = [(0, tick, [start_cell], start_cell_exit,
+          initial_cells_per_row, initial_cells_per_column)]
 
     while q:
         _, _, path, a_exit, cells_per_row, cells_per_column = heappop(q)
@@ -68,34 +69,14 @@ def train_tracks(rows: Counts, columns: Counts,
 
         row_index, column_index = int(b.real), int(b.imag)
 
-        # print_path(path + [b])
-        # print('Cells per row:', cells_per_row)
-        # print('Cells per column:', cells_per_column)
-        # input()
-
-        if cells_per_row[row_index] == rows[row_index] and b not in defined_cells:
-            continue
-
-        if cells_per_column[column_index] == columns[column_index] and b not in defined_cells:
-            continue
-
         if b not in defined_cells:
+
+            if cells_per_row[row_index] == rows[row_index]:
+                continue
+            if cells_per_column[column_index] == columns[column_index]:
+                continue
             cells_per_row[row_index] += 1
             cells_per_column[column_index] += 1
-
-        # already_used_in_row_count = 0
-        # for cell in set(path) | defined_cells.keys():
-        #     if int(cell.real) == row_index:
-        #         already_used_in_row_count += 1
-        #
-        # already_used_in_column_count = sum(1 for cell in set(path) | defined_cells.keys() if
-        #                                    int(cell.imag) == column_index)
-        #
-        # if already_used_in_row_count == rows[row_index] and b not in defined_cells:
-        #     continue
-        #
-        # if already_used_in_column_count == columns[column_index] and b not in defined_cells:
-        #     continue
 
         b_enter = -a_exit
 
@@ -142,24 +123,18 @@ def train_tracks(rows: Counts, columns: Counts,
 
         for b_exit in b_deltas:
 
+            # unpassed_defined_cells = defined_cells.keys() - set(path)
+            #
+            # next_defined_cell = min(unpassed_defined_cells,
+            #                         key=lambda cell: abs(b + b_exit - cell))
+            # priority = abs(b + b_exit - next_defined_cell)
+
             if not tick % 100000:
                 print('Tick:', tick)
                 print_path(path)
             tick += 1
 
-            # unpassed_defined_cells = defined_cells.keys() - set(path)
-            # print('Unpassed defined cells:', unpassed_defined_cells)
-
-            # next_defined_cell = min(unpassed_defined_cells,
-            #                         key=lambda cell: abs(b + b_exit - cell))
-            # print('Next defined cell:', next_defined_cell)
-
             priority = -tick
-            # priority = abs(b + b_exit - next_defined_cell)
-
-            # print('B b exit:', b + b_exit)
-            # print('Priority:', priority)
-            # input()
 
             heappush(q, (priority, tick, path + [b], b_exit, list(cells_per_row), list(cells_per_column)))
 
@@ -224,22 +199,22 @@ if __name__ == '__main__':
             {(3, 0): {'N'}, (4, 7): {'N', 'S'},
              (6, 4): {'E', 'W'}, (7, 6): {'W'}},
         ),
-        # (
-        #     [8, 7, 7, 5, 5, 3, 2, 3],
-        #     [3, 6, 7, 5, 4, 3, 6, 6],
-        #     (3, 0),
-        #     (7, 3),
-        #     {(1, 2): {'E', 'W'}, (1, 6): {'N', 'W'},
-        #      (3, 0): {'E'}, (7, 3): {'W'}},
-        # ),
-        # (
-        #     [6, 7, 5, 6, 4, 3, 6, 4],
-        #     [3, 2, 3, 4, 6, 6, 5, 5, 5, 2],
-        #     (3, 0),
-        #     (7, 4),
-        #     {(1, 3): {'N', 'E'}, (3, 0): {'N'}, (4, 5): {'N', 'E'},
-        #      (5, 6): {'E', 'S'}, (7, 4): {'N'}, (7, 8): {'E', 'W'}},
-        # ),
+        (
+            [8, 7, 7, 5, 5, 3, 2, 3],
+            [3, 6, 7, 5, 4, 3, 6, 6],
+            (3, 0),
+            (7, 3),
+            {(1, 2): {'E', 'W'}, (1, 6): {'N', 'W'},
+             (3, 0): {'E'}, (7, 3): {'W'}},
+        ),
+        (
+            [6, 7, 5, 6, 4, 3, 6, 4],
+            [3, 2, 3, 4, 6, 6, 5, 5, 5, 2],
+            (3, 0),
+            (7, 4),
+            {(1, 3): {'N', 'E'}, (3, 0): {'N'}, (4, 5): {'N', 'E'},
+             (5, 6): {'E', 'S'}, (7, 4): {'N'}, (7, 8): {'E', 'W'}},
+        ),
         # (
         #     [6, 5, 7, 7, 5, 7, 7, 8, 5, 3],
         #     [5, 4, 7, 8, 7, 6, 7, 4, 4, 8],
