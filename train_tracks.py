@@ -59,8 +59,37 @@ class TrainBoard:
         while is_changed:
             is_changed = False
 
+            for a, a_exit in ((a, a_exit) for a, a_exits
+                              in self.defined_cells.copy().items()
+                              for a_exit in a_exits):
 
+                b = a + a_exit
+                b_enter = -a_exit
 
+                print('A:', a)
+                print('A exit:', a_exit)
+                print('B:', b)
+
+                if b in self.defined_cells:
+                    continue
+
+                row_index, column_index = int(b.real), int(b.imag)
+
+                self.cells_per_row[row_index] += 1
+                self.cells_per_column[column_index] += 1
+
+                self.defined_cells[b] = {b_enter}
+
+                for b_exit in DELTAS:
+                    if b_exit == b_enter:
+                        continue
+                    if b + b_exit in self.contour:
+                        continue
+                    self.defined_cells[b].add(b_exit)
+                    print('    B enter:', b_enter)
+                    print('    B exit:', b_exit)
+                    print('    self.defined_cells[b]:', self.defined_cells[b])
+                    input()
 
 
     def find_path(self):
@@ -217,22 +246,22 @@ if __name__ == '__main__':
             {(3, 0): {'N'}, (4, 7): {'N', 'S'},
              (6, 4): {'E', 'W'}, (7, 6): {'W'}},
         ),
-        (
-            [8, 7, 7, 5, 5, 3, 2, 3],
-            [3, 6, 7, 5, 4, 3, 6, 6],
-            (3, 0),
-            (7, 3),
-            {(1, 2): {'E', 'W'}, (1, 6): {'N', 'W'},
-             (3, 0): {'E'}, (7, 3): {'W'}},
-        ),
-        (
-            [6, 7, 5, 6, 4, 3, 6, 4],
-            [3, 2, 3, 4, 6, 6, 5, 5, 5, 2],
-            (3, 0),
-            (7, 4),
-            {(1, 3): {'N', 'E'}, (3, 0): {'N'}, (4, 5): {'N', 'E'},
-             (5, 6): {'E', 'S'}, (7, 4): {'N'}, (7, 8): {'E', 'W'}},
-        ),
+        # (
+        #     [8, 7, 7, 5, 5, 3, 2, 3],
+        #     [3, 6, 7, 5, 4, 3, 6, 6],
+        #     (3, 0),
+        #     (7, 3),
+        #     {(1, 2): {'E', 'W'}, (1, 6): {'N', 'W'},
+        #      (3, 0): {'E'}, (7, 3): {'W'}},
+        # ),
+        # (
+        #     [6, 7, 5, 6, 4, 3, 6, 4],
+        #     [3, 2, 3, 4, 6, 6, 5, 5, 5, 2],
+        #     (3, 0),
+        #     (7, 4),
+        #     {(1, 3): {'N', 'E'}, (3, 0): {'N'}, (4, 5): {'N', 'E'},
+        #      (5, 6): {'E', 'S'}, (7, 4): {'N'}, (7, 8): {'E', 'W'}},
+        # ),
         # (
         #     [6, 5, 7, 7, 5, 7, 7, 8, 5, 3],
         #     [5, 4, 7, 8, 7, 6, 7, 4, 4, 8],
