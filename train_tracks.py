@@ -89,7 +89,7 @@ class TrainBoard:
                     print('    B enter:', b_enter)
                     print('    B exit:', b_exit)
                     print('    self.defined_cells[b]:', self.defined_cells[b])
-                    input()
+                    # input()
 
 
     def find_path(self):
@@ -172,6 +172,7 @@ class TrainBoard:
                 if not tick % 100000:
                     print('Tick:', tick)
                     self.print_path(path)
+                    print()
                 tick += 1
 
                 priority = -tick
@@ -238,14 +239,14 @@ if __name__ == '__main__':
 
 
     TESTS = (
-        (
-            [4, 6, 5, 3, 1, 3, 3, 4],
-            [4, 2, 2, 3, 4, 5, 6, 3],
-            (3, 0),
-            (7, 6),
-            {(3, 0): {'N'}, (4, 7): {'N', 'S'},
-             (6, 4): {'E', 'W'}, (7, 6): {'W'}},
-        ),
+        # (
+        #     [4, 6, 5, 3, 1, 3, 3, 4],
+        #     [4, 2, 2, 3, 4, 5, 6, 3],
+        #     (3, 0),
+        #     (7, 6),
+        #     {(3, 0): {'N'}, (4, 7): {'N', 'S'},
+        #      (6, 4): {'E', 'W'}, (7, 6): {'W'}},
+        # ),
         # (
         #     [8, 7, 7, 5, 5, 3, 2, 3],
         #     [3, 6, 7, 5, 4, 3, 6, 6],
