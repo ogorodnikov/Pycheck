@@ -174,9 +174,9 @@ class TrainBoard:
             if b in path:
                 continue
 
-            row_index, column_index = int(b.real), int(b.imag)
-
             if b not in self.tracks:
+                row_index = int(b.real)
+                column_index = int(b.imag)
 
                 if cells_per_row[row_index] == self.rows[row_index]:
                     continue
@@ -205,12 +205,6 @@ class TrainBoard:
                 return moves
 
             for b_exit in b_deltas:
-
-                # unpassed_defined_cells = defined_cells.keys() - set(path)
-                #
-                # next_defined_cell = min(unpassed_defined_cells,
-                #                         key=lambda cell: abs(b + b_exit - cell))
-                # priority = abs(b + b_exit - next_defined_cell)
 
                 if not tick % 100000:
                     print('Tick:', tick)
@@ -254,7 +248,6 @@ def train_tracks(rows, columns, start, end, constraints):
     print('After stubs:')
     board.print_board()
     print()
-    input()
 
     path_string = board.find_path()
     return path_string
