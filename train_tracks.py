@@ -73,33 +73,25 @@ class TrainBoard:
                             for (y, x), directions in constraints.items()}
         self.exits.update(self.constraints)
 
+        self.empty = set()
         self.tracks = set()
         self.set_tracks()
-        self.empty = set()
-
-        print('Self tracks:', self.tracks)
 
         self.cells_per_row = [0] * len(rows)
         self.cells_per_column = [0] * len(columns)
 
-        for cell in self.exits:
+        for cell in self.tracks:
             self.cells_per_row[int(cell.real)] += 1
             self.cells_per_column[int(cell.imag)] += 1
 
         self.start_cell_exit = next(iter(self.exits[self.start_cell]))
 
+        self.remove_filled_rows_and_columns()
+        self.remove_neighbor_exits()
+        self.remove_stubs()
+
     def is_in_board(self, cell):
         return self.height > cell.real >= 0 and self.width > cell.imag >= 0
-
-    @property
-    def fixed(self):
-        return {cell for cell, exits in self.exits.items() if 2 >= len(exits) >= 1}
-
-    @property
-    def stubs(self):
-        return {cell: exits for cell, exits in self.exits.items()
-                if len(exits) == 1
-                and cell not in (self.start_cell, self.end_cell)}
 
     def set_tracks(self):
         for a, a_exits in self.constraints.items():
@@ -108,18 +100,33 @@ class TrainBoard:
                 b = a + a_exit
                 self.tracks.add(b)
 
-    def add_filled_rows_and_columns(self):
-        # print('Self rows:', self.rows)
-        # print('Self cells per row:', self.cells_per_row)
+    def remove_filled_rows_and_columns(self):
+
+        print('Self rows:         ', self.rows)
+        print('Self cells per row:', self.cells_per_row)
+
+        for row_index, (cells_per_row, row_limit) in enumerate(zip(self.cells_per_row, self.rows)):
+            if cells_per_row == row_limit:
+                for column_index in range(len(self.columns)):
+                    cell = complex(row_index, column_index)
+                    self.exits[cell] = set()
+                    self.empty |= {cell}
+
+        self.print_board()
+        quit()
+
+    def remove_neighbor_exits(self):
 
         contour = {cell: set() for cell in self.contour_cells}
-        fixed = {cell: self.exits[cell] for cell in self.fixed}
+        tracks = {cell: self.exits[cell] for cell in self.tracks}
+        empty = {cell: self.exits[cell] for cell in self.empty}
 
-        contour_and_fixed = dict()
-        contour_and_fixed.update(contour)
-        contour_and_fixed.update(fixed)
+        defined = dict()
+        defined.update(contour)
+        defined.update(tracks)
+        defined.update(empty)
 
-        for a, a_exits in contour_and_fixed.items():
+        for a, a_exits in defined.items():
             a_missing_exits = set(DELTAS) - a_exits
 
             for a_missing_exit in a_missing_exits:
@@ -135,13 +142,19 @@ class TrainBoard:
         self.print_board()
         print()
 
-        print('Before - Self stubs:', self.stubs)
-        print()
-
         quit()
 
-        while self.stubs:
-            for stub, stub_exits in self.stubs:
+    def remove_stubs(self):
+
+        def get_stubs():
+            return {cell: exits for cell, exits in self.exits.items()
+                    if len(exits) == 1
+                    and cell not in (self.start_cell, self.end_cell)}
+
+        stubs = get_stubs()
+
+        while stubs:
+            for stub, stub_exits in stubs.items():
                 for stub_exit in stub_exits:
                     b = stub + stub_exit
 
@@ -149,24 +162,12 @@ class TrainBoard:
                         continue
 
                     b_exit = -stub_exit
-                    self.exits[b] -= b_exit
+                    print('    B exit:', b_exit)
+                    self.exits[b] -= {b_exit}
+                    self.exits[stub] = set()
+                    self.empty |= {stub}
 
-        print('After - Self stubs:', self.stubs)
-        print()
-
-        quit()
-
-        for row_index, (cells_per_row, row_limit) in enumerate(zip(self.cells_per_row, self.rows)):
-            if cells_per_row == row_limit:
-                for column_index in range(len(self.columns)):
-                    cell = complex(row_index, column_index)
-                    if cell not in self.defined_cells:
-                        # self.defined_cells[cell] = set()
-                        self.contour.add(cell)
-
-        self.print_path([])
-        print('Self defined cells:', self.defined_cells)
-        input()
+            stubs = get_stubs()
 
     def find_path(self):
 
@@ -261,7 +262,7 @@ class TrainBoard:
 def train_tracks(rows, columns, start, end, constraints):
     board = TrainBoard(rows, columns, start, end, constraints)
 
-    board.add_filled_rows_and_columns()
+
     path_string = board.find_path()
     return path_string
 
