@@ -42,7 +42,7 @@ class TrainBoard:
                     letter = 'E'
                 elif cell in self.tracks:
                     letter = 'T'
-                elif cell in self._empty:
+                elif cell in self.empty:
                     letter = 'X'
                 else:
                     letter = ':'
@@ -90,7 +90,7 @@ class TrainBoard:
         self.remove_stubs()
 
     @property
-    def _empty(self):
+    def empty(self):
         return {cell for cell, exits in self.exits.items() if len(exits) == 0}
 
     def is_in_board(self, cell):
@@ -112,6 +112,8 @@ class TrainBoard:
             if cells_per_row == row_limit:
                 for column_index in range(len(self.columns)):
                     cell = complex(row_index, column_index)
+                    if cell in self.tracks:
+                        continue
                     self.exits[cell] = set()
 
         # self.print_board()
@@ -121,7 +123,7 @@ class TrainBoard:
 
         contour = {cell: set() for cell in self.contour_cells}
         tracks = {cell: self.exits[cell] for cell in self.tracks}
-        empty = {cell: self.exits[cell] for cell in self._empty}
+        empty = {cell: self.exits[cell] for cell in self.empty}
 
         defined = dict()
         defined.update(contour)
