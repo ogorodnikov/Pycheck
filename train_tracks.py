@@ -45,12 +45,12 @@ class TrainBoard:
                 elif cell in self.empty:
                     letter = 'X'
                 else:
-                    letter = ':'
+                    letter = '.'
 
                 if len(self.exits[cell]) < 4:
                     row += f'{cell:6} {letter} {" ".join(str(e) for e in self.exits[cell]).replace("(-0-1j)", "-j").replace("1j", "j"):10}'
                 else:
-                    row += f'{"":6} . {" " * 10}'
+                    row += f'{"":6} {letter} {" " * 10}'
 
             print(row)
 
@@ -112,6 +112,17 @@ class TrainBoard:
                         continue
                     self.exits[cell] = set()
 
+        for column_index, (cells_per_column, column_limit) in enumerate(zip(self.cells_per_column, self.columns)):
+            if cells_per_column == column_limit:
+                for row_index in range(len(self.rows)):
+                    cell = complex(row_index, column_index)
+                    if cell in self.tracks:
+                        continue
+                    self.print_board()
+                    print('Cell:', cell)
+                    input()
+                    self.exits[cell] = set()
+
     def remove_neighbor_exits(self):
 
         contour = {cell: set() for cell in self.contour_cells}
@@ -158,16 +169,15 @@ class TrainBoard:
 
             stubs = get_stubs()
 
-
     def find_path(self):
 
         tick = 0
-        q = [(0, tick, [self.start_cell], self.start_cell_exit,
+        q = [([self.start_cell], self.start_cell_exit,
               self.cells_per_row, self.cells_per_column)]
 
         while q:
 
-            _, _, path, a_exit, cells_per_row, cells_per_column = heappop(q)
+            path, a_exit, cells_per_row, cells_per_column = q.pop()
             a = path[-1]
             b = a + a_exit
 
@@ -206,15 +216,15 @@ class TrainBoard:
 
             for b_exit in b_deltas:
 
-                if not tick % 100000:
+                if not tick % 1000000:
                     print('Tick:', tick)
                     self.print_path(path)
                     print()
                 tick += 1
 
-                priority = -tick
+                # priority = -tick
 
-                heappush(q, (priority, tick, path + [b], b_exit, list(cells_per_row), list(cells_per_column)))
+                q.append((path + [b], b_exit, list(cells_per_row), list(cells_per_column)))
 
         raise ValueError
 
@@ -311,31 +321,31 @@ if __name__ == '__main__':
             {(3, 0): {'N'}, (4, 7): {'N', 'S'},
              (6, 4): {'E', 'W'}, (7, 6): {'W'}},
         ),
-        (
-            [8, 7, 7, 5, 5, 3, 2, 3],
-            [3, 6, 7, 5, 4, 3, 6, 6],
-            (3, 0),
-            (7, 3),
-            {(1, 2): {'E', 'W'}, (1, 6): {'N', 'W'},
-             (3, 0): {'E'}, (7, 3): {'W'}},
-        ),
-        (
-            [6, 7, 5, 6, 4, 3, 6, 4],
-            [3, 2, 3, 4, 6, 6, 5, 5, 5, 2],
-            (3, 0),
-            (7, 4),
-            {(1, 3): {'N', 'E'}, (3, 0): {'N'}, (4, 5): {'N', 'E'},
-             (5, 6): {'E', 'S'}, (7, 4): {'N'}, (7, 8): {'E', 'W'}},
-        ),
-        (
-            [6, 5, 7, 7, 5, 7, 7, 8, 5, 3],
-            [5, 4, 7, 8, 7, 6, 7, 4, 4, 8],
-            (1, 0),
-            (9, 5),
-            {(1, 0): {'N'}, (3, 0): {'E', 'S'}, (4, 5): {'W', 'S'},
-             (6, 2): {'W', 'S'}, (6, 4): {'E', 'S'}, (6, 5): {'E', 'W'},
-             (8, 3): {'E', 'W'}, (9, 5): {'E'}},
-        ),
+        # (
+        #     [8, 7, 7, 5, 5, 3, 2, 3],
+        #     [3, 6, 7, 5, 4, 3, 6, 6],
+        #     (3, 0),
+        #     (7, 3),
+        #     {(1, 2): {'E', 'W'}, (1, 6): {'N', 'W'},
+        #      (3, 0): {'E'}, (7, 3): {'W'}},
+        # ),
+        # (
+        #     [6, 7, 5, 6, 4, 3, 6, 4],
+        #     [3, 2, 3, 4, 6, 6, 5, 5, 5, 2],
+        #     (3, 0),
+        #     (7, 4),
+        #     {(1, 3): {'N', 'E'}, (3, 0): {'N'}, (4, 5): {'N', 'E'},
+        #      (5, 6): {'E', 'S'}, (7, 4): {'N'}, (7, 8): {'E', 'W'}},
+        # ),
+        # (
+        #     [6, 5, 7, 7, 5, 7, 7, 8, 5, 3],
+        #     [5, 4, 7, 8, 7, 6, 7, 4, 4, 8],
+        #     (1, 0),
+        #     (9, 5),
+        #     {(1, 0): {'N'}, (3, 0): {'E', 'S'}, (4, 5): {'W', 'S'},
+        #      (6, 2): {'W', 'S'}, (6, 4): {'E', 'S'}, (6, 5): {'E', 'W'},
+        #      (8, 3): {'E', 'W'}, (9, 5): {'E'}},
+        # ),
     )
 
     from copy import deepcopy
