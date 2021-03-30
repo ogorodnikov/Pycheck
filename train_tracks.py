@@ -89,6 +89,12 @@ class TrainBoard:
         self.remove_neighbor_exits()
         self.remove_stubs()
 
+        print('After stubs:')
+        self.print_board()
+        print()
+
+        quit()
+
     @property
     def empty(self):
         return {cell for cell, exits in self.exits.items() if len(exits) == 0}
@@ -104,10 +110,6 @@ class TrainBoard:
                 self.tracks.add(b)
 
     def remove_filled_rows_and_columns(self):
-
-        print('Self rows:         ', self.rows)
-        print('Self cells per row:', self.cells_per_row)
-
         for row_index, (cells_per_row, row_limit) in enumerate(zip(self.cells_per_row, self.rows)):
             if cells_per_row == row_limit:
                 for column_index in range(len(self.columns)):
@@ -116,8 +118,6 @@ class TrainBoard:
                         continue
                     self.exits[cell] = set()
 
-        # self.print_board()
-        # quit()
 
     def remove_neighbor_exits(self):
 
@@ -142,12 +142,6 @@ class TrainBoard:
                 b_missing_exit = -a_missing_exit
                 self.exits[b] -= {b_missing_exit}
 
-        print('Self track cells:', self.exits)
-        self.print_board()
-        print()
-
-        quit()
-
     def remove_stubs(self):
 
         def get_stubs():
@@ -166,11 +160,11 @@ class TrainBoard:
                         continue
 
                     b_exit = -stub_exit
-                    print('    B exit:', b_exit)
                     self.exits[b] -= {b_exit}
                     self.exits[stub] = set()
 
             stubs = get_stubs()
+
 
     def find_path(self):
 
