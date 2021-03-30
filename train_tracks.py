@@ -22,10 +22,8 @@ class TrainBoard:
                     row += moves_dict[cell].replace('E', '>').replace('N', '^').replace('W', '<').replace('S', 'v')
                 else:
                     row += '.'
-                if cell in self.contour:
-                    row = row[:-1] + 'C'
-                if cell in self.defined_cells:
-                    row = row[:-1] + 'D'
+                if cell in self.track_cells:
+                    row = row[:-1] + 'T'
                 if cell == self.start_cell:
                     row = row[:-1] + 'S'
                 if cell == self.end_cell:
@@ -37,10 +35,10 @@ class TrainBoard:
             row = ''
             for x in range(len(self.columns)):
                 cell = complex(y, x)
-                if cell in self.cells:
-                    row += f'{cell:6}:{" ".join(str(e) for e in self.cells[cell]).replace("(-0-1j)", "-j").replace("1j", "j"):10}'
+                if cell in self.track_cells:
+                    row += f'{cell:6}:{" ".join(str(e) for e in self.track_cells[cell]).replace("(-0-1j)", "-j").replace("1j", "j"):10}'
                 else:
-                    row += f'{"":6}.{" "*10}'
+                    row += f'{"":6}.{" " * 10}'
             print(row)
 
     def __init__(self, rows, columns, start, end, constraints):
@@ -54,72 +52,60 @@ class TrainBoard:
         shifted_cell_sets = ({cell + delta for cell in all_cells} for delta in DELTAS)
         self.contour_cells = set.union(*(shifted_cells for shifted_cells in shifted_cell_sets)) - all_cells
 
-        self.defined_cells = {complex(y, x): {DIRECTIONS[d] for d in directions}
-                              for (y, x), directions in constraints.items()}
-
-        print('Self defined cells:', self.defined_cells)
+        self.track_cells = {complex(y, x): {DIRECTIONS[d] for d in directions}
+                            for (y, x), directions in constraints.items()}
 
         self.cells_per_row = [0] * len(rows)
         self.cells_per_column = [0] * len(columns)
 
-        for cell in self.defined_cells:
+        for cell in self.track_cells:
             self.cells_per_row[int(cell.real)] += 1
             self.cells_per_column[int(cell.imag)] += 1
 
-        self.start_cell_exit = next(iter(self.defined_cells[self.start_cell]))
-
-        self.cells = {cell: exits.copy() for cell, exits in self.defined_cells.items()}
+        self.start_cell_exit = next(iter(self.track_cells[self.start_cell]))
 
         self.add_defined_border_cells()
 
     @property
     def defined(self):
-        return {cell for cell in self.cells if 2 >= len(self.cells[cell]) >= 1}
+        return {cell for cell, exits in self.track_cells.items() if 2 >= len(exits) >= 1}
 
     @property
     def stub_cells(self):
-        return {cell: exits for cell, exits in self.cells.items()
+        return {cell: exits for cell, exits in self.track_cells.items()
                 if len(exits) == 1
                 and cell not in (self.start_cell, self.end_cell)}
-    
+
     def add_defined_border_cells(self):
-        for a, a_exits in self.defined_cells.items():
+        for a, a_exits in self.track_cells.copy().items():
             for a_exit in a_exits:
                 b = a + a_exit
-                self.cells[b] = set(DELTAS)
+                self.track_cells[b] = set(DELTAS)
 
     def add_filled_rows_and_columns(self):
         # print('Self rows:', self.rows)
         # print('Self cells per row:', self.cells_per_row)
 
         contour = {cell: set() for cell in self.contour_cells}
-        defined = {cell: self.cells[cell] for cell in self.defined}
+        defined = {cell: self.track_cells[cell] for cell in self.defined}
 
         contour_and_defined = dict()
         contour_and_defined.update(contour)
         contour_and_defined.update(defined)
 
-        self.print_board()
-        print()
-
         for a, a_exits in contour_and_defined.items():
             a_missing_exits = set(DELTAS) - a_exits
-
-            # print('A:', a)
-            # print('A exits:', a_exits)
-            # print('A missing exits:', a_missing_exits)
-            # input()
 
             for a_missing_exit in a_missing_exits:
                 b = a + a_missing_exit
 
-                if b not in self.cells:
+                if b not in self.track_cells:
                     continue
 
                 b_missing_exit = -a_missing_exit
-                self.cells[b] -= {b_missing_exit}
+                self.track_cells[b] -= {b_missing_exit}
 
-        print('Self cells:', self.cells)
+        print('Self track cells:', self.track_cells)
         self.print_board()
         print()
         quit()
