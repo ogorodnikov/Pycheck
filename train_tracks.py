@@ -42,7 +42,7 @@ class TrainBoard:
                     letter = 'E'
                 elif cell in self.tracks:
                     letter = 'T'
-                elif cell in self.empty:
+                elif cell in self._empty:
                     letter = 'X'
                 else:
                     letter = ':'
@@ -90,6 +90,10 @@ class TrainBoard:
         self.remove_neighbor_exits()
         self.remove_stubs()
 
+    @property
+    def _empty(self):
+        return {cell for cell, exits in self.exits.items() if len(exits) == 0}
+
     def is_in_board(self, cell):
         return self.height > cell.real >= 0 and self.width > cell.imag >= 0
 
@@ -112,8 +116,8 @@ class TrainBoard:
                     self.exits[cell] = set()
                     self.empty |= {cell}
 
-        self.print_board()
-        quit()
+        # self.print_board()
+        # quit()
 
     def remove_neighbor_exits(self):
 
