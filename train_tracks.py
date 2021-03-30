@@ -186,47 +186,38 @@ class TrainBoard:
                 cells_per_column[column_index] += 1
 
             b_enter = -a_exit
+            b_deltas = self.exits[b] - {b_enter}
 
-            try:
-                b_deltas_defined = self.exits[b]
-                if b_enter not in b_deltas_defined:
+            if b == self.end_cell:
+                final_path = path + [b]
+
+                if any(cell not in final_path for cell in self.constraints):
+                    # print('---- Constraint not in final path')
                     continue
 
-                if b == self.end_cell:
-                    final_path = path + [b]
+                if any(sum(int(cell.real) == row_index for cell in final_path) < row_limitation
+                       for row_index, row_limitation in enumerate(self.rows)):
+                    # print('---- Row cell count < row limitation')
+                    continue
 
-                    if any(cell not in final_path for cell in self.constraints):
-                        # print('---- Constraint not in final path')
-                        continue
+                if any(sum(int(cell.imag) == column_index for cell in final_path) < column_limitation
+                       for column_index, column_limitation in enumerate(self.columns)):
+                    # print('---- Column cell count < column limitation')
+                    continue
 
-                    if any(sum(int(cell.real) == row_index for cell in final_path) < row_limitation
-                           for row_index, row_limitation in enumerate(self.rows)):
-                        # print('---- Row cell count < row limitation')
-                        continue
+                moves = [direction for a, b in zip(final_path, final_path[1:])
+                         for direction, delta in DIRECTIONS.items()
+                         if b - a == delta]
 
-                    if any(sum(int(cell.imag) == column_index for cell in final_path) < column_limitation
-                           for column_index, column_limitation in enumerate(self.columns)):
-                        # print('---- Column cell count < column limitation')
-                        continue
+                moves_string = ''.join(moves)
 
-                    moves = [direction for a, b in zip(final_path, final_path[1:])
-                             for direction, delta in DIRECTIONS.items()
-                             if b - a == delta]
+                self.print_path(final_path)
 
-                    moves_string = ''.join(moves)
+                print('Tick:', tick)
+                print('Final path:', final_path)
+                print('Moves string:', moves_string)
 
-                    self.print_path(final_path)
-
-                    print('Tick:', tick)
-                    print('Final path:', final_path)
-                    print('Moves string:', moves_string)
-
-                    return moves_string
-
-                b_deltas = b_deltas_defined - {b_enter}
-
-            except KeyError:
-                b_deltas = {1j, 1, -1j, -1} - {b_enter}
+                return moves_string
 
             for b_exit in b_deltas:
 
