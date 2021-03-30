@@ -73,7 +73,6 @@ class TrainBoard:
                             for (y, x), directions in constraints.items()}
         self.exits.update(self.constraints)
 
-        self.empty = set()
         self.tracks = set()
         self.set_tracks()
 
@@ -114,7 +113,6 @@ class TrainBoard:
                 for column_index in range(len(self.columns)):
                     cell = complex(row_index, column_index)
                     self.exits[cell] = set()
-                    self.empty |= {cell}
 
         # self.print_board()
         # quit()
@@ -123,7 +121,7 @@ class TrainBoard:
 
         contour = {cell: set() for cell in self.contour_cells}
         tracks = {cell: self.exits[cell] for cell in self.tracks}
-        empty = {cell: self.exits[cell] for cell in self.empty}
+        empty = {cell: self.exits[cell] for cell in self._empty}
 
         defined = dict()
         defined.update(contour)
@@ -169,7 +167,6 @@ class TrainBoard:
                     print('    B exit:', b_exit)
                     self.exits[b] -= {b_exit}
                     self.exits[stub] = set()
-                    self.empty |= {stub}
 
             stubs = get_stubs()
 
