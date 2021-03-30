@@ -189,35 +189,20 @@ class TrainBoard:
             b_deltas = self.exits[b] - {b_enter}
 
             if b == self.end_cell:
+
                 final_path = path + [b]
 
-                if any(cell not in final_path for cell in self.constraints):
-                    # print('---- Constraint not in final path')
+                if not self.check_path(final_path):
                     continue
 
-                if any(sum(int(cell.real) == row_index for cell in final_path) < row_limitation
-                       for row_index, row_limitation in enumerate(self.rows)):
-                    # print('---- Row cell count < row limitation')
-                    continue
-
-                if any(sum(int(cell.imag) == column_index for cell in final_path) < column_limitation
-                       for column_index, column_limitation in enumerate(self.columns)):
-                    # print('---- Column cell count < column limitation')
-                    continue
-
-                moves = [direction for a, b in zip(final_path, final_path[1:])
-                         for direction, delta in DIRECTIONS.items()
-                         if b - a == delta]
-
-                moves_string = ''.join(moves)
+                moves = self.path_to_moves(final_path)
 
                 self.print_path(final_path)
-
                 print('Tick:', tick)
                 print('Final path:', final_path)
-                print('Moves string:', moves_string)
+                print('Moves string:', moves)
 
-                return moves_string
+                return moves
 
             for b_exit in b_deltas:
 
@@ -239,6 +224,29 @@ class TrainBoard:
 
         raise ValueError
 
+    def check_path(self, final_path):
+        if any(cell not in final_path for cell in self.constraints):
+            # print('---- Constraint not in final path')
+            return False
+
+        if any(sum(int(cell.real) == row_index for cell in final_path) < row_limitation
+               for row_index, row_limitation in enumerate(self.rows)):
+            # print('---- Row cell count < row limitation')
+            return False
+
+        if any(sum(int(cell.imag) == column_index for cell in final_path) < column_limitation
+               for column_index, column_limitation in enumerate(self.columns)):
+            # print('---- Column cell count < column limitation')
+            return False
+
+        return True
+
+    @staticmethod
+    def path_to_moves(path):
+        moves = [direction for a, b in zip(path, path[1:])
+                 for direction, delta in DIRECTIONS.items()
+                 if b - a == delta]
+        return ''.join(moves)
 
 def train_tracks(rows, columns, start, end, constraints):
     board = TrainBoard(rows, columns, start, end, constraints)
@@ -246,6 +254,7 @@ def train_tracks(rows, columns, start, end, constraints):
     print('After stubs:')
     board.print_board()
     print()
+    input()
 
     path_string = board.find_path()
     return path_string
@@ -309,31 +318,31 @@ if __name__ == '__main__':
             {(3, 0): {'N'}, (4, 7): {'N', 'S'},
              (6, 4): {'E', 'W'}, (7, 6): {'W'}},
         ),
-        # (
-        #     [8, 7, 7, 5, 5, 3, 2, 3],
-        #     [3, 6, 7, 5, 4, 3, 6, 6],
-        #     (3, 0),
-        #     (7, 3),
-        #     {(1, 2): {'E', 'W'}, (1, 6): {'N', 'W'},
-        #      (3, 0): {'E'}, (7, 3): {'W'}},
-        # ),
-        # (
-        #     [6, 7, 5, 6, 4, 3, 6, 4],
-        #     [3, 2, 3, 4, 6, 6, 5, 5, 5, 2],
-        #     (3, 0),
-        #     (7, 4),
-        #     {(1, 3): {'N', 'E'}, (3, 0): {'N'}, (4, 5): {'N', 'E'},
-        #      (5, 6): {'E', 'S'}, (7, 4): {'N'}, (7, 8): {'E', 'W'}},
-        # ),
-        # (
-        #     [6, 5, 7, 7, 5, 7, 7, 8, 5, 3],
-        #     [5, 4, 7, 8, 7, 6, 7, 4, 4, 8],
-        #     (1, 0),
-        #     (9, 5),
-        #     {(1, 0): {'N'}, (3, 0): {'E', 'S'}, (4, 5): {'W', 'S'},
-        #      (6, 2): {'W', 'S'}, (6, 4): {'E', 'S'}, (6, 5): {'E', 'W'},
-        #      (8, 3): {'E', 'W'}, (9, 5): {'E'}},
-        # ),
+        (
+            [8, 7, 7, 5, 5, 3, 2, 3],
+            [3, 6, 7, 5, 4, 3, 6, 6],
+            (3, 0),
+            (7, 3),
+            {(1, 2): {'E', 'W'}, (1, 6): {'N', 'W'},
+             (3, 0): {'E'}, (7, 3): {'W'}},
+        ),
+        (
+            [6, 7, 5, 6, 4, 3, 6, 4],
+            [3, 2, 3, 4, 6, 6, 5, 5, 5, 2],
+            (3, 0),
+            (7, 4),
+            {(1, 3): {'N', 'E'}, (3, 0): {'N'}, (4, 5): {'N', 'E'},
+             (5, 6): {'E', 'S'}, (7, 4): {'N'}, (7, 8): {'E', 'W'}},
+        ),
+        (
+            [6, 5, 7, 7, 5, 7, 7, 8, 5, 3],
+            [5, 4, 7, 8, 7, 6, 7, 4, 4, 8],
+            (1, 0),
+            (9, 5),
+            {(1, 0): {'N'}, (3, 0): {'E', 'S'}, (4, 5): {'W', 'S'},
+             (6, 2): {'W', 'S'}, (6, 4): {'E', 'S'}, (6, 5): {'E', 'W'},
+             (8, 3): {'E', 'W'}, (9, 5): {'E'}},
+        ),
     )
 
     from copy import deepcopy
