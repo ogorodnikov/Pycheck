@@ -22,8 +22,8 @@ class TrainBoard:
                     row += moves_dict[cell].replace('E', '>').replace('N', '^').replace('W', '<').replace('S', 'v')
                 else:
                     row += '.'
-                if cell in self.exits:
-                    row = row[:-1] + 'T'
+                if cell in self.empty:
+                    row = row[:-1] + 'X'
                 if cell == self.start_cell:
                     row = row[:-1] + 'S'
                 if cell == self.end_cell:
@@ -89,12 +89,6 @@ class TrainBoard:
         self.remove_neighbor_exits()
         self.remove_stubs()
 
-        print('After stubs:')
-        self.print_board()
-        print()
-
-        quit()
-
     @property
     def empty(self):
         return {cell for cell, exits in self.exits.items() if len(exits) == 0}
@@ -117,7 +111,6 @@ class TrainBoard:
                     if cell in self.tracks:
                         continue
                     self.exits[cell] = set()
-
 
     def remove_neighbor_exits(self):
 
@@ -178,12 +171,12 @@ class TrainBoard:
             a = path[-1]
             b = a + a_exit
 
-            if b in path or b in self.contour:
+            if b in path:
                 continue
 
             row_index, column_index = int(b.real), int(b.imag)
 
-            if b not in self.defined_cells:
+            if b not in self.tracks:
 
                 if cells_per_row[row_index] == self.rows[row_index]:
                     continue
@@ -195,15 +188,15 @@ class TrainBoard:
             b_enter = -a_exit
 
             try:
-                b_deltas_defined = self.defined_cells[b]
+                b_deltas_defined = self.exits[b]
                 if b_enter not in b_deltas_defined:
                     continue
 
                 if b == self.end_cell:
                     final_path = path + [b]
 
-                    if any(cell not in final_path for cell in self.defined_cells):
-                        # print('---- Defined cell not in final path')
+                    if any(cell not in final_path for cell in self.constraints):
+                        # print('---- Constraint not in final path')
                         continue
 
                     if any(sum(int(cell.real) == row_index for cell in final_path) < row_limitation
@@ -259,6 +252,9 @@ class TrainBoard:
 def train_tracks(rows, columns, start, end, constraints):
     board = TrainBoard(rows, columns, start, end, constraints)
 
+    print('After stubs:')
+    board.print_board()
+    print()
 
     path_string = board.find_path()
     return path_string
