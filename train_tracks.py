@@ -1,5 +1,3 @@
-from heapq import heappop, heappush
-
 DELTAS = (1j, 1, -1j, -1)
 DIRECTIONS = {direction: delta for direction, delta in (zip('ESWN', DELTAS))}
 
@@ -118,9 +116,6 @@ class TrainBoard:
                     cell = complex(row_index, column_index)
                     if cell in self.tracks:
                         continue
-                    self.print_board()
-                    print('Cell:', cell)
-                    input()
                     self.exits[cell] = set()
 
     def remove_neighbor_exits(self):
@@ -174,6 +169,8 @@ class TrainBoard:
         tick = 0
         q = [([self.start_cell], self.start_cell_exit,
               self.cells_per_row, self.cells_per_column)]
+
+        history = set()
 
         while q:
 
@@ -252,12 +249,14 @@ class TrainBoard:
                  if b - a == delta]
         return ''.join(moves)
 
+
 def train_tracks(rows, columns, start, end, constraints):
     board = TrainBoard(rows, columns, start, end, constraints)
 
     print('After stubs:')
     board.print_board()
     print()
+    # input()
 
     path_string = board.find_path()
     return path_string
@@ -313,14 +312,14 @@ if __name__ == '__main__':
 
 
     TESTS = (
-        (
-            [4, 6, 5, 3, 1, 3, 3, 4],
-            [4, 2, 2, 3, 4, 5, 6, 3],
-            (3, 0),
-            (7, 6),
-            {(3, 0): {'N'}, (4, 7): {'N', 'S'},
-             (6, 4): {'E', 'W'}, (7, 6): {'W'}},
-        ),
+        # (
+        #     [4, 6, 5, 3, 1, 3, 3, 4],
+        #     [4, 2, 2, 3, 4, 5, 6, 3],
+        #     (3, 0),
+        #     (7, 6),
+        #     {(3, 0): {'N'}, (4, 7): {'N', 'S'},
+        #      (6, 4): {'E', 'W'}, (7, 6): {'W'}},
+        # ),
         # (
         #     [8, 7, 7, 5, 5, 3, 2, 3],
         #     [3, 6, 7, 5, 4, 3, 6, 6],
@@ -346,6 +345,15 @@ if __name__ == '__main__':
         #      (6, 2): {'W', 'S'}, (6, 4): {'E', 'S'}, (6, 5): {'E', 'W'},
         #      (8, 3): {'E', 'W'}, (9, 5): {'E'}},
         # ),
+        (
+            [9, 10, 9, 9, 10, 3, 3, 3, 4, 2],
+            [8, 7, 7, 8, 7, 5, 5, 5, 5, 5],
+            [8, 0],
+            [9, 4],
+            {(1, 1): {'W', 'S'}, (1, 8): {'W', 'N'}, (2, 5): {'E', 'S'},
+             (3, 5): {'E', 'N'}, (3, 8): {'W', 'N'}, (5, 4): {'W', 'N'},
+             (7, 2): {'N', 'S'}, (8, 0): {'E'}, (9, 4): {'W'}}
+        ),
     )
 
     from copy import deepcopy
