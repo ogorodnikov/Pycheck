@@ -1,18 +1,34 @@
-from typing import List, Tuple
-
-
 def is_touching(a, b):
+
     ax, ay, a_size = a[1]
     bx, by, b_size = b[1]
-    return (ax + a_size > bx >= ax and ay + a_size > by >= ay or
-            bx + b_size > ax >= bx and by + b_size > ay >= by)
+
+    a_squares = {(ax + x, ay + y) for x in range(a_size) for y in range(a_size)}
+    b_squares = {(bx + x, by + y) for x in range(b_size) for y in range(b_size)}
+
+    intersection = a_squares & b_squares
+
+    print('A:', a)
+    print('B:', b)
+    print('A squares:', a_squares)
+    print('B squares:', b_squares)
+    print('Intersection:', intersection)
+    print('Bool intersection :', bool(intersection))
+    # input()
+    return bool(intersection)
+
+    #
+    # return (ax + a_size > bx >= ax and ay + a_size > by >= ay or
+    #         bx + b_size > ax >= bx and by + b_size > ay >= by)
 
 
-def stacking_cubes(cubes: List[Tuple[int, int, int]]) -> int:
+
+
+def stacking_cubes(cubes):
     print('Cubes:', cubes)
     print()
 
-    cubes_with_id = [(cube_id, cube) for cube_id, cube in enumerate(cubes)]
+    cubes_with_id = [(cube_id, tuple(cube)) for cube_id, cube in enumerate(cubes)]
     print('Cubes with id:', cubes_with_id)
     print()
 
@@ -26,11 +42,9 @@ def stacking_cubes(cubes: List[Tuple[int, int, int]]) -> int:
     max_pile_height = max(cube[1][2] for cube in cubes_with_id)
     q = [[cube] for cube in cubes_with_id]
 
+    all_piles = []
+
     while q:
-
-        print()
-        print('Q:', q)
-
         pile = q.pop()
         a = pile[-1]
 
@@ -42,13 +56,27 @@ def stacking_cubes(cubes: List[Tuple[int, int, int]]) -> int:
             new_pile = pile + [b]
 
             new_pile_height = sum(cube[1][2] for cube in new_pile)
-            max_pile_height = max(max_pile_height, new_pile_height)
+
+            if new_pile_height > max_pile_height:
+                print('    ++++ New max pile height:', new_pile_height)
+                print('         New pile:           ', new_pile)
+                max_pile_height = new_pile_height
 
             q.append(new_pile)
-            print('    Q:', q)
+
+            all_piles.append(new_pile)
 
     print('==== Max pile height:', max_pile_height)
     print()
+
+    print('Connections:')
+    [print(key, value) for key, value in connections.items()]
+    print()
+
+    print('All piles:')
+    [print(pile, sum(cube[1][2] for cube in pile)) for pile in all_piles]
+    print()
+
     return max_pile_height
 
 
@@ -58,3 +86,6 @@ if __name__ == '__main__':
     assert stacking_cubes([(0, 0, 2), (2, 0, 2), (2, 0, 2), (0, 2, 2), (0, 2, 2), (0, 2, 2), (0, 2, 2)]) == 8, 'towers'
     assert stacking_cubes([(0, 0, 2), (0, 3, 2), (3, 0, 2)]) == 2, 'no stacking'
     assert stacking_cubes([(-1, -1, 2), (0, 0, 2), (-2, -2, 2)]) == 6, 'negative coordinates'
+    assert stacking_cubes(
+        [[0, 0, 2], [1, 1, 2], [3, -1, 3], [-3, -2, 3], [0, 2, 2], [3, 1, 4], [-3, 0, 3], [-1, -4, 3], [-1, 2, 2],
+         [1, -3, 3], [0, 0, 1]]) == 28
