@@ -14,9 +14,35 @@ def stacking_cubes(cubes: List[Tuple[int, int, int]]) -> int:
 
     connections = {a: {b for b in cubes if is_touching(a, b) and a is not b} for a in cubes}
     print('Connections:', connections)
-    quit()
+    print()
 
-    return 0
+    max_pile_height = max(cube[2] for cube in cubes)
+    q = [[cube] for cube in cubes]
+
+    while q:
+
+        print()
+        print('Q:', q)
+
+        pile = q.pop()
+        a = pile[-1]
+
+        print('A:', a)
+
+        for b in connections[a] - set(pile):
+            print('    B:', b)
+
+            new_pile = pile + [b]
+
+            new_pile_height = sum(cube[2] for cube in new_pile)
+            max_pile_height = max(max_pile_height, new_pile_height)
+
+            q.append(new_pile)
+            print('    Q:', q)
+
+    print('==== Max pile height:', max_pile_height)
+    print()
+    return max_pile_height
 
 
 if __name__ == '__main__':
