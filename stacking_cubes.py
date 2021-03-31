@@ -1,5 +1,10 @@
 def is_touching(a, b):
 
+    # intersection = reduce(set.intersection, ({(ax + x, ay + y)
+    #                                           for x in range(a_size)
+    #                                           for y in range(a_size)}
+    #                                          for ax, ay, a_size in (a[1], b[1])))
+
     ax, ay, a_size = a[1]
     bx, by, b_size = b[1]
 
@@ -7,10 +12,6 @@ def is_touching(a, b):
     b_squares = {(bx + x, by + y) for x in range(b_size) for y in range(b_size)}
 
     intersection = a_squares & b_squares
-
-    intersection = set.intersection(
-        *[{(ax + x, ay + y) for x in range(a_size) for y in range(a_size)} for ax, ay, a_size in (a[1], b[1])]
-    )
 
     return bool(intersection)
 
