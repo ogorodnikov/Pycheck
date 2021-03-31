@@ -1,17 +1,12 @@
+from functools import reduce
+
+
 def is_touching(a, b):
 
-    # intersection = reduce(set.intersection, ({(ax + x, ay + y)
-    #                                           for x in range(a_size)
-    #                                           for y in range(a_size)}
-    #                                          for ax, ay, a_size in (a[1], b[1])))
-
-    a_id, (ax, ay, a_size) = a
-    b_id, (bx, by, b_size) = b
-
-    a_squares = {(ax + x, ay + y) for x in range(a_size) for y in range(a_size)}
-    b_squares = {(bx + x, by + y) for x in range(b_size) for y in range(b_size)}
-
-    intersection = a_squares & b_squares
+    intersection = reduce(set.intersection, ({(ax + x, ay + y)
+                                              for x in range(a_size)
+                                              for y in range(a_size)}
+                                             for ax, ay, a_size in (a[1], b[1])))
 
     return bool(intersection)
 
@@ -25,7 +20,7 @@ def stacking_cubes(cubes):
                        and a is not b}
                    for a in cubes_with_id}
 
-    max_pile_height = max(cube_size for cube_id, (cube_x, cube_y, cube_size) in cubes_with_id)
+    max_pile_height = max(cube_size for _, (*_, cube_size) in cubes_with_id)
     q = [[cube] for cube in cubes_with_id]
 
     while q:
@@ -35,7 +30,7 @@ def stacking_cubes(cubes):
         for b in connections[a] - set(pile):
 
             new_pile = pile + [b]
-            new_pile_height = sum(cube_size for cube_id, (cube_x, cube_y, cube_size) in new_pile)
+            new_pile_height = sum(cube_size for _, (*_, cube_size) in new_pile)
             max_pile_height = max(max_pile_height, new_pile_height)
 
             q.append(new_pile)
