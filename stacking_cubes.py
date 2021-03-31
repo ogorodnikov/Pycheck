@@ -8,20 +8,11 @@ def is_touching(a, b):
 
     intersection = a_squares & b_squares
 
-    print('A:', a)
-    print('B:', b)
-    print('A squares:', a_squares)
-    print('B squares:', b_squares)
-    print('Intersection:', intersection)
-    print('Bool intersection :', bool(intersection))
-    # input()
+    intersection = set.intersection(
+        *[{(ax + x, ay + y) for x in range(a_size) for y in range(a_size)} for ax, ay, a_size in (a[1], b[1])]
+    )
+
     return bool(intersection)
-
-    #
-    # return (ax + a_size > bx >= ax and ay + a_size > by >= ay or
-    #         bx + b_size > ax >= bx and by + b_size > ay >= by)
-
-
 
 
 def stacking_cubes(cubes):
