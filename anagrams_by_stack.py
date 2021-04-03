@@ -1,126 +1,40 @@
+# ACTIONS = (1, 0), (1, 2), (0, 1), (0, 2), (2, 1), (2, 0)
+from itertools import product
+
+
 def checkio(data):
+
+    all_actions = list(filter(lambda pair: len(set(pair)) == 2, product((0, 1, 2), repeat=2)))
 
     start, end = data.split('-')
 
-    start_parts = (start, '', '')
-
     min_actions_len = float('inf')
-    history = {start_parts}
-    q = [(start_parts, [])]
+    start_registers = [start, '', '']
+    history = {start_registers}
+
+    q = [(start_registers, [])]
 
     while q:
-        (a, b, c), actions = q.pop()
+        registers, actions = q.pop()
 
-        if a:
-            a1 = a[:-1]
-            b1 = b + a[-1]
-            c1 = c
+        for a, b in all_actions:
 
-            action = '10'
+            if not registers[a]:
+                continue
 
-            new_parts = (a1, b1, c1)
+            new_registers = registers.copy()
 
-            if new_parts[2] == end:
-                new_actions = actions + [action]
-                new_actions_len = len(actions + [action])
-                print('New parts:', new_parts)
-                print('Actions:', new_actions, new_actions_len)
+            letter = new_registers[a][-1]
+            new_registers[a] = new_registers[a][:-1]
+            new_registers[b] = new_registers[b] + letter
 
-                if new_actions_len < min_actions_len:
-                    print('++++ New min length:', new_actions_len)
-                    min_actions_len = new_actions_len
+            if new_registers[2] == end:
+                min_actions_len = min(min_actions_len, len(actions) + 1)
+                continue
 
-
-                quit()
-            if new_parts not in history:
-                q.append((new_parts, actions + [action]))
-                history.add(new_parts)
-
-            a2 = a[:-1]
-            b2 = b
-            c2 = c + a[-1]
-
-            action = '12'
-
-            new_parts = (a2, b2, c2)
-
-            if new_parts[2] == end:
-                print('New parts:', new_parts)
-                print('Actions:', actions + [action], len(actions + [action]))
-                quit()
-            if new_parts not in history:
-                q.append((new_parts, actions + [action]))
-                history.add(new_parts)
-
-        if b:
-            b1 = b[:-1]
-            a1 = a + b[-1]
-            c1 = c
-
-            action = '01'
-
-            new_parts = (a1, b1, c1)
-
-            if new_parts[2] == end:
-                print('New parts:', new_parts)
-                print('Actions:', actions + [action], len(actions + [action]))
-                quit()
-            if new_parts not in history:
-                q.append((new_parts, actions + [action]))
-                history.add(new_parts)
-
-            b2 = b[:-1]
-            a2 = a
-            c2 = c + b[-1]
-
-            action = '02'
-
-            new_parts = (a2, b2, c2)
-
-            if new_parts[2] == end:
-                print('New parts:', new_parts)
-                print('Actions:', actions + [action], len(actions + [action]))
-                quit()
-            if new_parts not in history:
-                q.append((new_parts, actions + [action]))
-                history.add(new_parts)
-
-        if c:
-            c1 = c[:-1]
-            a1 = a + c[-1]
-            b1 = b
-
-            action = '21'
-
-            new_parts = (a1, b1, c1)
-
-            if new_parts[2] == end:
-                print('New parts:', new_parts)
-                print('Actions:', actions + [action], len(actions + [action]))
-                quit()
-            if new_parts not in history:
-                q.append((new_parts, actions + [action]))
-                history.add(new_parts)
-
-            c2 = c[:-1]
-            a2 = a
-            b2 = b + c[-1]
-
-            action = '20'
-
-            new_parts = (a2, b2, c2)
-
-            if new_parts[2] == end:
-                print('New parts:', new_parts)
-                print('Actions:', actions + [action], len(actions + [action]))
-                quit()
-            if new_parts not in history:
-                q.append((new_parts, actions + [action]))
-                history.add(new_parts)
-
-        print('Q:', q)
-        print('History:', history)
-        print()
+            if new_registers not in history:
+                q.append((new_registers, actions + [(a, b)]))
+                history.add(new_registers)
 
     return ValueError
 
