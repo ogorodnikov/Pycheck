@@ -52,9 +52,17 @@ def checkio(data):
                 print('         New actions:', new_actions)
                 min_actions_len = min(min_actions_len, len(new_actions))
                 print('         New min actions len:', min_actions_len)
+
+                sequence = ','.join(f'{a}{b}' for a, b in new_actions)
+                print('Sequence:', sequence)
+                return sequence
                 continue
 
-            if len(new_actions) == min_actions_len:
+            if len(new_actions) >= min_actions_len:
+                # print('Len new actions :', len(new_actions))
+                # print('New actions:', new_actions, len(new_actions))
+                # print('min actions len reached')
+                # input()
                 continue
 
             q.append((new_registers, new_actions))
@@ -102,7 +110,7 @@ if __name__ == '__main__':
             return False
 
     assert check_solution(checkio, "rice-cire", 5), "rice-cire"
-    # assert check_solution(checkio, "tort-trot", 4), "tort-trot"
-    # assert check_solution(checkio, "hello-holle", 14), "hello-holle"
-    # assert check_solution(checkio, "anagram-mragana", 8), "anagram-mragana"
-    # assert check_solution(checkio, "mirror-mirorr", 25), "mirror-mirorr"
+    assert check_solution(checkio, "tort-trot", 4), "tort-trot"
+    assert check_solution(checkio, "hello-holle", 14), "hello-holle"
+    assert check_solution(checkio, "anagram-mragana", 8), "anagram-mragana"
+    assert check_solution(checkio, "mirror-mirorr", 25), "mirror-mirorr"
