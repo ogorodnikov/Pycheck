@@ -1,16 +1,15 @@
-# ACTIONS = (1, 0), (1, 2), (0, 1), (0, 2), (2, 1), (2, 0)
 from itertools import product
+
+MOVES = tuple(filter(lambda pair: len(set(pair)) == 2,
+                     product((0, 1, 2), repeat=2)))
 
 
 def checkio(data):
-
-    all_actions = tuple(filter(lambda pair: len(set(pair)) == 2,
-                               product((0, 1, 2), repeat=2)))
-
     start, end = data.split('-')
-
     start_registers = ['', start, '']
-    history = [hash(tuple(start_registers))]
+
+    start_hash = hash(tuple(start_registers))
+    history = [start_hash]
 
     q = [(start_registers, [])]
 
@@ -18,34 +17,26 @@ def checkio(data):
 
         registers, actions = q.pop(0)
 
-        for a, b in all_actions:
+        for from_index, to_index in MOVES:
 
-            # print()
-            # print('Action:       ', (a, b))
-            # print('Registers:    ', registers)
-
-            if not registers[a]:
-                # print('---- Register empty:', a)
+            if not registers[from_index]:
+                # print('---- Register empty:', from_index)
                 continue
 
-            if b == 0 and len(registers[0]) == 1:
-                # print('---- Register 0 is full:', registers[0])
+            if to_index == 0 and len(registers[0]) == 1:
+                # print('---- Register 0 is full')
                 continue
 
-            new_actions = actions + [(a, b)]
-
+            new_actions = actions + [(from_index, to_index)]
             new_registers = registers.copy()
 
-            letter = new_registers[a][-1]
-            new_registers[a] = new_registers[a][:-1]
-            new_registers[b] = new_registers[b] + letter
-
-            # print('New registers:', new_registers)
+            letter = new_registers[from_index][-1]
+            new_registers[from_index] = new_registers[from_index][:-1]
+            new_registers[to_index] = new_registers[to_index] + letter
 
             new_hash = hash(tuple(new_registers))
 
             if new_hash in history:
-                print('---- Already in history')
                 continue
 
             if new_registers[2] == end:
@@ -61,6 +52,7 @@ def checkio(data):
 
 if __name__ == '__main__':
     GOOD_ACTIONS = ("12", "10", "01", "02", "20", "21")
+
 
     def check_solution(func, anagrams, min_length):
         start, end = anagrams.split("-")
@@ -91,6 +83,7 @@ if __name__ == '__main__':
         else:
             print("The result anagram is wrong.")
             return False
+
 
     assert check_solution(checkio, "rice-cire", 5), "rice-cire"
     assert check_solution(checkio, "tort-trot", 4), "tort-trot"
