@@ -4,13 +4,13 @@ from itertools import product
 
 def checkio(data):
 
-    all_actions = list(filter(lambda pair: len(set(pair)) == 2, product((0, 1, 2), repeat=2)))
+    all_actions = tuple(filter(lambda pair: len(set(pair)) == 2,
+                               product((0, 1, 2), repeat=2)))
 
     start, end = data.split('-')
 
-    min_actions_len = float('inf')
     start_registers = ['', start, '']
-    history = [start_registers]
+    history = [hash(tuple(start_registers))]
 
     q = [(start_registers, [])]
 
@@ -20,16 +20,16 @@ def checkio(data):
 
         for a, b in all_actions:
 
-            print()
-            print('Action:       ', (a, b))
-            print('Registers:    ', registers)
+            # print()
+            # print('Action:       ', (a, b))
+            # print('Registers:    ', registers)
 
             if not registers[a]:
-                print('---- Register empty:', a)
+                # print('---- Register empty:', a)
                 continue
 
             if b == 0 and len(registers[0]) == 1:
-                print('---- Register 0 is full:', registers[0])
+                # print('---- Register 0 is full:', registers[0])
                 continue
 
             new_actions = actions + [(a, b)]
@@ -40,38 +40,21 @@ def checkio(data):
             new_registers[a] = new_registers[a][:-1]
             new_registers[b] = new_registers[b] + letter
 
-            print('New registers:', new_registers)
+            # print('New registers:', new_registers)
 
-            if new_registers in history:
+            new_hash = hash(tuple(new_registers))
+
+            if new_hash in history:
                 print('---- Already in history')
                 continue
 
             if new_registers[2] == end:
-                print('    ==== End found:')
-                print('         New registers:', new_registers)
-                print('         New actions:', new_actions)
-                min_actions_len = min(min_actions_len, len(new_actions))
-                print('         New min actions len:', min_actions_len)
-
                 sequence = ','.join(f'{a}{b}' for a, b in new_actions)
-                print('Sequence:', sequence)
+                print('==== Sequence:', sequence)
                 return sequence
-                continue
-
-            if len(new_actions) >= min_actions_len:
-                # print('Len new actions :', len(new_actions))
-                # print('New actions:', new_actions, len(new_actions))
-                # print('min actions len reached')
-                # input()
-                continue
 
             q.append((new_registers, new_actions))
-            history.append(new_registers)
-
-    print('Q:', q)
-    print('History:', history)
-    print('Min actions len:', min_actions_len)
-    quit()
+            history.append(new_hash)
 
     return ValueError
 
