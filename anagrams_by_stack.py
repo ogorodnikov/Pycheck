@@ -9,18 +9,30 @@ def checkio(data):
     start, end = data.split('-')
 
     min_actions_len = float('inf')
-    start_registers = [start, '', '']
-    history = {start_registers}
+    start_registers = ['', start, '']
+    history = [start_registers]
 
     q = [(start_registers, [])]
 
     while q:
-        registers, actions = q.pop()
+
+        registers, actions = q.pop(0)
 
         for a, b in all_actions:
 
+            print()
+            print('Action:       ', (a, b))
+            print('Registers:    ', registers)
+
             if not registers[a]:
+                print('---- Register empty:', a)
                 continue
+
+            if b == 0 and len(registers[0]) == 1:
+                print('---- Register 0 is full:', registers[0])
+                continue
+
+            new_actions = actions + [(a, b)]
 
             new_registers = registers.copy()
 
@@ -28,13 +40,30 @@ def checkio(data):
             new_registers[a] = new_registers[a][:-1]
             new_registers[b] = new_registers[b] + letter
 
-            if new_registers[2] == end:
-                min_actions_len = min(min_actions_len, len(actions) + 1)
+            print('New registers:', new_registers)
+
+            if new_registers in history:
+                print('---- Already in history')
                 continue
 
-            if new_registers not in history:
-                q.append((new_registers, actions + [(a, b)]))
-                history.add(new_registers)
+            if new_registers[2] == end:
+                print('    ==== End found:')
+                print('         New registers:', new_registers)
+                print('         New actions:', new_actions)
+                min_actions_len = min(min_actions_len, len(new_actions))
+                print('         New min actions len:', min_actions_len)
+                continue
+
+            if len(new_actions) == min_actions_len:
+                continue
+
+            q.append((new_registers, new_actions))
+            history.append(new_registers)
+
+    print('Q:', q)
+    print('History:', history)
+    print('Min actions len:', min_actions_len)
+    quit()
 
     return ValueError
 
