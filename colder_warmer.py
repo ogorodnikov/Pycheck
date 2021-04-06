@@ -5,10 +5,12 @@ board = {complex(y, x) for x in range(BOARD_SIZE) for y in range(BOARD_SIZE)}
 
 possible_cells = board.copy()
 last_step_cell = None
+steps_per_solution = 0
+solution_count = 0
+total_steps = 0
 
 
 def print_board(cells):
-
     height = int(max(cell.real for cell in cells)) + 1
     width = int(max(cell.imag for cell in cells)) + 1
 
@@ -23,70 +25,86 @@ def print_board(cells):
                 row += '.'
         print(row)
 
+
 def checkio(steps):
+    global steps_per_solution
+    steps_per_solution += 1
 
     current_step = steps[-1]
-    print('Current step:', current_step)
+    # print('Current step:', current_step)
 
     y, x, result = current_step
     step_cell = complex(y, x)
-    print('Step cell:', step_cell)
+    # print('Step cell:', step_cell)
 
     global possible_cells
     global last_step_cell
 
-    print('Possible cells:', possible_cells)
-    print('Last step cell:', last_step_cell)
+    # print('Possible cells:', possible_cells)
+    # print('Last step cell:', last_step_cell)
 
     if result == 0 and last_step_cell is not None:
-
         equal_distance_cells = {cell for cell in board if abs(cell - step_cell) == abs(cell - last_step_cell)}
         possible_cells &= equal_distance_cells
 
-        print('Equal distance cells:', equal_distance_cells)
+        # print('    Equal distance cells:', equal_distance_cells)
 
     if result == 1:
 
         closer_cells = {cell for cell in board if abs(cell - step_cell) < abs(cell - last_step_cell)}
         possible_cells &= closer_cells
 
-        print('    Closer cells:', closer_cells)
+        # print('    Closer cells:', closer_cells)
 
     elif result == -1:
 
         further_cells = {cell for cell in board if abs(cell - step_cell) > abs(cell - last_step_cell)}
         possible_cells &= further_cells
 
-        print('    Further cells:', further_cells)
+        # print('    Further cells:', further_cells)
 
-    print('    Possible cells:', possible_cells)
-    print_board(possible_cells)
+    # print('    Possible cells:', possible_cells)
+    # print_board(possible_cells)
 
     last_step_cell = step_cell
 
-    print('New Last step cell:', last_step_cell)
+    # print('New Last step cell:', last_step_cell)
+
+    possible_cells -= {step_cell}
 
     random_cell = random.choice(list(possible_cells))
-    print('Random cell:', random_cell)
-    new_step_cell = random_cell
+    next_step = random_cell
+
+    # next_step = min(possible_cells,
+    #                 key=lambda new_cell: abs(
+    #                     sum(abs(cell - new_cell) < abs(cell - step_cell) for cell in possible_cells) -
+    #                     sum(abs(cell - new_cell) > abs(cell - step_cell) for cell in possible_cells)))
+
+    # print('Next step:', next_step)
+    # print('Steps count:', steps_count)
+    # input()
 
     # new_step_cell = possible_cells.copy().pop()
     # print('New step cell:', new_step_cell)
 
     # input()
 
-    return new_step_cell.real, new_step_cell.imag
+    return next_step.real, next_step.imag
+
 
 if __name__ == '__main__':
 
     from math import hypot
-    MAX_STEP = 12
+
+    MAX_STEP = 20
+
 
     def check_solution(func, goal, start):
         prev_steps = [start]
         for step in range(MAX_STEP):
             row, col = func([s[:] for s in prev_steps])
             if [row, col] == goal:
+                # print('Steps per solution:', steps_per_solution)
                 return True
             if 10 <= row or 0 > row or 10 <= col or 0 > col:
                 print("You gave wrong coordinates.")
@@ -98,5 +116,25 @@ if __name__ == '__main__':
         print("Too many steps")
         return False
 
-    # assert check_solution(checkio, [7, 7], [5, 5, 0]), "1st example"
-    assert check_solution(checkio, [5, 6], [0, 0, 0]), "2nd example"
+
+    for i in range(1000):
+        BOARD_SIZE = 10
+        board = {complex(y, x) for x in range(BOARD_SIZE) for y in range(BOARD_SIZE)}
+
+        possible_cells = board.copy()
+        last_step_cell = None
+        steps_per_solution = 0
+
+        assert check_solution(checkio, [7, 7], [5, 5, 0]), "1st example"
+
+        total_steps += steps_per_solution
+
+        print('Solution count:', solution_count)
+        solution_count += 1
+        average_steps_per_solution = total_steps / solution_count
+
+    print('Solution count:', solution_count)
+    print('Total steps:', total_steps)
+    print('Average steps per solution:', average_steps_per_solution)
+
+    # assert check_solution(checkio, [5, 6], [0, 0, 0]), "2nd example"
