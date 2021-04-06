@@ -41,7 +41,7 @@ def checkio(steps):
     if result == 1:
 
         closer_cells = {cell for cell in board if abs(cell - step_cell) < abs(cell - last_step_cell)}
-        possible_cells = closer_cells
+        possible_cells &= closer_cells
 
         print('    Closer cells:', closer_cells)
         print('    Possible cells:', possible_cells)
@@ -49,7 +49,7 @@ def checkio(steps):
     elif result == -1:
 
         further_cells = {cell for cell in board if abs(cell - step_cell) > abs(cell - last_step_cell)}
-        possible_cells = further_cells
+        possible_cells &= further_cells
 
         print('    Further cells:', further_cells)
         print('    Possible cells:', possible_cells)
@@ -60,11 +60,12 @@ def checkio(steps):
 
     print('New Last step cell:', last_step_cell)
 
-    # random_cell = random.choice(list(possible_cells))
-    # print('Random cell:', random_cell)
+    random_cell = random.choice(list(possible_cells))
+    print('Random cell:', random_cell)
+    new_step_cell = random_cell
 
-    new_step_cell = step_cell - 2j
-    print('New step cell:', new_step_cell)
+    # new_step_cell = possible_cells.copy().pop()
+    # print('New step cell:', new_step_cell)
 
     input()
 
