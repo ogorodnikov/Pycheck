@@ -1,11 +1,8 @@
-import random
-
 BOARD_SIZE = 10
-board = {complex(y, x) for x in range(BOARD_SIZE) for y in range(BOARD_SIZE)}
 
+board = {complex(y, x) for x in range(BOARD_SIZE) for y in range(BOARD_SIZE)}
 possible_cells = board.copy()
 last_step_cell = None
-
 
 def print_board(cells):
 
@@ -23,37 +20,30 @@ def print_board(cells):
                 row += '.'
         print(row)
 
+def closer_cells(closer_cell, further_cell):
+    return (cell for cell in possible_cells if abs(cell - closer_cells()) < abs(cell - further_cell))
+
 def checkio(steps):
 
-    current_step = steps[-1]
-    # print('Current step:', current_step)
+    y, x, result = steps[-1]
+    current_step = complex(y, x)
 
-    y, x, result = current_step
-    step_cell = complex(y, x)
-    # print('Step cell:', step_cell)
 
     global possible_cells
     global last_step_cell
 
-    # print('Possible cells:', possible_cells)
-    # print('Last step cell:', last_step_cell)
-
-    if result == 0 and last_step_cell is not None:
-
-        equal_distance_cells = {cell for cell in board if abs(cell - step_cell) == abs(cell - last_step_cell)}
-        possible_cells &= equal_distance_cells
 
     if result == 1:
 
-        closer_cells = {cell for cell in board if abs(cell - step_cell) < abs(cell - last_step_cell)}
+        closer_cells = {cell for cell in possible_cells if abs(cell - current_step) < abs(cell - last_step_cell)}
         possible_cells &= closer_cells
 
     elif result == -1:
 
-        further_cells = {cell for cell in board if abs(cell - step_cell) > abs(cell - last_step_cell)}
+        further_cells = {cell for cell in possible_cells if abs(cell - current_step) > abs(cell - last_step_cell)}
         possible_cells &= further_cells
 
-    last_step_cell = step_cell
+    last_step_cell = current_step
 
     # print('New Last step cell:', last_step_cell)
 
@@ -61,7 +51,7 @@ def checkio(steps):
     # print('Random cell:', random_cell)
     # new_step_cell = random_cell
 
-    possible_cells -= {step_cell}
+    possible_cells -= {current_step}
 
     # print('    Possible cells:', possible_cells)
     # print_board(possible_cells)
@@ -73,10 +63,10 @@ def checkio(steps):
 
     next_step = min(possible_cells,
                     key=lambda new_cell: abs(
-                        sum(abs(cell - new_cell) < abs(cell - step_cell) for cell in possible_cells) -
-                        sum(abs(cell - new_cell) > abs(cell - step_cell) for cell in possible_cells)))
+                        sum(abs(cell - new_cell) < abs(cell - current_step) for cell in possible_cells) -
+                        sum(abs(cell - new_cell) > abs(cell - current_step) for cell in possible_cells)))
 
-    return next_step.real, next_step.imag
+    return list(map(int, (next_step.real, next_step.imag)))
 
 if __name__ == '__main__':
 
