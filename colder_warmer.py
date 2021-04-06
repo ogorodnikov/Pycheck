@@ -6,6 +6,23 @@ board = {complex(y, x) for x in range(BOARD_SIZE) for y in range(BOARD_SIZE)}
 possible_cells = board.copy()
 last_step_cell = None
 
+
+def print_board(cells):
+
+    height = int(max(cell.real for cell in cells)) + 1
+    width = int(max(cell.imag for cell in cells)) + 1
+
+    print(''.join(map(str, range(width))))
+    for y in range(height):
+        row = ''
+        for x in range(width):
+            cell = complex(y, x)
+            if cell in cells:
+                row += 'X'
+            else:
+                row += '.'
+        print(row)
+
 def checkio(steps):
 
     current_step = steps[-1]
@@ -23,7 +40,7 @@ def checkio(steps):
 
     if result == 1:
 
-        closer_cells = {cell for cell in board if abs(cell - step_cell) < (cell - last_step_cell)}
+        closer_cells = {cell for cell in board if abs(cell - step_cell) < abs(cell - last_step_cell)}
         possible_cells = closer_cells
 
         print('    Closer cells:', closer_cells)
@@ -31,20 +48,27 @@ def checkio(steps):
 
     elif result == -1:
 
-        further_cells = {cell for cell in board if abs(cell - step_cell) > (cell - last_step_cell)}
+        further_cells = {cell for cell in board if abs(cell - step_cell) > abs(cell - last_step_cell)}
         possible_cells = further_cells
 
         print('    Further cells:', further_cells)
         print('    Possible cells:', possible_cells)
 
+    print_board(possible_cells)
 
     last_step_cell = step_cell
 
-    random_cell = random.choice(list(possible_cells))
-    print('Random cell:', random_cell)
+    print('New Last step cell:', last_step_cell)
+
+    # random_cell = random.choice(list(possible_cells))
+    # print('Random cell:', random_cell)
+
+    new_step_cell = step_cell - 2j
+    print('New step cell:', new_step_cell)
+
     input()
 
-    return random_cell.real, random_cell.imag
+    return new_step_cell.real, new_step_cell.imag
 
 if __name__ == '__main__':
 
