@@ -38,13 +38,19 @@ def checkio(steps):
     print('Possible cells:', possible_cells)
     print('Last step cell:', last_step_cell)
 
+    if result == 0 and last_step_cell is not None:
+
+        equal_distance_cells = {cell for cell in board if abs(cell - step_cell) == abs(cell - last_step_cell)}
+        possible_cells &= equal_distance_cells
+
+        print('Equal distance cells:', equal_distance_cells)
+
     if result == 1:
 
         closer_cells = {cell for cell in board if abs(cell - step_cell) < abs(cell - last_step_cell)}
         possible_cells &= closer_cells
 
         print('    Closer cells:', closer_cells)
-        print('    Possible cells:', possible_cells)
 
     elif result == -1:
 
@@ -52,8 +58,8 @@ def checkio(steps):
         possible_cells &= further_cells
 
         print('    Further cells:', further_cells)
-        print('    Possible cells:', possible_cells)
 
+    print('    Possible cells:', possible_cells)
     print_board(possible_cells)
 
     last_step_cell = step_cell
@@ -67,7 +73,7 @@ def checkio(steps):
     # new_step_cell = possible_cells.copy().pop()
     # print('New step cell:', new_step_cell)
 
-    input()
+    # input()
 
     return new_step_cell.real, new_step_cell.imag
 
@@ -92,5 +98,5 @@ if __name__ == '__main__':
         print("Too many steps")
         return False
 
-    assert check_solution(checkio, [7, 7], [5, 5, 0]), "1st example"
-    # assert check_solution(checkio, [5, 6], [0, 0, 0]), "2nd example"
+    # assert check_solution(checkio, [7, 7], [5, 5, 0]), "1st example"
+    assert check_solution(checkio, [5, 6], [0, 0, 0]), "2nd example"
