@@ -29,10 +29,10 @@ def is_covered(room, sensors):
     print('Width:', width)
     print('Height:', height)
 
-    segment_count = 100
+    segment_count = 1000
 
     for sensor in sensors:
-        print('Sensor:', sensor)
+        # print('Sensor:', sensor)
 
         x0, y0, r = sensor
 
@@ -40,27 +40,27 @@ def is_covered(room, sensors):
         # print('Locus:', locus)
 
         locus_in_room = [point for point in locus if height >= point.real >= 0 and width >= point.imag >= 0]
-        print('Locus in room:', locus_in_room)
+        # print('Locus in room:', locus_in_room)
 
         # plot_complex_locus(locus_in_room)
 
         for point in locus_in_room:
-            print('Point:', point)
+            # print('Point:', point)
 
             is_in_others = False
 
             for other_sensor in sensors:
                 if other_sensor == sensor:
                     continue
-                print('Other sensor:', other_sensor)
+                # print('Other sensor:', other_sensor)
 
                 other_x, other_y, other_r = other_sensor
                 other_center = complex(other_y, other_x)
 
                 if abs(point - other_center) <= other_r:
-                    print('---- Is in others')
-                    print('     Other center:', other_center)
-                    print('     Other r:', other_r)
+                    # print('---- Is in others')
+                    # print('     Other center:', other_center)
+                    # print('     Other r:', other_r)
 
                     is_in_others = True
 
