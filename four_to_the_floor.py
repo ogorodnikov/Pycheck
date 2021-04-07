@@ -1,43 +1,18 @@
-from math import e, pi, exp
+from math import e, pi, cos, sin
 
-from matplotlib import pyplot, patches
+PRECISION = 1000
 
 def is_covered(room, sensors):
 
-    def plot_complex_locus(locus):
-
-        locus_y = [point.real for point in locus]
-        locus_x = [point.imag for point in locus]
-
-        figure, axes = pyplot.subplots()
-
-        room_patch = patches.Rectangle((0, 0), width, height, linewidth=2, edgecolor='k', facecolor='none')
-        axes.add_patch(room_patch)
-
-        axes.plot(locus_x, locus_y)
-        axes.set(xlim=(width * -0.5, width * 1.5), ylim=(height * -0.5, height * 1.5))
-
-        axes.grid()
-
-        pyplot.show()
-
-
     width, height = room
 
-    print('Room:', room)
-    print('Sensors:', sensors)
-    print('Width:', width)
-    print('Height:', height)
-
-    segment_count = 1000
-
     for sensor in sensors:
-        # print('Sensor:', sensor)
 
-        x0, y0, r = sensor
+        sensor_x, sensor_y, r = sensor
+        sensor_center = complex(sensor_y, sensor_x)
 
-        locus = [complex(y0, x0) + r * e ** (2j * pi / segment_count * segment) for segment in range(segment_count + 1)]
-        # print('Locus:', locus)
+        # locus = (sensor_center + r * e ** (2j * pi / PRECISION * segment) for segment in range(PRECISION + 1))
+        locus = (sensor_center + r * (cos(pi / PRECISION * segment) + 1j * sin(pi / PRECISION * segment)) for segment in range(PRECISION + 1))
 
         locus_in_room = [point for point in locus if height >= point.real >= 0 and width >= point.imag >= 0]
         # print('Locus in room:', locus_in_room)
