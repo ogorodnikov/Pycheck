@@ -1,5 +1,8 @@
 from math import e, pi, exp
 
+from matplotlib import pyplot, patches
+
+
 def is_covered(room, sensors):
 
     width, height = room
@@ -16,24 +19,42 @@ def is_covered(room, sensors):
 
         x0, y0, r = sensor
 
-        locus = [complex(y0, x0) + r * e ** (2j * pi / segment_count * segment) for segment in range(segment_count)]
+        locus = [complex(y0, x0) + r * e ** (2j * pi / segment_count * segment) for segment in range(segment_count + 1)]
         print('Locus:', locus)
 
         locus_in_room = [point for point in locus if height >= point.real >= 0 and width >= point.imag >= 0]
         print('Locus in room:', locus_in_room)
+
+        locus_y = [point.real for point in locus]
+        locus_x = [point.imag for point in locus]
+
+        print('Locus y:', locus_y)
+        print('Locus x:', locus_x)
+
+        figure, axes = pyplot.subplots()
+
+        room_patch = patches.Rectangle((0, 0), width, height, linewidth=2, edgecolor='k', facecolor='none')
+        axes.add_patch(room_patch)
+
+        axes.plot(locus_x, locus_y)
+        axes.set(xlim=(width * -0.5, width * 1.5), ylim=(height * -0.5, height * 1.5))
+
+        axes.grid()
+
+        pyplot.show()
+
+        quit()
 
         is_not_covered = any(abs(point - complex(sensor_y, sensor_x)) > sensor_radius
                              for point in locus_in_room
                              for sensor_x, sensor_y, sensor_radius in sensors)
 
         print('Is not covered:', is_not_covered)
-        input()
 
 
-    quit()
-    print('Is all covered:', is_all_covered)
-    print()
-    return is_all_covered
+    # print('Is all covered:', is_all_covered)
+    # print()
+    # return is_all_covered
 
 
 
