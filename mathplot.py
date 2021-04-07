@@ -2,6 +2,33 @@ from math import e, pi
 
 from matplotlib import pyplot
 
+
+from matplotlib import pyplot, patches
+
+def is_covered(room, sensors):
+
+    def plot_complex_locus(locus):
+
+        locus_y = [point.real for point in locus]
+        locus_x = [point.imag for point in locus]
+
+        figure, axes = pyplot.subplots()
+
+        room_patch = patches.Rectangle((0, 0), width, height, linewidth=2, edgecolor='k', facecolor='none')
+        axes.add_patch(room_patch)
+
+        axes.plot(locus_x, locus_y)
+        axes.set(xlim=(width * -0.5, width * 1.5), ylim=(height * -0.5, height * 1.5))
+
+        axes.grid()
+
+        pyplot.show()
+
+
+
+
+
+
 sensors = [[50, 75, 100], [150, 75, 100]]
 
 x0, y0, r = sensors[0]

@@ -1,65 +1,39 @@
-from math import e, pi, cos, sin
+from math import e, pi
 
 PRECISION = 1000
 
-def is_covered(room, sensors):
 
+def is_covered(room, sensors):
     width, height = room
 
     for sensor in sensors:
 
-        sensor_x, sensor_y, r = sensor
+        sensor_x, sensor_y, sensor_radius = sensor
         sensor_center = complex(sensor_y, sensor_x)
 
-        # locus = (sensor_center + r * e ** (2j * pi / PRECISION * segment) for segment in range(PRECISION + 1))
-        locus = (sensor_center + r * (cos(pi / PRECISION * segment) + 1j * sin(pi / PRECISION * segment)) for segment in range(PRECISION + 1))
+        locus = (sensor_center + sensor_radius * e ** (2j * pi * segment_index / PRECISION)
+                 for segment_index in range(PRECISION + 1))
 
-        locus_in_room = [point for point in locus if height >= point.real >= 0 and width >= point.imag >= 0]
-        # print('Locus in room:', locus_in_room)
+        locus_in_room = (point for point in locus
+                         if height > point.real > 0
+                         and width > point.imag > 0)
 
-        # plot_complex_locus(locus_in_room)
+        # other_sensors = [other_sensor for other_sensor in sensors if sensor != other_sensor]
 
-        for point in locus_in_room:
-            # print('Point:', point)
+        other_sensors = set(map(tuple, sensors)) - {tuple(sensor)}
 
-            is_in_others = False
+        is_locus_covered = all(any(abs(point - complex(other_y, other_x)) <= other_radius
+                                   for other_x, other_y, other_radius in other_sensors)
+                               for point in locus_in_room)
 
-            for other_sensor in sensors:
-                if other_sensor == sensor:
-                    continue
-                # print('Other sensor:', other_sensor)
+        if not is_locus_covered:
+            return False
 
-                other_x, other_y, other_r = other_sensor
-                other_center = complex(other_y, other_x)
-
-                if abs(point - other_center) <= other_r:
-                    # print('---- Is in others')
-                    # print('     Other center:', other_center)
-                    # print('     Other r:', other_r)
-
-                    is_in_others = True
-
-            if not is_in_others:
-                print('==== Not in others')
-                return False
-
-    print('All covered')
     return True
-
-        # is_not_covered = any(abs(point - complex(sensor_y, sensor_x)) > sensor_radius
-        #                      for point in locus_in_room
-        #                      for sensor_x, sensor_y, sensor_radius in sensors)
-        #
-        # print('Is not covered:', is_not_covered)
-
-
-    # print('Is all covered:', is_all_covered)
-    # print()
-    # return is_all_covered
-
 
 
 if __name__ == '__main__':
+
     assert is_covered([200, 150], [[100, 75, 130]]) == True
     assert is_covered([200, 150], [[50, 75, 100], [150, 75, 100]]) == True
     assert is_covered([200, 150], [[50, 75, 100], [150, 25, 50], [150, 125, 50]]) == False
@@ -75,3 +49,5 @@ if __name__ == '__main__':
     assert is_covered([4000, 1000],
                       [[0, 500, 1600], [2000, 100, 500], [2100, 900, 500], [2500, 200, 500], [2600, 800, 500],
                        [4000, 500, 1200], [1600, 500, 600]])
+
+    assert is_covered([100, 100], [[50, 50, 65], [25, 25, 25], [25, 75, 25], [75, 25, 25], [75, 75, 25]]) == False
