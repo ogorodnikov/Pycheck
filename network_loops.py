@@ -1,4 +1,24 @@
+
+def find_loop(connections, path):
+    
+    for connection in connections:
+        print('Connection:', connection)
+
+        if len(path) == 0:
+            print('Checked')
+            print('Path:', path)
+
+
+        if not path or set(path[-1]) & set(connection):
+
+            find_loop(connections, path + [connection])
+
+
 def find_cycle(connections):
+    print('Connections:', connections)
+    
+    find_loop(connections, [])
+
     return []
 
 
@@ -33,5 +53,6 @@ if __name__ == '__main__':
     assert checker(find_cycle,
                    ((1, 2), (2, 3), (3, 4), (4, 5), (5, 7), (7, 6),
                     (8, 5), (8, 4), (1, 5), (2, 4), (1, 8)), 6), "Example"
-    assert checker(find_cycle,
-                   ((1, 2), (2, 3), (3, 4), (4, 5), (5, 7), (7, 6), (8, 4), (1, 5), (2, 4)), 5), "Second"
+
+    # assert checker(find_cycle,
+    #                ((1, 2), (2, 3), (3, 4), (4, 5), (5, 7), (7, 6), (8, 4), (1, 5), (2, 4)), 5), "Second"
