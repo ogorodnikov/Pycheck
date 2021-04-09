@@ -7,8 +7,8 @@ ALL_CELLS = {complex(y, x) for y, x in product(range(BOARD_SIZE), repeat=2)}
 def checkio(previous):
     print('==== Previous:', previous)
 
-    if not previous:
-        return [BOARD_SIZE // 2, BOARD_SIZE // 2]
+    # if not previous:
+    #     return [BOARD_SIZE // 2, BOARD_SIZE // 2]
 
     possible_cells = ALL_CELLS.copy()
 
@@ -18,25 +18,15 @@ def checkio(previous):
         center_y, center_x, radius = step
         center = complex(center_y, center_x)
 
-        print('    Center:', center)
-        print('    Radius:', radius)
-        print('    Radius + 0.5:', radius + 0.5)
-        print('    Radius - 0.5:', radius - 0.5)
-
-        # for cell in ALL_CELLS:
-        #     print(cell, abs(cell - center))
-        #
-        #
-        #
-        # quit()
-
-        # print(abs((5 + 5j) - (1 + 1j)))
-        # quit()
+        # print('    Center:', center)
+        # print('    Radius:', radius)
+        # print('    Radius + 0.5:', radius + 0.5)
+        # print('    Radius - 0.5:', radius - 0.5)
 
         possible_cells &= {cell for cell in ALL_CELLS
                            if radius + 0.5 >= abs(cell - center) >= radius - 0.5}
 
-        possible_cells -= {center}
+        # possible_cells -= {center}
 
         print('Possible cells:', possible_cells)
         print()
@@ -45,7 +35,7 @@ def checkio(previous):
     print('Next cell:', next_cell)
 
     next_cell_coordinates = int(next_cell.real), int(next_cell.imag)
-    print('Next cell coordinates:', next_cell_coordinates)
+    # print('Next cell coordinates:', next_cell_coordinates)
     print()
 
     return next_cell_coordinates
@@ -67,6 +57,9 @@ if __name__ == '__main__':
         print("It was the last probe.")
         return False
 
+
     assert check_solution(checkio, (1, 1)), "Example"
     assert check_solution(checkio, (9, 9)), "Bottom right"
-    # assert check_solution(checkio, (6, 6)), "Center"
+    assert check_solution(checkio, (6, 6)), "Center"
+
+    assert check_solution(checkio, (7, 8))
