@@ -17,7 +17,7 @@ def find_loop(connections, path):
         else:
             return tuple()
 
-    loops = set()
+    longest_loop = tuple()
 
     for connection in set(connections) - set(path):
 
@@ -26,10 +26,10 @@ def find_loop(connections, path):
 
         if path[-1] in connection:
             new_step = [e for e in connection if e != path[-1]]
-            loops.add(find_loop(connections, path + new_step))
+            new_loop = find_loop(connections, path + new_step)
+            longest_loop = max(longest_loop, new_loop, key=len)
 
-    # print('Loops:', loops)
-    return max(loops, key=len)
+    return longest_loop
 
 
 def find_cycle(connections):
