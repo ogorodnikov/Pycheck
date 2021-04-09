@@ -1,18 +1,20 @@
-
 def find_loop(connections, path):
-
     print('Path:', path)
 
-    if len(path) > 2 and path[-1] in path[:-1]:
-        looped_element = path[-1]
-        print('Looped element:', looped_element)
-        first_occurence = path.index(looped_element)
-        print('First occurence:', first_occurence)
+    if path and path[-1] in path[:-1]:
 
-        loop = path[first_occurence:]
-        print('Loop:', loop)
-        # input()
-        return tuple(loop)
+        looped_element = path[-1]
+        first_occurrence = path.index(looped_element)
+        loop = path[first_occurrence:]
+
+        print('Looped element:  ', looped_element)
+        print('First occurrence:', first_occurrence)
+        print('Loop:            ', loop)
+
+        if len(loop) > 3:
+            return tuple(loop)
+        else:
+            return tuple()
 
     loops = set()
 
@@ -25,6 +27,7 @@ def find_loop(connections, path):
         if path[-1] in connection:
             new_step = [e for e in connection if e != path[-1]]
             print('Recursion:', path + new_step)
+
             loops.add(find_loop(connections, path + new_step))
 
     print('Loops:', loops)
@@ -33,7 +36,7 @@ def find_loop(connections, path):
 
 def find_cycle(connections):
     print('Connections:', connections)
-    
+
     longest_loop = find_loop(connections, [])
 
     print('Longest loop:', longest_loop)
@@ -76,3 +79,5 @@ if __name__ == '__main__':
 
     assert checker(find_cycle,
                    ((1, 2), (2, 3), (3, 4), (4, 5), (5, 7), (7, 6), (8, 4), (1, 5), (2, 4)), 5), "Second"
+
+    assert checker(find_cycle, ((3, 4), (2, 3), (1, 2)), 0)
