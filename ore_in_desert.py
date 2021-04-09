@@ -1,5 +1,54 @@
+from itertools import product
+
+BOARD_SIZE = 10
+ALL_CELLS = {complex(y, x) for y, x in product(range(BOARD_SIZE), repeat=2)}
+
+
 def checkio(previous):
-    return [0, 0]
+    print('==== Previous:', previous)
+
+    if not previous:
+        return [BOARD_SIZE // 2, BOARD_SIZE // 2]
+
+    possible_cells = ALL_CELLS.copy()
+
+    for step in previous:
+        print('Step:', step)
+
+        center_y, center_x, radius = step
+        center = complex(center_y, center_x)
+
+        print('    Center:', center)
+        print('    Radius:', radius)
+        print('    Radius + 0.5:', radius + 0.5)
+        print('    Radius - 0.5:', radius - 0.5)
+
+        # for cell in ALL_CELLS:
+        #     print(cell, abs(cell - center))
+        #
+        #
+        #
+        # quit()
+
+        # print(abs((5 + 5j) - (1 + 1j)))
+        # quit()
+
+        possible_cells &= {cell for cell in ALL_CELLS
+                           if radius + 0.5 >= abs(cell - center) >= radius - 0.5}
+
+        possible_cells -= {center}
+
+        print('Possible cells:', possible_cells)
+        print()
+
+    next_cell = possible_cells.pop()
+    print('Next cell:', next_cell)
+
+    next_cell_coordinates = int(next_cell.real), int(next_cell.imag)
+    print('Next cell coordinates:', next_cell_coordinates)
+    print()
+
+    return next_cell_coordinates
 
 
 if __name__ == '__main__':
@@ -19,5 +68,5 @@ if __name__ == '__main__':
         return False
 
     assert check_solution(checkio, (1, 1)), "Example"
-    # assert check_solution(checkio, (9, 9)), "Bottom right"
+    assert check_solution(checkio, (9, 9)), "Bottom right"
     # assert check_solution(checkio, (6, 6)), "Center"
