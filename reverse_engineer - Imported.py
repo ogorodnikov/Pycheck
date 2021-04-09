@@ -81,7 +81,6 @@ if __name__ == '__main__':
         else:
             return False
 
-
     assert test_it("x+y", checkio), "x+y"
     assert test_it("x*y", checkio), "x*y"
     assert test_it("x-y", checkio), "x-y"
