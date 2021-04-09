@@ -1,5 +1,33 @@
+denominator = '1'
+numerator = '1'
+
 def checkio(steps):
-    return ["x+y", 1, -1]
+    print('Steps:', steps)
+
+    global denominator
+
+    if len(steps) == 0:
+        return ['1', 0, 2]
+
+    if len(steps) == 1:
+
+        if steps[-1][2] == 'ZeroDivisionError':
+            denominator = 'x'
+        else:
+            return ['1', 2, 0]
+
+    if len(steps) == 2:
+
+        if steps[-1][2] == 'ZeroDivisionError':
+            denominator = 'y'
+        else:
+            pass
+
+        print('Denominator:', denominator)
+        quit()
+
+
+    return [f'{numerator}/{denominator}', 5, 5]
 
 
 if __name__ == '__main__':
@@ -41,7 +69,8 @@ if __name__ == '__main__':
             return False
 
 
-    assert test_it("x+y", checkio), "x+y"
+    # assert test_it("x+y", checkio), "x+y"
     # assert test_it("x*y", checkio), "x*y"
     # assert test_it("x-y", checkio), "x-y"
     # assert test_it("x/y", checkio), "x/y"
+    # assert test_it("y/x", checkio), "y/x"
