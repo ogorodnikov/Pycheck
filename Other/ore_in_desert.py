@@ -1,42 +1,22 @@
-from itertools import product
+from itertools import product, starmap
 
 BOARD_SIZE = 10
-ALL_CELLS = {complex(y, x) for y, x in product(range(BOARD_SIZE), repeat=2)}
+ALL_CELLS = set(starmap(complex, product(range(BOARD_SIZE), repeat=2)))
 
 
 def checkio(previous):
-    print('==== Previous:', previous)
-
-    # if not previous:
-    #     return [BOARD_SIZE // 2, BOARD_SIZE // 2]
 
     possible_cells = ALL_CELLS.copy()
 
-    for step in previous:
-        print('Step:', step)
+    for center_y, center_x, radius in previous:
 
-        center_y, center_x, radius = step
         center = complex(center_y, center_x)
 
-        # print('    Center:', center)
-        # print('    Radius:', radius)
-        # print('    Radius + 0.5:', radius + 0.5)
-        # print('    Radius - 0.5:', radius - 0.5)
-
-        possible_cells &= {cell for cell in ALL_CELLS
+        possible_cells &= {cell for cell in possible_cells
                            if radius + 0.5 >= abs(cell - center) >= radius - 0.5}
 
-        # possible_cells -= {center}
-
-        print('Possible cells:', possible_cells)
-        print()
-
     next_cell = possible_cells.pop()
-    print('Next cell:', next_cell)
-
     next_cell_coordinates = int(next_cell.real), int(next_cell.imag)
-    # print('Next cell coordinates:', next_cell_coordinates)
-    print()
 
     return next_cell_coordinates
 
