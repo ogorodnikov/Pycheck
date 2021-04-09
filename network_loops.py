@@ -1,44 +1,32 @@
 MIN_LOOP_SIZE = 4
 
-def find_loop(connections, path):
 
-    if path and path[-1] in path[:-1]:
+def find_cycle(connections, path=None):
+
+    is_looped = path and path[-1] in path[:-1]
+
+    if is_looped:
 
         looped_element = path[-1]
         first_occurrence = path.index(looped_element)
         loop = path[first_occurrence:]
 
-        # print('Looped element:  ', looped_element)
-        # print('First occurrence:', first_occurrence)
-        # print('Loop:            ', loop)
-
         if len(loop) >= MIN_LOOP_SIZE:
-            return tuple(loop)
+            return loop
         else:
-            return tuple()
+            return []
 
-    longest_loop = tuple()
+    longest_loop = []
 
-    for connection in set(connections) - set(path):
+    for connection in connections:
 
         if not path:
             path = [connection[0]]
 
         if path[-1] in connection:
             new_step = [e for e in connection if e != path[-1]]
-            new_loop = find_loop(connections, path + new_step)
+            new_loop = find_cycle(connections, path + new_step)
             longest_loop = max(longest_loop, new_loop, key=len)
-
-    return longest_loop
-
-
-def find_cycle(connections):
-    print('Connections:', connections)
-
-    longest_loop = find_loop(connections, [])
-
-    print('Longest loop:', longest_loop)
-    # quit()
 
     return longest_loop
 
