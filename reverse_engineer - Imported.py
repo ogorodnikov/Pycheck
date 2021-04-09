@@ -3,40 +3,44 @@ from fractions import Fraction
 from random import randint
 
 OPERATIONS = list('+-/*')
-
-
-def verify(expr, x, y):
-    try:
-        out = eval(expr, {"x": Fraction(x), "y": Fraction(y)})
-        return [out.numerator, out.denominator]
-    except ZeroDivisionError:
-        return "ZeroDivisionError"
+NUMBER_RANGE = (-100, 100)
 
 
 def get_expressions(depth):
-    if depth == 0:
 
+    if depth == 0:
         expressions = ["x-x", "x", "y"]
 
     else:
-
         sub_expressions = get_expressions(depth - 1)
-
         expression_parts = product(sub_expressions, OPERATIONS, sub_expressions)
-
         expressions = [''.join(parts).join('()') for parts in expression_parts]
 
     return expressions
 
 
-def checkio(steps, counter=0):
+def is_correct(expression, x, y):
+
+    globals_dict = {"x": Fraction(x), "y": Fraction(y)}
+
+    try:
+        result = eval(expression, globals_dict)
+        return [result.numerator, result.denominator]
+
+    except ZeroDivisionError:
+        return "ZeroDivisionError"
+
+
+def checkio(steps, depth=0):
+
     while True:
-        for e in get_expressions(counter):
-            print('E:', e)
-            print('Steps:', steps)
-            if all(verify(e, x, y) == val for x, y, val in steps):
-                return e, randint(-100, 100), randint(-100, 100)
-        counter += 1
+
+        for expression in get_expressions(depth):
+
+            if all(is_correct(expression, x, y) == result for x, y, result in steps):
+                return expression, randint(*NUMBER_RANGE), randint(*NUMBER_RANGE)
+
+        depth += 1
 
 
 if __name__ == '__main__':
