@@ -1,5 +1,6 @@
+MIN_LOOP_SIZE = 4
+
 def find_loop(connections, path):
-    print('Path:', path)
 
     if path and path[-1] in path[:-1]:
 
@@ -7,11 +8,11 @@ def find_loop(connections, path):
         first_occurrence = path.index(looped_element)
         loop = path[first_occurrence:]
 
-        print('Looped element:  ', looped_element)
-        print('First occurrence:', first_occurrence)
-        print('Loop:            ', loop)
+        # print('Looped element:  ', looped_element)
+        # print('First occurrence:', first_occurrence)
+        # print('Loop:            ', loop)
 
-        if len(loop) > 3:
+        if len(loop) >= MIN_LOOP_SIZE:
             return tuple(loop)
         else:
             return tuple()
@@ -19,18 +20,15 @@ def find_loop(connections, path):
     loops = set()
 
     for connection in set(connections) - set(path):
-        print('Connection:', connection)
 
         if not path:
             path = [connection[0]]
 
         if path[-1] in connection:
             new_step = [e for e in connection if e != path[-1]]
-            print('Recursion:', path + new_step)
-
             loops.add(find_loop(connections, path + new_step))
 
-    print('Loops:', loops)
+    # print('Loops:', loops)
     return max(loops, key=len)
 
 
