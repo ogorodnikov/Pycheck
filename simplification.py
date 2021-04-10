@@ -1,11 +1,33 @@
 import re
+from collections import defaultdict
 
 
 def simplify(expr):
     print('Expr:', expr)
 
-    terms = re.findall(r'((-|\+).+?)(?=[+-]|$)', expr)
+    terms = re.findall(r'(([+-]?\d?).+?)(?=[+-]|$)', expr)
     print('Terms:', terms)
+    
+    polynomial = defaultdict(int)
+
+    for term, coefficient in terms:
+        
+        if coefficient[0] not in '+-':
+            coefficient = '+' + coefficient
+        if coefficient[-1] in '+-':
+            coefficient = coefficient + '1'
+
+        degree = term.count('x')
+
+        print('Term:', term)
+        print('Coefficient:', coefficient)
+        print('Degree:', degree)
+        
+        polynomial[degree] += int(coefficient)
+
+    print('Polynomial:', polynomial)
+
+
 
     quit()
 
@@ -29,7 +51,7 @@ def encode(message):
 
 if __name__ == "__main__":
 
-    assert simplify("-5*x*x+3*x-1") == "-5*x**2+3*x-1"
+    assert simplify("5*x*x+x*x+3*x-1") == "-5*x**2+3*x-1"
 
     # assert simplify("(x-1)*(x+1)") == "x**2-1", "First and simple"
 
