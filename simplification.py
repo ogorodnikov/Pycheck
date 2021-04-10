@@ -4,7 +4,7 @@ import re
 def simplify(expr):
     print('Expr:', expr)
 
-    terms = re.findall(r'([+-].+?)(?=[+-]|$)', expr)
+    terms = re.findall(r'((-|\+).+?)(?=[+-]|$)', expr)
     print('Terms:', terms)
 
     quit()
