@@ -36,12 +36,12 @@ def parse_polynomial(polynomial_string):
 def reduce_polynomial(expression):
     print('Reduce expression:', expression)
 
-    sub_expressions = re.findall(r'(\(.?\))', expression)
+    sub_expressions = re.findall(r'\(.+?\)', expression)
     print('Sub expressions:', sub_expressions)
 
     quit()
 
-    return parse_polynomial(expr)
+    return parse_polynomial(expression)
 
 
 def polynomial_to_string(polynomial):
