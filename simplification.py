@@ -6,15 +6,19 @@ def parse_polynomial(polynomial_string):
     """ parse polynomial_string to dictionary {degree: coefficient} """
 
     terms = re.findall(r'(([+-]?\d?).+?)(?=[+-]|$)', polynomial_string)
+    print('Terms:', terms)
 
     polynomial = defaultdict(int)
 
     for term, coefficient in terms:
 
-        if coefficient[0] not in '+-':
-            coefficient = '+' + coefficient
-        if coefficient[-1] in '+-':
-            coefficient = coefficient + '1'
+        if coefficient == '':
+            coefficient = '+1'
+        else:
+            if coefficient[0] not in '+-':
+                coefficient = '+' + coefficient
+            if coefficient[-1] in '+-':
+                coefficient = coefficient + '1'
 
         degree = term.count('x')
 
@@ -33,9 +37,46 @@ def reduce_polynomial(expr):
     return parse_polynomial(expr)
 
 
-def polynomial_to_string(resulting_polynomial):
-    print('Resulting polynomial:', resulting_polynomial)
-    quit()
+def polynomial_to_string(polynomial):
+    print('Polynomial:', polynomial)
+
+    polynomial_string = ''
+
+    for degree, coefficient in polynomial.items():
+
+        if coefficient == 1 and degree == max(degree for degree, coefficient in polynomial.items()):
+            coefficient_string = ''
+
+        elif coefficient in (1, -1) and degree > 0:
+            coefficient_string = f'{coefficient:+d}'[:-1]
+
+        else:
+            coefficient_string = f'{coefficient:+d}'
+
+        if degree == 0:
+            degree_string = ''
+        elif degree == 1:
+            degree_string = f'x'
+        else:
+            degree_string = f'x**{degree}'
+
+        # print('Coefficient:', coefficient)
+        # print('Degree:', degree)
+        # print('    Coefficient string:', coefficient_string)
+        # print('    Degree string:', degree_string)
+        # print()
+
+        if coefficient_string == '-':
+            term_symbol = ''
+        else:
+            term_symbol = '*'
+
+        term_string = term_symbol.join(filter(None, (coefficient_string, degree_string)))
+
+        polynomial_string += term_string
+
+    print('Polynomial string:', polynomial_string)
+    return polynomial_string
 
 
 def simplify(expr):
@@ -46,8 +87,7 @@ def simplify(expr):
     resulting_polynomial_string = polynomial_to_string(resulting_polynomial)
 
     print('Resulting polynomial string:', resulting_polynomial_string)
-    quit()
-
+    print()
     return resulting_polynomial_string
 
 
@@ -67,7 +107,9 @@ def encode(message):
 
 
 if __name__ == "__main__":
-    assert simplify("5*x*x+x*x+3*x-1") == "-5*x**2+3*x-1"
+
+    assert simplify("x*x*x+5*x*x+x*x+3*x-1") == "x**3+6*x**2+3*x-1"
+    assert simplify("-x*x*x+5*x*x+x*x+3*x-1") == "-x**3+6*x**2+3*x-1"
 
     # assert simplify("(x-1)*(x+1)") == "x**2-1", "First and simple"
 
