@@ -2,16 +2,15 @@ import re
 from collections import defaultdict
 
 
-def simplify(expr):
-    print('Expr:', expr)
+def parse_polynomial(polynomial_string):
+    """ parse polynomial_string to dictionary {degree: coefficient} """
 
-    terms = re.findall(r'(([+-]?\d?).+?)(?=[+-]|$)', expr)
-    print('Terms:', terms)
-    
+    terms = re.findall(r'(([+-]?\d?).+?)(?=[+-]|$)', polynomial_string)
+
     polynomial = defaultdict(int)
 
     for term, coefficient in terms:
-        
+
         if coefficient[0] not in '+-':
             coefficient = '+' + coefficient
         if coefficient[-1] in '+-':
@@ -19,23 +18,40 @@ def simplify(expr):
 
         degree = term.count('x')
 
-        print('Term:', term)
-        print('Coefficient:', coefficient)
-        print('Degree:', degree)
-        
+        # print('Term:', term)
+        # print('    Coefficient:', coefficient)
+        # print('    Degree:', degree)
+
         polynomial[degree] += int(coefficient)
 
-    print('Polynomial:', polynomial)
+    # print('Polynomial:', polynomial)
+
+    return polynomial
 
 
+def reduce_polynomial(expr):
+    return parse_polynomial(expr)
 
+
+def polynomial_to_string(resulting_polynomial):
+    print('Resulting polynomial:', resulting_polynomial)
     quit()
 
 
-    return expr
+def simplify(expr):
+    print('Expr:', expr)
+
+    resulting_polynomial = reduce_polynomial(expr)
+
+    resulting_polynomial_string = polynomial_to_string(resulting_polynomial)
+
+    print('Resulting polynomial string:', resulting_polynomial_string)
+    quit()
+
+    return resulting_polynomial_string
+
 
 def encode(message):
-
     def write_transparently(_, token):
         return token
 
@@ -49,8 +65,8 @@ def encode(message):
 
     return ''.join(tokens)
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     assert simplify("5*x*x+x*x+3*x-1") == "-5*x**2+3*x-1"
 
     # assert simplify("(x-1)*(x+1)") == "x**2-1", "First and simple"
