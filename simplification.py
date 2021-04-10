@@ -33,7 +33,14 @@ def parse_polynomial(polynomial_string):
     return polynomial
 
 
-def reduce_polynomial(expr):
+def reduce_polynomial(expression):
+    print('Reduce expression:', expression)
+
+    sub_expressions = re.findall(r'(\(.?\))', expression)
+    print('Sub expressions:', sub_expressions)
+
+    quit()
+
     return parse_polynomial(expr)
 
 
@@ -108,10 +115,10 @@ def encode(message):
 
 if __name__ == "__main__":
 
-    assert simplify("x*x*x+5*x*x+x*x+3*x-1") == "x**3+6*x**2+3*x-1"
-    assert simplify("-x*x*x+5*x*x+x*x+3*x-1") == "-x**3+6*x**2+3*x-1"
+    # assert simplify("x*x*x+5*x*x+x*x+3*x-1") == "x**3+6*x**2+3*x-1"
+    # assert simplify("-x*x*x+5*x*x+x*x+3*x-1") == "-x**3+6*x**2+3*x-1"
 
-    # assert simplify("(x-1)*(x+1)") == "x**2-1", "First and simple"
+    assert simplify("(x-1)*(x+1)") == "x**2-1", "First and simple"
 
     # assert simplify("(x+1)*(x+1)") == "x**2+2*x+1", "Almost the same"
     # assert simplify("(x+3)*x*2-x*x") == "x**2+6*x", "Different operations"
