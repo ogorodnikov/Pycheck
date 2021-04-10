@@ -36,10 +36,38 @@ def parse_polynomial(polynomial_string):
 def reduce_polynomial(expression):
     print('Reduce expression:', expression)
 
-    sub_expressions = re.findall(r'\(.+?\)', expression)
-    print('Sub expressions:', sub_expressions)
+    def process_sub_expression(_, token):
+        return 'Sub-expression', token, parse_polynomial(token).__repr__()
+
+    def process_mult(_, token):
+        return 'Mult', token
+
+    def process_add(_, token):
+        return 'Add', token
+
+    def process_sub(_, token):
+        return 'Sub', token
+
+    def process_polynomial(_, token):
+        return 'Polynomial', token, parse_polynomial(token).__repr__()
+
+    scanner = re.Scanner([(r'\(.+?\)', process_sub_expression),
+                          (r'\*', process_mult),
+                          (r'\+', process_add),
+                          (r'-', process_sub),
+                          (r'\d+|x', process_polynomial)])
+
+    tokens, unrecognised = scanner.scan(expression)
+
+    print('Tokens:')
+    [print(token) for token in tokens]
 
     quit()
+
+
+    # sub_expressions = re.findall(r'\(.+?\)', expression)
+    # print('Sub expressions:', sub_expressions)
+
 
     return parse_polynomial(expression)
 
@@ -98,28 +126,16 @@ def simplify(expr):
     return resulting_polynomial_string
 
 
-def encode(message):
-    def write_transparently(_, token):
-        return token
-
-    def write_ascii_code(_, token):
-        return f'{ord(token):<07b}'
-
-    scanner = re.Scanner([(r'\d|[^\w\s]', write_transparently),
-                          (r'.', write_ascii_code)])
-
-    tokens, unrecognised = scanner.scan(message)
-
-    return ''.join(tokens)
-
-
 if __name__ == "__main__":
+
+
+    assert simplify("(x-1)*(x+1)-16456*x*x+(x*x)*(1)")
+
 
     # assert simplify("x*x*x+5*x*x+x*x+3*x-1") == "x**3+6*x**2+3*x-1"
     # assert simplify("-x*x*x+5*x*x+x*x+3*x-1") == "-x**3+6*x**2+3*x-1"
 
-    assert simplify("(x-1)*(x+1)") == "x**2-1", "First and simple"
-
+    # assert simplify("(x-1)*(x+1)") == "x**2-1", "First and simple"
     # assert simplify("(x+1)*(x+1)") == "x**2+2*x+1", "Almost the same"
     # assert simplify("(x+3)*x*2-x*x") == "x**2+6*x", "Different operations"
     # assert simplify("x+x*x+x*x*x") == "x**3+x**2+x", "Don't forget about order"
