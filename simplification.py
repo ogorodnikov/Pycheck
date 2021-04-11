@@ -37,7 +37,7 @@ def reduce_polynomial(expression):
     print('Reduce expression:', expression)
 
     def process_sub_expression(_, token):
-        return 'Sub-expression', token, parse_polynomial(token).__repr__()
+        return 'Sub-expression', token
 
     def process_mult(_, token):
         return 'Mult', token
@@ -49,7 +49,7 @@ def reduce_polynomial(expression):
         return 'Sub', token
 
     def process_polynomial(_, token):
-        return 'Polynomial', token, parse_polynomial(token).__repr__()
+        return 'Polynomial', token
 
     scanner = re.Scanner([(r'\(.+?\)', process_sub_expression),
                           (r'\*', process_mult),
@@ -128,9 +128,7 @@ def simplify(expr):
 
 if __name__ == "__main__":
 
-
-    assert simplify("(x-1)*(x+1)-16456*x*x+(x*x)*(1)")
-
+    assert simplify("((x-1)*(x+1))-16456*x*x+(x*x)*(1)")
 
     # assert simplify("x*x*x+5*x*x+x*x+3*x-1") == "x**3+6*x**2+3*x-1"
     # assert simplify("-x*x*x+5*x*x+x*x+3*x-1") == "-x**3+6*x**2+3*x-1"
