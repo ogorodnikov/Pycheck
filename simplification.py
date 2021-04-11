@@ -51,7 +51,11 @@ def reduce_polynomial(expression):
     def process_polynomial(_, token):
         return 'Polynomial', token
 
-    scanner = re.Scanner([(r'\(.+?\)', process_sub_expression),
+    groups = re.findall(r'\([^\(\)]*?\)', expression)
+    print('Groups:', groups)
+    quit()
+
+    scanner = re.Scanner([(r'\(([^\(\)]*\([^\(\)]*\)[^\(\)]*)*\)', process_sub_expression),
                           (r'\*', process_mult),
                           (r'\+', process_add),
                           (r'-', process_sub),
