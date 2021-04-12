@@ -1,5 +1,5 @@
 import re
-from collections import defaultdict
+from collections import defaultdict, Counter
 from itertools import product
 
 
@@ -130,8 +130,40 @@ def reduce_polynomial(tokens):
                 else:
                     b_poly = b_value
 
-                c_poly = mult_poly(a_poly, b_poly)
-                print('C poly:', c_poly)
+                c_poly = multiply_poly(a_poly, b_poly)
+                print('C:', c_poly)
+
+                tokens = tokens[:token_index - 1] + [('Poly', c_poly)] + tokens[token_index + 2:]
+
+                break
+
+    while any(token_type == 'Add' for token_type, token_value in tokens):
+
+        for token_index, (token_type, token_value) in enumerate(tokens):
+
+            if token_type == 'Add':
+
+                a_type, a_value = tokens[token_index - 1]
+                b_type, b_value = tokens[token_index + 1]
+
+                if a_type == 'Value':
+                    if a_value == 'x':
+                        a_poly = {1: 1}
+                    else:
+                        a_poly = {0: int(a_value)}
+                else:
+                    a_poly = a_value
+
+                if b_type == 'Value':
+                    if b_value == 'x':
+                        b_poly = {1: 1}
+                    else:
+                        b_poly = {0: int(b_value)}
+                else:
+                    b_poly = b_value
+
+                c_poly = add_poly(a_poly, b_poly)
+                print('C:', c_poly)
 
                 tokens = tokens[:token_index - 1] + [('Poly', c_poly)] + tokens[token_index + 2:]
 
@@ -144,12 +176,12 @@ def reduce_polynomial(tokens):
     return tokens
 
 
-def mult_poly(a_poly, b_poly):
-    print('A:', a_poly)
-    print('B:', b_poly)
+def multiply_poly(a_poly, b_poly):
+    # print('A:', a_poly)
+    # print('B:', b_poly)
 
     pairs = list(product(a_poly.items(), b_poly.items()))
-    print('Pairs:', pairs)
+    # print('Pairs:', pairs)
 
     terms = []
 
@@ -158,10 +190,10 @@ def mult_poly(a_poly, b_poly):
         term = (u_degree + v_degree, u_coefficient * v_coefficient)
         terms.append(term)
 
-        print('    Pair:', pair)
-        print('    Term:', term)
+        # print('    Pair:', pair)
+        # print('    Term:', term)
 
-    print('Terms:', terms)
+    # print('Terms:', terms)
 
     c_poly = defaultdict(int)
     for term in terms:
@@ -169,6 +201,25 @@ def mult_poly(a_poly, b_poly):
         c_poly[term_degree] += term_coefficient
 
     return dict(c_poly)
+
+
+def add_poly(a_poly, b_poly):
+    print('A:', a_poly)
+    print('B:', b_poly)
+
+    a_counter = Counter(a_poly)
+    b_counter = Counter(b_poly)
+
+    print('A counter:', a_counter)
+    print('B counter:', b_counter)
+
+    c_counter = a_counter + b_counter
+    c_poly = dict(c_counter)
+
+    print('C counter:', c_counter)
+    print('C poly:', c_poly)
+
+    return c_poly
 
 
 def polynomial_to_string(polynomial):
