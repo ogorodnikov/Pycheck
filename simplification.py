@@ -94,22 +94,6 @@ def reduce_polynomial(tokens):
                 print()
                 break
 
-    while any(token_type == 'Add' for token_type, token_value in tokens):
-
-        for token_index, (token_type, token_value) in enumerate(tokens):
-
-            if token_type == 'Add':
-
-                _, a_poly = tokens[token_index - 1]
-                _, b_poly = tokens[token_index + 1]
-
-                c_poly = add_poly(a_poly, b_poly)
-
-                tokens = tokens[:token_index - 1] + [('Poly', c_poly)] + tokens[token_index + 2:]
-                print('After ADD:', tokens)
-                print()
-                break
-
     while any(token_type == 'Sub' for token_type, token_value in tokens):
 
         for token_index, (token_type, token_value) in enumerate(tokens):
@@ -123,6 +107,22 @@ def reduce_polynomial(tokens):
 
                 tokens = tokens[:token_index - 1] + [('Poly', c_poly)] + tokens[token_index + 2:]
                 print('After SUB:', tokens)
+                print()
+                break
+
+    while any(token_type == 'Add' for token_type, token_value in tokens):
+
+        for token_index, (token_type, token_value) in enumerate(tokens):
+
+            if token_type == 'Add':
+
+                _, a_poly = tokens[token_index - 1]
+                _, b_poly = tokens[token_index + 1]
+
+                c_poly = add_poly(a_poly, b_poly)
+
+                tokens = tokens[:token_index - 1] + [('Poly', c_poly)] + tokens[token_index + 2:]
+                print('After ADD:', tokens)
                 print()
                 break
 
@@ -268,16 +268,16 @@ def simplify(expr):
 
 if __name__ == "__main__":
 
-    assert simplify("((x*5)*(x+1))-16456*x*x*x+(x*x)*(1)") == '-16456*x**3+4*x**2+5*x'
+    assert simplify("((x*5)*(x+1))-16456*x*x*x+(x*x)*(1)") == '-16456*x**3+6*x**2+5*x'
     assert simplify("x*x*x+5*x*x+x*x+3*x-1") == "x**3+6*x**2+3*x-1"
 
     assert simplify("(x-1)*(x+1)") == "x**2-1", "First and simple"
     assert simplify("(x+1)*(x+1)") == "x**2+2*x+1", "Almost the same"
     assert simplify("(x+3)*x*2-x*x") == "x**2+6*x", "Different operations"
-
     assert simplify("x+x*x+x*x*x") == "x**3+x**2+x", "Don't forget about order"
 
-    # assert simplify("(2*x+3)*2-x+x*x*x*x") == "x**4+3*x+6", "All together"
+    assert simplify("(2*x+3)*2-x+x*x*x*x") == "x**4+3*x+6", "All together"
+
     # assert simplify("x*x-(x-1)*(x+1)-1") == "0", "Zero"
     # assert simplify("5-5-x") == "-x", "Negative C1"
     # assert simplify("x*x*x-x*x*x-1") == "-1", "Negative C0"
