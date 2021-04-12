@@ -244,6 +244,9 @@ def polynomial_to_string(polynomial):
 
         polynomial_string += term_string
 
+    if polynomial_string == '':
+        polynomial_string = '0'
+
     # print('Polynomial string:', polynomial_string)
 
     return polynomial_string
@@ -275,9 +278,9 @@ if __name__ == "__main__":
     assert simplify("(x+1)*(x+1)") == "x**2+2*x+1", "Almost the same"
     assert simplify("(x+3)*x*2-x*x") == "x**2+6*x", "Different operations"
     assert simplify("x+x*x+x*x*x") == "x**3+x**2+x", "Don't forget about order"
-
     assert simplify("(2*x+3)*2-x+x*x*x*x") == "x**4+3*x+6", "All together"
 
-    # assert simplify("x*x-(x-1)*(x+1)-1") == "0", "Zero"
+    assert simplify("x*x-(x-1)*(x+1)-1") == "0", "Zero"
+
     # assert simplify("5-5-x") == "-x", "Negative C1"
     # assert simplify("x*x*x-x*x*x-1") == "-1", "Negative C0"
