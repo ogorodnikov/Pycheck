@@ -51,18 +51,25 @@ def reduce_polynomial(expression):
     def process_polynomial(_, token):
         return 'Polynomial', token
 
+    bracket_level = -1
+
     def process_open_bracket(_, token):
-        return 'Polynomial', token
+        nonlocal bracket_level
+        bracket_level += 1
+
+        return 'Open bracket', bracket_level
 
     def process_close_bracket(_, token):
-        return 'Polynomial', token
+        nonlocal bracket_level
+        bracket_level -= 1
+
+        return 'Close bracket', bracket_level + 1
 
     # groups = re.findall(r'\([^\(\)]*?\)', expression)
     # print('Groups:', groups)
 
-
     scanner = re.Scanner([(r'\(', process_open_bracket),
-                          (r'\)', process_close_bracket)
+                          (r'\)', process_close_bracket),
                           (r'\*', process_mult),
                           (r'\+', process_add),
                           (r'-', process_sub),
