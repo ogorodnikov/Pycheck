@@ -93,7 +93,7 @@ def reduce_polynomial(tokens):
 
         for token_index, (token_type, token_value) in enumerate(tokens):
 
-            print(token_index, (token_type, token_value))
+            # print(token_index, (token_type, token_value))
 
             if token_type == 'Open bracket':
                 last_bracket_index = token_index
@@ -102,10 +102,11 @@ def reduce_polynomial(tokens):
 
                 sub_expression = tokens[last_bracket_index + 1:token_index]
 
-                print('    Sub-expression:', sub_expression)
+                # print('---- Recursion:', sub_expression)
 
                 tokens = tokens[:last_bracket_index] + reduce_polynomial(sub_expression) + tokens[token_index + 1:]
-                print('Tokens after sub-expression:', tokens)
+                print('After Sub-expression:', tokens)
+                print()
                 break
 
     while any(token_type == 'Mult' for token_type, token_value in tokens):
@@ -120,7 +121,8 @@ def reduce_polynomial(tokens):
                 c_poly = multiply_poly(a_poly, b_poly)
 
                 tokens = tokens[:token_index - 1] + [('Poly', c_poly)] + tokens[token_index + 2:]
-                print('Tokens after mult:', tokens)
+                print('After MULT:', tokens)
+                print()
                 break
 
     while any(token_type == 'Add' for token_type, token_value in tokens):
@@ -135,7 +137,8 @@ def reduce_polynomial(tokens):
                 c_poly = add_poly(a_poly, b_poly)
 
                 tokens = tokens[:token_index - 1] + [('Poly', c_poly)] + tokens[token_index + 2:]
-                print('Tokens after add:', tokens)
+                print('After ADD:', tokens)
+                print()
                 break
 
     while any(token_type == 'Sub' for token_type, token_value in tokens):
@@ -150,10 +153,10 @@ def reduce_polynomial(tokens):
                 c_poly = sub_poly(a_poly, b_poly)
 
                 tokens = tokens[:token_index - 1] + [('Poly', c_poly)] + tokens[token_index + 2:]
+                print('After SUB:', tokens)
+                print()
                 break
 
-    print('==== Tokens:', tokens)
-    print()
     input()
 
     return tokens
