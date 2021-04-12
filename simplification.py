@@ -33,11 +33,8 @@ def parse_polynomial(polynomial_string):
     return polynomial
 
 
-def reduce_polynomial(expression):
-    print('Reduce expression:', expression)
-
-    def process_sub_expression(_, token):
-        return 'Sub-expression', token
+def tokenize(expression):
+    print('Tokenize:', expression)
 
     def process_mult(_, token):
         return 'Mult', token
@@ -48,8 +45,8 @@ def reduce_polynomial(expression):
     def process_sub(_, token):
         return 'Sub', token
 
-    def process_polynomial(_, token):
-        return 'Polynomial', token
+    def process_value(_, token):
+        return 'Value', token
 
     bracket_level = -1
 
@@ -65,29 +62,55 @@ def reduce_polynomial(expression):
 
         return 'Close bracket', bracket_level + 1
 
-    # groups = re.findall(r'\([^\(\)]*?\)', expression)
-    # print('Groups:', groups)
-
     scanner = re.Scanner([(r'\(', process_open_bracket),
                           (r'\)', process_close_bracket),
                           (r'\*', process_mult),
                           (r'\+', process_add),
                           (r'-', process_sub),
-                          (r'\d+|x', process_polynomial)])
+                          (r'\d+|x', process_value)])
 
     tokens, unrecognised = scanner.scan(expression)
 
     print('Tokens:')
     [print(token) for token in tokens]
 
+    return tokens
+
+
+def reduce_polynomial(tokens):
+
+    print('Reduce tokens:', tokens)
+
+    while any(token_value == 'Open bracket' for token_type, token_value in tokens):
+
+        last_bracket_index = 0
+
+        for token_index, (token_type, token_value) in enumerate(tokens):
+
+            print(token_index, (token_type, token_value))
+
+            if token_type == 'Open bracket':
+                last_bracket_index = token_index
+
+            if token_type == 'Close bracket':
+
+                sub_expression = tokens[last_bracket_index + 1:token_index]
+
+                print('    Sub expression:', sub_expression)
+
+                tokens = tokens[:last_bracket_index] + ['TEST'] + tokens[token_index + 1:]
+                print('Tokens:', tokens)
+                quit()
+
+                break
+
+
+    return [('<', 0)] + tokens + [('>', 0)]
+
+
     quit()
 
 
-    # sub_expressions = re.findall(r'\(.+?\)', expression)
-    # print('Sub expressions:', sub_expressions)
-
-
-    return parse_polynomial(expression)
 
 
 def polynomial_to_string(polynomial):
@@ -135,13 +158,14 @@ def polynomial_to_string(polynomial):
 def simplify(expr):
     print('Expr:', expr)
 
-    resulting_polynomial = reduce_polynomial(expr)
+    tokens = tokenize(expr)
+    resulting_polynomial = reduce_polynomial(tokens)
 
-    resulting_polynomial_string = polynomial_to_string(resulting_polynomial)
-
-    print('Resulting polynomial string:', resulting_polynomial_string)
-    print()
-    return resulting_polynomial_string
+    # resulting_polynomial_string = polynomial_to_string(resulting_polynomial)
+    #
+    # print('Resulting polynomial string:', resulting_polynomial_string)
+    # print()
+    # return resulting_polynomial_string
 
 
 if __name__ == "__main__":
