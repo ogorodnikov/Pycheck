@@ -35,7 +35,7 @@ def parse_polynomial(polynomial_string):
 
 
 def tokenize(expression):
-    print('Tokenize:', expression)
+    print('>>>> Tokenize:', expression)
 
     def process_mult(_, token):
         return 'Mult', token
@@ -76,15 +76,16 @@ def tokenize(expression):
 
     tokens, unrecognised = scanner.scan(expression)
 
-    print('Tokens:')
-    [print(token) for token in tokens]
+    # print('Tokens:')
+    # [print(token) for token in tokens]
+    # print()
 
     return tokens
 
 
 def reduce_polynomial(tokens):
 
-    print('>>>> Reduce tokens:', tokens)
+    print('>>>> Reduce:', tokens)
 
     while any(token_type == 'Open bracket' for token_type, token_value in tokens):
 
@@ -101,12 +102,10 @@ def reduce_polynomial(tokens):
 
                 sub_expression = tokens[last_bracket_index + 1:token_index]
 
-                print('    Sub expression:', sub_expression)
+                print('    Sub-expression:', sub_expression)
 
                 tokens = tokens[:last_bracket_index] + reduce_polynomial(sub_expression) + tokens[token_index + 1:]
-                print('Tokens:', tokens)
-                input()
-
+                print('Tokens after sub-expression:', tokens)
                 break
 
     while any(token_type == 'Mult' for token_type, token_value in tokens):
@@ -115,30 +114,13 @@ def reduce_polynomial(tokens):
 
             if token_type == 'Mult':
 
-                a_type, a_value = tokens[token_index - 1]
-                b_type, b_value = tokens[token_index + 1]
-
-                if a_type == 'Value':
-                    if a_value == 'x':
-                        a_poly = {1: 1}
-                    else:
-                        a_poly = {0: int(a_value)}
-                else:
-                    a_poly = a_value
-
-                if b_type == 'Value':
-                    if b_value == 'x':
-                        b_poly = {1: 1}
-                    else:
-                        b_poly = {0: int(b_value)}
-                else:
-                    b_poly = b_value
+                _, a_poly = tokens[token_index - 1]
+                _, b_poly = tokens[token_index + 1]
 
                 c_poly = multiply_poly(a_poly, b_poly)
-                print('C:', c_poly)
 
                 tokens = tokens[:token_index - 1] + [('Poly', c_poly)] + tokens[token_index + 2:]
-
+                print('Tokens after mult:', tokens)
                 break
 
     while any(token_type == 'Add' for token_type, token_value in tokens):
@@ -147,30 +129,27 @@ def reduce_polynomial(tokens):
 
             if token_type == 'Add':
 
-                a_type, a_value = tokens[token_index - 1]
-                b_type, b_value = tokens[token_index + 1]
-
-                if a_type == 'Value':
-                    if a_value == 'x':
-                        a_poly = {1: 1}
-                    else:
-                        a_poly = {0: int(a_value)}
-                else:
-                    a_poly = a_value
-
-                if b_type == 'Value':
-                    if b_value == 'x':
-                        b_poly = {1: 1}
-                    else:
-                        b_poly = {0: int(b_value)}
-                else:
-                    b_poly = b_value
+                _, a_poly = tokens[token_index - 1]
+                _, b_poly = tokens[token_index + 1]
 
                 c_poly = add_poly(a_poly, b_poly)
-                print('C:', c_poly)
 
                 tokens = tokens[:token_index - 1] + [('Poly', c_poly)] + tokens[token_index + 2:]
+                print('Tokens after add:', tokens)
+                break
 
+    while any(token_type == 'Sub' for token_type, token_value in tokens):
+
+        for token_index, (token_type, token_value) in enumerate(tokens):
+
+            if token_type == 'Sub':
+
+                _, a_poly = tokens[token_index - 1]
+                _, b_poly = tokens[token_index + 1]
+
+                c_poly = sub_poly(a_poly, b_poly)
+
+                tokens = tokens[:token_index - 1] + [('Poly', c_poly)] + tokens[token_index + 2:]
                 break
 
     print('==== Tokens:', tokens)
@@ -208,19 +187,38 @@ def multiply_poly(a_poly, b_poly):
 
 
 def add_poly(a_poly, b_poly):
+
+    degrees = set(a_poly.keys()) | set(b_poly.keys())
+
+    a_dict = defaultdict(int)
+    b_dict = defaultdict(int)
+    a_dict.update(a_poly)
+    b_dict.update(b_poly)
+
+    c_poly = {degree: a_dict[degree] + b_dict[degree] for degree in degrees}
+
     # print('A:', a_poly)
     # print('B:', b_poly)
+    # print('Degrees:', degrees)
+    # print('C poly:', c_poly)
 
-    a_counter = Counter(a_poly)
-    b_counter = Counter(b_poly)
+    return c_poly
 
-    # print('A counter:', a_counter)
-    # print('B counter:', b_counter)
 
-    c_counter = a_counter + b_counter
-    c_poly = dict(c_counter)
+def sub_poly(a_poly, b_poly):
 
-    # print('C counter:', c_counter)
+    degrees = set(a_poly.keys()) | set(b_poly.keys())
+
+    a_dict = defaultdict(int)
+    b_dict = defaultdict(int)
+    a_dict.update(a_poly)
+    b_dict.update(b_poly)
+
+    c_poly = {degree: a_dict[degree] - b_dict[degree] for degree in degrees}
+
+    # print('A:', a_poly)
+    # print('B:', b_poly)
+    # print('Degrees:', degrees)
     # print('C poly:', c_poly)
 
     return c_poly
@@ -283,7 +281,7 @@ def simplify(expr):
 
 if __name__ == "__main__":
 
-    assert simplify("((x*5)*(x+1))-16456*x*x+(x*x)*(1)")
+    assert simplify("((x*5)*(x+1))-16456*x*x*x+(x*x)*(1)")
 
     # assert simplify("x*x*x+5*x*x+x*x+3*x-1") == "x**3+6*x**2+3*x-1"
     # assert simplify("-x*x*x+5*x*x+x*x+3*x-1") == "-x**3+6*x**2+3*x-1"
