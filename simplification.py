@@ -6,34 +6,18 @@ from itertools import product
 def tokenize(expression):
     print('>>>> Tokenize:', expression)
 
-    def process_mult(_, token):
-        return '*'
-
-    def process_add(_, token):
-        return '+'
-
-    def process_sub(_, token):
-        return '-'
-
     def process_number(_, token):
         return {0: int(token)}
 
     def process_x(_, token):
         return {1: 1}
 
-    def process_open_bracket(_, token):
-        return '('
+    def process_other(_, token):
+        return token
 
-    def process_close_bracket(_, token):
-        return ')'
-
-    scanner = re.Scanner([(r'\(', process_open_bracket),
-                          (r'\)', process_close_bracket),
-                          (r'\*', process_mult),
-                          (r'\+', process_add),
-                          (r'-', process_sub),
-                          (r'\d+', process_number),
-                          (r'x', process_x)])
+    scanner = re.Scanner([(r'\d+', process_number),
+                          (r'x', process_x),
+                          (r'.', process_other)])
 
     tokens, unrecognised = scanner.scan(expression)
 
