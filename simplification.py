@@ -46,8 +46,11 @@ def tokenize(expression):
     def process_sub(_, token):
         return 'Sub', token
 
-    def process_value(_, token):
-        return 'Value', token
+    def process_number(_, token):
+        return 'Poly', {0: int(token)}
+
+    def process_x(_, token):
+        return 'Poly', {1: 1}
 
     bracket_level = -1
 
@@ -68,7 +71,8 @@ def tokenize(expression):
                           (r'\*', process_mult),
                           (r'\+', process_add),
                           (r'-', process_sub),
-                          (r'\d+|x', process_value)])
+                          (r'\d+', process_number),
+                          (r'x', process_x)])
 
     tokens, unrecognised = scanner.scan(expression)
 
@@ -204,20 +208,20 @@ def multiply_poly(a_poly, b_poly):
 
 
 def add_poly(a_poly, b_poly):
-    print('A:', a_poly)
-    print('B:', b_poly)
+    # print('A:', a_poly)
+    # print('B:', b_poly)
 
     a_counter = Counter(a_poly)
     b_counter = Counter(b_poly)
 
-    print('A counter:', a_counter)
-    print('B counter:', b_counter)
+    # print('A counter:', a_counter)
+    # print('B counter:', b_counter)
 
     c_counter = a_counter + b_counter
     c_poly = dict(c_counter)
 
-    print('C counter:', c_counter)
-    print('C poly:', c_poly)
+    # print('C counter:', c_counter)
+    # print('C poly:', c_poly)
 
     return c_poly
 
