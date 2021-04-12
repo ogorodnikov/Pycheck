@@ -81,7 +81,7 @@ def reduce_polynomial(tokens):
 
     print('Reduce tokens:', tokens)
 
-    while any(token_value == 'Open bracket' for token_type, token_value in tokens):
+    while any(token_type == 'Open bracket' for token_type, token_value in tokens):
 
         last_bracket_index = 0
 
@@ -98,9 +98,9 @@ def reduce_polynomial(tokens):
 
                 print('    Sub expression:', sub_expression)
 
-                tokens = tokens[:last_bracket_index] + ['TEST'] + tokens[token_index + 1:]
+                tokens = tokens[:last_bracket_index] + reduce_polynomial(sub_expression) + tokens[token_index + 1:]
                 print('Tokens:', tokens)
-                quit()
+                input()
 
                 break
 
