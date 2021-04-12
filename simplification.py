@@ -7,33 +7,25 @@ def tokenize(expression):
     print('>>>> Tokenize:', expression)
 
     def process_mult(_, token):
-        return 'Mult', token
+        return '*'
 
     def process_add(_, token):
-        return 'Add', token
+        return '+'
 
     def process_sub(_, token):
-        return 'Sub', token
+        return '-'
 
     def process_number(_, token):
-        return 'Poly', {0: int(token)}
+        return {0: int(token)}
 
     def process_x(_, token):
-        return 'Poly', {1: 1}
-
-    bracket_level = -1
+        return {1: 1}
 
     def process_open_bracket(_, token):
-        nonlocal bracket_level
-        bracket_level += 1
-
-        return 'Open bracket', bracket_level
+        return '('
 
     def process_close_bracket(_, token):
-        nonlocal bracket_level
-        bracket_level -= 1
-
-        return 'Close bracket', bracket_level + 1
+        return ')'
 
     scanner = re.Scanner([(r'\(', process_open_bracket),
                           (r'\)', process_close_bracket),
@@ -56,72 +48,68 @@ def reduce_polynomial(tokens):
 
     print('>>>> Reduce:', tokens)
 
-    while any(token_type == 'Open bracket' for token_type, token_value in tokens):
+    while '(' in tokens:
 
         last_bracket_index = 0
 
-        for token_index, (token_type, token_value) in enumerate(tokens):
+        for token_index, token in enumerate(tokens):
 
-            # print(token_index, (token_type, token_value))
-
-            if token_type == 'Open bracket':
+            if token == '(':
                 last_bracket_index = token_index
 
-            if token_type == 'Close bracket':
+            if token == ')':
 
                 sub_expression = tokens[last_bracket_index + 1:token_index]
-
-                # print('---- Recursion:', sub_expression)
 
                 tokens = tokens[:last_bracket_index] + reduce_polynomial(sub_expression) + tokens[token_index + 1:]
                 print('After Sub-expression:', tokens)
                 print()
                 break
 
-    while any(token_type == 'Mult' for token_type, token_value in tokens):
+    while '*' in tokens:
 
-        for token_index, (token_type, token_value) in enumerate(tokens):
+        for token_index, token in enumerate(tokens):
 
-            if token_type == 'Mult':
+            if token == '*':
 
-                _, a_poly = tokens[token_index - 1]
-                _, b_poly = tokens[token_index + 1]
+                a_poly = tokens[token_index - 1]
+                b_poly = tokens[token_index + 1]
 
                 c_poly = multiply_poly(a_poly, b_poly)
 
-                tokens = tokens[:token_index - 1] + [('Poly', c_poly)] + tokens[token_index + 2:]
+                tokens = tokens[:token_index - 1] + [c_poly] + tokens[token_index + 2:]
                 print('After MULT:', tokens)
                 print()
                 break
 
-    while any(token_type == 'Sub' for token_type, token_value in tokens):
+    while '-' in tokens:
 
-        for token_index, (token_type, token_value) in enumerate(tokens):
+        for token_index, token in enumerate(tokens):
 
-            if token_type == 'Sub':
+            if token == '-':
 
-                _, a_poly = tokens[token_index - 1]
-                _, b_poly = tokens[token_index + 1]
+                a_poly = tokens[token_index - 1]
+                b_poly = tokens[token_index + 1]
 
                 c_poly = sub_poly(a_poly, b_poly)
 
-                tokens = tokens[:token_index - 1] + [('Poly', c_poly)] + tokens[token_index + 2:]
+                tokens = tokens[:token_index - 1] + [ c_poly] + tokens[token_index + 2:]
                 print('After SUB:', tokens)
                 print()
                 break
 
-    while any(token_type == 'Add' for token_type, token_value in tokens):
+    while '+' in tokens:
 
-        for token_index, (token_type, token_value) in enumerate(tokens):
+        for token_index, token in enumerate(tokens):
 
-            if token_type == 'Add':
+            if token == '+':
 
-                _, a_poly = tokens[token_index - 1]
-                _, b_poly = tokens[token_index + 1]
+                a_poly = tokens[token_index - 1]
+                b_poly = tokens[token_index + 1]
 
                 c_poly = add_poly(a_poly, b_poly)
 
-                tokens = tokens[:token_index - 1] + [('Poly', c_poly)] + tokens[token_index + 2:]
+                tokens = tokens[:token_index - 1] + [c_poly] + tokens[token_index + 2:]
                 print('After ADD:', tokens)
                 print()
                 break
@@ -257,7 +245,7 @@ def simplify(expr):
 
     tokens = tokenize(expr)
 
-    _, resulting_polynomial = reduce_polynomial(tokens)[0]
+    resulting_polynomial = reduce_polynomial(tokens)[0]
 
     print('Resulting polynomial:', resulting_polynomial)
     print()
