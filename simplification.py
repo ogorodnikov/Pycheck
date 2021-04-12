@@ -1,37 +1,6 @@
 import re
-from collections import defaultdict, Counter
+from collections import defaultdict
 from itertools import product
-
-
-def parse_polynomial(polynomial_string):
-    """ parse polynomial_string to dictionary {degree: coefficient} """
-
-    terms = re.findall(r'(([+-]?\d?).+?)(?=[+-]|$)', polynomial_string)
-    print('Terms:', terms)
-
-    polynomial = defaultdict(int)
-
-    for term, coefficient in terms:
-
-        if coefficient == '':
-            coefficient = '+1'
-        else:
-            if coefficient[0] not in '+-':
-                coefficient = '+' + coefficient
-            if coefficient[-1] in '+-':
-                coefficient = coefficient + '1'
-
-        degree = term.count('x')
-
-        # print('Term:', term)
-        # print('    Coefficient:', coefficient)
-        # print('    Degree:', degree)
-
-        polynomial[degree] += int(coefficient)
-
-    # print('Polynomial:', polynomial)
-
-    return polynomial
 
 
 def tokenize(expression):
@@ -228,10 +197,11 @@ def sub_poly(a_poly, b_poly):
 
 
 def polynomial_to_string(polynomial):
-    print('Polynomial:', polynomial)
 
     poly_items = sorted(polynomial.items(), reverse=True)
-    print('Poly items:', poly_items)
+
+    # print('Polynomial:', polynomial)
+    # print('Poly items:', poly_items)
 
     polynomial_string = ''
 
@@ -256,11 +226,11 @@ def polynomial_to_string(polynomial):
         else:
             degree_string = f'x**{degree}'
 
-        print('Coefficient:', coefficient)
-        print('Degree:', degree)
-        print('    Coefficient string:', coefficient_string)
-        print('    Degree string:', degree_string)
-        print()
+        # print('Coefficient:', coefficient)
+        # print('Degree:', degree)
+        # print('    Coefficient string:', coefficient_string)
+        # print('    Degree string:', degree_string)
+        # print()
 
         if coefficient_string == '-':
             term_symbol = ''
@@ -271,7 +241,8 @@ def polynomial_to_string(polynomial):
 
         polynomial_string += term_string
 
-    print('Polynomial string:', polynomial_string)
+    # print('Polynomial string:', polynomial_string)
+
     return polynomial_string
 
 
@@ -279,9 +250,11 @@ def simplify(expr):
     print('Expr:', expr)
 
     tokens = tokenize(expr)
+
     _, resulting_polynomial = reduce_polynomial(tokens)[0]
 
     print('Resulting polynomial:', resulting_polynomial)
+    print()
 
     resulting_polynomial_string = polynomial_to_string(resulting_polynomial)
 
