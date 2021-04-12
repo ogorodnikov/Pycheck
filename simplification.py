@@ -80,7 +80,7 @@ def tokenize(expression):
 
 def reduce_polynomial(tokens):
 
-    print('Reduce tokens:', tokens)
+    print('>>>> Reduce tokens:', tokens)
 
     while any(token_type == 'Open bracket' for token_type, token_value in tokens):
 
@@ -130,43 +130,45 @@ def reduce_polynomial(tokens):
                 else:
                     b_poly = b_value
 
-                print('A:', a_type, a_value, a_poly)
-                print('B:', b_type, b_value, b_poly)
-
-                pairs = list(product(a_poly.items(), b_poly.items()))
-                print('Pairs:', pairs)
-
-                terms = []
-
-                for pair in pairs:
-                    (u_degree, u_coefficient), (v_degree, v_coefficient) = pair
-                    term = (u_degree + v_degree, u_coefficient * v_coefficient)
-                    terms.append(term)
-
-                    print('    Pair:', pair)
-                    print('    Term:', term)
-
-                print('Terms:', terms)
-
-                c_poly = defaultdict(int)
-                for term in terms:
-                    term_degree, term_coefficient = term
-                    c_poly[term_degree] += term_coefficient
-
+                c_poly = mult_poly(a_poly, b_poly)
                 print('C poly:', c_poly)
 
-                tokens = tokens[:token_index - 1] + [('Poly', dict(c_poly))] + tokens[token_index + 2:]
+                tokens = tokens[:token_index - 1] + [('Poly', c_poly)] + tokens[token_index + 2:]
 
                 break
 
+    print('==== Tokens:', tokens)
+    print()
+    input()
+
+    return tokens
 
 
-    return [('<', 0)] + tokens + [('>', 0)]
+def mult_poly(a_poly, b_poly):
+    print('A:', a_poly)
+    print('B:', b_poly)
 
+    pairs = list(product(a_poly.items(), b_poly.items()))
+    print('Pairs:', pairs)
 
-    quit()
+    terms = []
 
+    for pair in pairs:
+        (u_degree, u_coefficient), (v_degree, v_coefficient) = pair
+        term = (u_degree + v_degree, u_coefficient * v_coefficient)
+        terms.append(term)
 
+        print('    Pair:', pair)
+        print('    Term:', term)
+
+    print('Terms:', terms)
+
+    c_poly = defaultdict(int)
+    for term in terms:
+        term_degree, term_coefficient = term
+        c_poly[term_degree] += term_coefficient
+
+    return dict(c_poly)
 
 
 def polynomial_to_string(polynomial):
