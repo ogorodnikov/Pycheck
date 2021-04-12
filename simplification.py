@@ -207,7 +207,10 @@ def polynomial_to_string(polynomial):
 
     for degree, coefficient in poly_items:
 
-        if coefficient == 1 and degree == max(degree for degree, coefficient in polynomial.items()):
+        if coefficient == 0:
+            coefficient_string = ''
+
+        elif coefficient == 1 and degree == max(degree for degree, coefficient in polynomial.items()):
             coefficient_string = ''
 
         elif coefficient > 0 and degree == max(degree for degree, coefficient in polynomial.items()):
@@ -219,7 +222,7 @@ def polynomial_to_string(polynomial):
         else:
             coefficient_string = f'{coefficient:+d}'
 
-        if degree == 0:
+        if degree == 0 or coefficient == 0:
             degree_string = ''
         elif degree == 1:
             degree_string = f'x'
@@ -265,12 +268,11 @@ def simplify(expr):
 
 if __name__ == "__main__":
 
-    assert simplify("((x*5)*(x+1))-16456*x*x*x+(x*x)*(1)")
+    assert simplify("((x*5)*(x+1))-16456*x*x*x+(x*x)*(1)") == '-16456*x**3+4*x**2+5*x'
+    assert simplify("x*x*x+5*x*x+x*x+3*x-1") == "x**3+6*x**2+3*x-1"
 
-    # assert simplify("x*x*x+5*x*x+x*x+3*x-1") == "x**3+6*x**2+3*x-1"
-    # assert simplify("-x*x*x+5*x*x+x*x+3*x-1") == "-x**3+6*x**2+3*x-1"
+    assert simplify("(x-1)*(x+1)") == "x**2-1", "First and simple"
 
-    # assert simplify("(x-1)*(x+1)") == "x**2-1", "First and simple"
     # assert simplify("(x+1)*(x+1)") == "x**2+2*x+1", "Almost the same"
     # assert simplify("(x+3)*x*2-x*x") == "x**2+6*x", "Different operations"
     # assert simplify("x+x*x+x*x*x") == "x**3+x**2+x", "Don't forget about order"
