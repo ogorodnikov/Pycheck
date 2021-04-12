@@ -1,5 +1,6 @@
 import re
 from collections import defaultdict
+from itertools import product
 
 
 def parse_polynomial(polynomial_string):
@@ -104,6 +105,61 @@ def reduce_polynomial(tokens):
 
                 break
 
+    while any(token_type == 'Mult' for token_type, token_value in tokens):
+
+        for token_index, (token_type, token_value) in enumerate(tokens):
+
+            if token_type == 'Mult':
+
+                a_type, a_value = tokens[token_index - 1]
+                b_type, b_value = tokens[token_index + 1]
+
+                if a_type == 'Value':
+                    if a_value == 'x':
+                        a_poly = {1: 1}
+                    else:
+                        a_poly = {0: int(a_value)}
+                else:
+                    a_poly = a_value
+
+                if b_type == 'Value':
+                    if b_value == 'x':
+                        b_poly = {1: 1}
+                    else:
+                        b_poly = {0: int(b_value)}
+                else:
+                    b_poly = b_value
+
+                print('A:', a_type, a_value, a_poly)
+                print('B:', b_type, b_value, b_poly)
+
+                pairs = list(product(a_poly.items(), b_poly.items()))
+                print('Pairs:', pairs)
+
+                terms = []
+
+                for pair in pairs:
+                    (u_degree, u_coefficient), (v_degree, v_coefficient) = pair
+                    term = (u_degree + v_degree, u_coefficient * v_coefficient)
+                    terms.append(term)
+
+                    print('    Pair:', pair)
+                    print('    Term:', term)
+
+                print('Terms:', terms)
+
+                c_poly = defaultdict(int)
+                for term in terms:
+                    term_degree, term_coefficient = term
+                    c_poly[term_degree] += term_coefficient
+
+                print('C poly:', c_poly)
+
+                tokens = tokens[:token_index - 1] + [('Poly', dict(c_poly))] + tokens[token_index + 2:]
+
+                break
+
+
 
     return [('<', 0)] + tokens + [('>', 0)]
 
@@ -170,7 +226,7 @@ def simplify(expr):
 
 if __name__ == "__main__":
 
-    assert simplify("((x-1)*(x+1))-16456*x*x+(x*x)*(1)")
+    assert simplify("((x*5)*(x+1))-16456*x*x+(x*x)*(1)")
 
     # assert simplify("x*x*x+5*x*x+x*x+3*x-1") == "x**3+6*x**2+3*x-1"
     # assert simplify("-x*x*x+5*x*x+x*x+3*x-1") == "-x**3+6*x**2+3*x-1"
