@@ -157,7 +157,7 @@ def reduce_polynomial(tokens):
                 print()
                 break
 
-    input()
+    # input()
 
     return tokens
 
@@ -230,12 +230,18 @@ def sub_poly(a_poly, b_poly):
 def polynomial_to_string(polynomial):
     print('Polynomial:', polynomial)
 
+    poly_items = sorted(polynomial.items(), reverse=True)
+    print('Poly items:', poly_items)
+
     polynomial_string = ''
 
-    for degree, coefficient in polynomial.items():
+    for degree, coefficient in poly_items:
 
         if coefficient == 1 and degree == max(degree for degree, coefficient in polynomial.items()):
             coefficient_string = ''
+
+        elif coefficient > 0 and degree == max(degree for degree, coefficient in polynomial.items()):
+            coefficient_string = f'{coefficient:d}'
 
         elif coefficient in (1, -1) and degree > 0:
             coefficient_string = f'{coefficient:+d}'[:-1]
@@ -250,11 +256,11 @@ def polynomial_to_string(polynomial):
         else:
             degree_string = f'x**{degree}'
 
-        # print('Coefficient:', coefficient)
-        # print('Degree:', degree)
-        # print('    Coefficient string:', coefficient_string)
-        # print('    Degree string:', degree_string)
-        # print()
+        print('Coefficient:', coefficient)
+        print('Degree:', degree)
+        print('    Coefficient string:', coefficient_string)
+        print('    Degree string:', degree_string)
+        print()
 
         if coefficient_string == '-':
             term_symbol = ''
@@ -273,13 +279,15 @@ def simplify(expr):
     print('Expr:', expr)
 
     tokens = tokenize(expr)
-    resulting_polynomial = reduce_polynomial(tokens)
+    _, resulting_polynomial = reduce_polynomial(tokens)[0]
 
-    # resulting_polynomial_string = polynomial_to_string(resulting_polynomial)
-    #
-    # print('Resulting polynomial string:', resulting_polynomial_string)
-    # print()
-    # return resulting_polynomial_string
+    print('Resulting polynomial:', resulting_polynomial)
+
+    resulting_polynomial_string = polynomial_to_string(resulting_polynomial)
+
+    print('Resulting polynomial string:', resulting_polynomial_string)
+    print()
+    return resulting_polynomial_string
 
 
 if __name__ == "__main__":
