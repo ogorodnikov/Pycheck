@@ -60,7 +60,12 @@ def checkio(image: List[List[int]]) -> int:
 
             print('Pair distance:', pair_distance)
 
+        min_distance, number = min((sum(sum(map(abs, starmap(sub, zip(*line_pair))))
+                                        for line_pair in zip(symbol, template)), number)
+                                   for number, template in enumerate(template_images, 1))
 
+        print('Min distance:', min_distance)
+        print('Number:', number)
 
         # for row in symbol:
         #     print('Row:', row)
