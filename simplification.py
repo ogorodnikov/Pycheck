@@ -1,10 +1,10 @@
 import re
 from collections import defaultdict
 from itertools import product
+from operator import sub
 
 
 def tokenize(expression):
-    print('>>>> Tokenize:', expression)
 
     def process_number(_, token):
         return {0: int(token)}
@@ -20,17 +20,21 @@ def tokenize(expression):
                           (r'.', process_other)])
 
     tokens, unrecognised = scanner.scan(expression)
-
-    # print('Tokens:')
-    # [print(token) for token in tokens]
-    # print()
-
     return tokens
 
 
 def reduce_polynomial(tokens):
 
-    print('>>>> Reduce:', tokens)
+    tokens = reduce_sub_expression(tokens)
+
+    tokens = reduce_operation(tokens, '*', multiply_poly)
+    tokens = reduce_operation(tokens, '-', sub_poly)
+    tokens = reduce_operation(tokens, '+', add_poly)
+
+    return tokens
+
+
+def reduce_sub_expression(tokens):
 
     while '(' in tokens:
 
@@ -45,70 +49,37 @@ def reduce_polynomial(tokens):
 
                 sub_expression = tokens[last_bracket_index + 1:token_index]
 
-                tokens = tokens[:last_bracket_index] + reduce_polynomial(sub_expression) + tokens[token_index + 1:]
-                # print('After Sub-expression:', tokens)
-                # print()
+                left_tokens = tokens[:last_bracket_index]
+                right_tokens = tokens[token_index + 1:]
+
+                tokens = left_tokens + reduce_polynomial(sub_expression) + right_tokens
                 break
 
-    while '*' in tokens:
+    return tokens
+
+
+def reduce_operation(tokens, operation_symbol, operation_function):
+
+    while operation_symbol in tokens:
 
         for token_index, token in enumerate(tokens):
 
-            if token == '*':
+            if token == operation_symbol:
 
                 a_poly = tokens[token_index - 1]
                 b_poly = tokens[token_index + 1]
 
-                c_poly = multiply_poly(a_poly, b_poly)
+                c_poly = operation_function(a_poly, b_poly)
 
                 tokens = tokens[:token_index - 1] + [c_poly] + tokens[token_index + 2:]
-                # print('After MULT:', tokens)
-                # print()
                 break
-
-    while '-' in tokens:
-
-        for token_index, token in enumerate(tokens):
-
-            if token == '-':
-
-                a_poly = tokens[token_index - 1]
-                b_poly = tokens[token_index + 1]
-
-                c_poly = sub_poly(a_poly, b_poly)
-
-                tokens = tokens[:token_index - 1] + [ c_poly] + tokens[token_index + 2:]
-                # print('After SUB:', tokens)
-                # print()
-                break
-
-    while '+' in tokens:
-
-        for token_index, token in enumerate(tokens):
-
-            if token == '+':
-
-                a_poly = tokens[token_index - 1]
-                b_poly = tokens[token_index + 1]
-
-                c_poly = add_poly(a_poly, b_poly)
-
-                tokens = tokens[:token_index - 1] + [c_poly] + tokens[token_index + 2:]
-                # print('After ADD:', tokens)
-                # print()
-                break
-
-    # input()
 
     return tokens
 
 
 def multiply_poly(a_poly, b_poly):
-    # print('A:', a_poly)
-    # print('B:', b_poly)
 
     pairs = list(product(a_poly.items(), b_poly.items()))
-    # print('Pairs:', pairs)
 
     terms = []
 
@@ -117,12 +88,8 @@ def multiply_poly(a_poly, b_poly):
         term = (u_degree + v_degree, u_coefficient * v_coefficient)
         terms.append(term)
 
-        # print('    Pair:', pair)
-        # print('    Term:', term)
-
-    # print('Terms:', terms)
-
     c_poly = defaultdict(int)
+
     for term in terms:
         term_degree, term_coefficient = term
         c_poly[term_degree] += term_coefficient
@@ -141,15 +108,12 @@ def add_poly(a_poly, b_poly):
 
     c_poly = {degree: a_dict[degree] + b_dict[degree] for degree in degrees}
 
-    # print('A:', a_poly)
-    # print('B:', b_poly)
-    # print('Degrees:', degrees)
-    # print('C poly:', c_poly)
-
     return c_poly
 
 
 def sub_poly(a_poly, b_poly):
+
+    return add_sub_poly(a_poly, b_poly, sub)
 
     degrees = set(a_poly.keys()) | set(b_poly.keys())
 
@@ -160,10 +124,19 @@ def sub_poly(a_poly, b_poly):
 
     c_poly = {degree: a_dict[degree] - b_dict[degree] for degree in degrees}
 
-    # print('A:', a_poly)
-    # print('B:', b_poly)
-    # print('Degrees:', degrees)
-    # print('C poly:', c_poly)
+    return c_poly
+
+
+def add_sub_poly(a_poly, b_poly, operation):
+
+    degrees = set(a_poly.keys()) | set(b_poly.keys())
+
+    a_dict = defaultdict(int)
+    b_dict = defaultdict(int)
+    a_dict.update(a_poly)
+    b_dict.update(b_poly)
+
+    c_poly = {degree: operation(a_dict[degree], b_dict[degree]) for degree in degrees}
 
     return c_poly
 
