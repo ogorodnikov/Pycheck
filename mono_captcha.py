@@ -39,40 +39,44 @@ def checkio(image: List[List[int]]) -> int:
     print('Template images:', template_images)
     print('Symbol images:', symbol_images)
 
-    for symbol in symbol_images:
+    # for symbol in symbol_images:
+    #     distance = 0
+    #
+    #     # for number, template in enumerate(template_images, 1):
+    #     #     print()
+    #     #     print('Number:  ', number)
+    #     #     print('Symbol:  ', symbol)
+    #     #     print('Template:', template)
+    #     #
+    #     #     # for pair in zip(symbol, template):
+    #     #     #     print('    Pair:', pair)
+    #     #     #
+    #     #     #     pair_distance = sum(map(abs, starmap(sub, zip(*pair))))
+    #     #     #     print('Pair distance:', pair_distance)
+    #     #
+    #     #     pair_distance = sum(sum(map(abs, starmap(sub, zip(*line_pair))))
+    #     #                         for line_pair in zip(symbol, template))
+    #     #
+    #     #     print('Pair distance:', pair_distance)
+    #
+    #     min_distance, number = min((sum(sum(map(abs, starmap(sub, zip(*line_pair))))
+    #                                     for line_pair in zip(symbol, template)), number)
+    #                                for number, template in enumerate(template_images, 1))
+    #
+    #     print('Min distance:', min_distance)
+    #     print('Number:', number)
 
-        distance = 0
+    digits = [min((sum(sum(map(abs, starmap(sub, zip(*line_pair))))
+                       for line_pair in zip(symbol, template)), digit)
+                  for digit, template in enumerate(template_images, 1))[1]
+              for symbol in symbol_images]
 
-        for number, template in enumerate(template_images, 1):
-            print()
-            print('Number:  ', number)
-            print('Symbol:  ', symbol)
-            print('Template:', template)
+    number = sum(digit * 10 ** position for position, digit in (enumerate(reversed(digits))))
 
-            # for pair in zip(symbol, template):
-            #     print('    Pair:', pair)
-            #
-            #     pair_distance = sum(map(abs, starmap(sub, zip(*pair))))
-            #     print('Pair distance:', pair_distance)
-
-            pair_distance = sum(sum(map(abs, starmap(sub, zip(*line_pair))))
-                                for line_pair in zip(symbol, template))
-
-            print('Pair distance:', pair_distance)
-
-        min_distance, number = min((sum(sum(map(abs, starmap(sub, zip(*line_pair))))
-                                        for line_pair in zip(symbol, template)), number)
-                                   for number, template in enumerate(template_images, 1))
-
-        print('Min distance:', min_distance)
-        print('Number:', number)
-
-        # for row in symbol:
-        #     print('Row:', row)
-
-    quit()
-
-    return 1
+    print('Digits:', digits)
+    print('Number:', number)
+    print()
+    return number
 
 
 if __name__ == '__main__':
