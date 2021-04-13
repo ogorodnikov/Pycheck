@@ -52,18 +52,12 @@ def checkio(image: List[List[int]]) -> int:
 
     number = digits_to_number(digits)
 
+    return number
+
+
+def print_image(image):
     print('Image:')
     [print(''.join(MARK if cell == 1 else ' ' for cell in line)) for line in image]
-
-    # print('FONT:', FONT)
-    # print('Template strings:', template_strings)
-    # print('Template images:', template_images)
-    # print('Symbol images:', symbol_images)
-    # print('Digits:', digits)
-
-    print('Number:', number)
-    print()
-    return number
 
 
 if __name__ == '__main__':
