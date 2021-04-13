@@ -1,60 +1,36 @@
-from itertools import permutations
+from itertools import permutations, starmap
+from operator import eq
 
 VARIANTS = set(''.join(map(str, permutation)) for permutation in permutations(range(10), 4))
 
+
 def filter_variants(variants, guess, result):
+
+    old_bull_count = int(result[0])
+    old_cow_count = int(result[2])
 
     new_variants = set()
 
-    for variant in variants:
+    for variant in variants - {guess}:
 
-        cow_count = 0
-        bulls_count = 0
+        bull_count = sum(starmap(eq, zip(variant, guess)))
+        cow_count = len(set(guess) & set(variant)) - bull_count
 
-        # print('    Guess:  ', guess)
-        # print('    Variant:', variant)
-
-        for v, g in zip(variant, guess):
-            # print('        V:', v)
-            # print('        G:', g)
-
-            if v == g:
-                bulls_count += 1
-
-            elif v in guess:
-                cow_count += 1
-
-        variant_result = f'{bulls_count}B{cow_count}C'
-        # print('    Variant result:', variant_result)
-
-        if variant_result == result:
+        if bull_count == old_bull_count and cow_count == old_cow_count:
             new_variants.add(variant)
 
     return new_variants
 
 
-
-
 def checkio(data):
-    print('Data:', data)
-
     steps = [step.split(' ') for step in data]
-    print('Steps:', steps)
 
     new_variants = VARIANTS
 
     for guess, result in steps:
-        print('Guess:', guess)
-        print('Result:', result)
-
-        new_variants = filter_variants(new_variants - {guess}, guess, result)
-
-        print('New variants:', len(new_variants))
+        new_variants = filter_variants(new_variants, guess, result)
 
     new_guess = next(iter(new_variants))
-    print('New guess:', new_guess)
-    print()
-
     return new_guess
 
 if __name__ == '__main__':
