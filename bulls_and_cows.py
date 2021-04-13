@@ -1,9 +1,39 @@
+from itertools import permutations
+
+VARIANTS = set(permutations(range(10), 4))
+
+def filter_variants(variants, result):
+
+    for variant in variants:
+
+
+
 def checkio(data):
-    #your function
-    return "0123"
+    print('Data:', data)
+
+    steps = [step.split(' ') for step in data]
+    print('Steps:', steps)
+
+    new_variants = VARIANTS
+
+    for guess, result in steps:
+        print('Guess:', guess)
+        print('Result:', result)
+
+        new_variants = filter_variants(new_variants, result)
+
+        print('New variants:', new_variants)
+        input()
+
+
+    new_guess = next(iter(new_variants))
+    new_guess_string = ''.join(map(str, guess))
+
+
+    return guess_string
 
 if __name__ == '__main__':
-    #This part is using only for self-checking and not necessary for auto-testing
+
     def check_solution(func, goal):
         recent = []
         for step in range(8):
@@ -22,6 +52,6 @@ if __name__ == '__main__':
         return False
 
     assert check_solution(checkio, "1234"), "1234"
-    assert check_solution(checkio, "6130"), "6130"
-    assert check_solution(checkio, "0317"), "0317"
-    assert check_solution(checkio, "9876"), "9876"
+    # assert check_solution(checkio, "6130"), "6130"
+    # assert check_solution(checkio, "0317"), "0317"
+    # assert check_solution(checkio, "9876"), "9876"
