@@ -1,10 +1,37 @@
 from itertools import permutations
 
-VARIANTS = set(permutations(range(10), 4))
+VARIANTS = set(''.join(map(str, permutation)) for permutation in permutations(range(10), 4))
 
-def filter_variants(variants, result):
+def filter_variants(variants, guess, result):
+
+    new_variants = set()
 
     for variant in variants:
+
+        cow_count = 0
+        bulls_count = 0
+
+        print('    Guess:  ', guess)
+        print('    Variant:', variant)
+
+        for v, g in zip(variant, guess):
+            # print('        V:', v)
+            # print('        G:', g)
+
+            if v == g:
+                bulls_count += 1
+
+            elif v in guess:
+                cow_count += 1
+
+        variant_result = f'{bulls_count}B{cow_count}C'
+        print('    Variant result:', variant_result)
+
+        if variant_result == result:
+            new_variants.add(variant)
+
+    return new_variants
+
 
 
 
@@ -20,17 +47,16 @@ def checkio(data):
         print('Guess:', guess)
         print('Result:', result)
 
-        new_variants = filter_variants(new_variants, result)
+        new_variants = filter_variants(new_variants - {guess}, guess, result)
 
-        print('New variants:', new_variants)
+        print('New variants:', new_variants, len(new_variants))
         input()
 
-
     new_guess = next(iter(new_variants))
-    new_guess_string = ''.join(map(str, guess))
+    print('New guess:', new_guess)
+    print()
 
-
-    return guess_string
+    return new_guess
 
 if __name__ == '__main__':
 
