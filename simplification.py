@@ -46,8 +46,8 @@ def reduce_polynomial(tokens):
                 sub_expression = tokens[last_bracket_index + 1:token_index]
 
                 tokens = tokens[:last_bracket_index] + reduce_polynomial(sub_expression) + tokens[token_index + 1:]
-                print('After Sub-expression:', tokens)
-                print()
+                # print('After Sub-expression:', tokens)
+                # print()
                 break
 
     while '*' in tokens:
@@ -62,8 +62,8 @@ def reduce_polynomial(tokens):
                 c_poly = multiply_poly(a_poly, b_poly)
 
                 tokens = tokens[:token_index - 1] + [c_poly] + tokens[token_index + 2:]
-                print('After MULT:', tokens)
-                print()
+                # print('After MULT:', tokens)
+                # print()
                 break
 
     while '-' in tokens:
@@ -78,8 +78,8 @@ def reduce_polynomial(tokens):
                 c_poly = sub_poly(a_poly, b_poly)
 
                 tokens = tokens[:token_index - 1] + [ c_poly] + tokens[token_index + 2:]
-                print('After SUB:', tokens)
-                print()
+                # print('After SUB:', tokens)
+                # print()
                 break
 
     while '+' in tokens:
@@ -94,8 +94,8 @@ def reduce_polynomial(tokens):
                 c_poly = add_poly(a_poly, b_poly)
 
                 tokens = tokens[:token_index - 1] + [c_poly] + tokens[token_index + 2:]
-                print('After ADD:', tokens)
-                print()
+                # print('After ADD:', tokens)
+                # print()
                 break
 
     # input()
@@ -201,11 +201,11 @@ def polynomial_to_string(polynomial):
         else:
             degree_string = f'x**{degree}'
 
-        print('Coefficient:', coefficient)
-        print('Degree:', degree)
-        print('    Coefficient string:', coefficient_string)
-        print('    Degree string:', degree_string)
-        print()
+        # print('Coefficient:', coefficient)
+        # print('Degree:', degree)
+        # print('    Coefficient string:', coefficient_string)
+        # print('    Degree string:', degree_string)
+        # print()
 
         if coefficient_string in '-+':
             term_symbol = ''
