@@ -1,3 +1,5 @@
+from itertools import starmap
+from operator import sub
 from typing import List
 
 SPACE_WIDTH = 1
@@ -50,8 +52,13 @@ def checkio(image: List[List[int]]) -> int:
             for pair in zip(symbol, template):
                 print('    Pair:', pair)
 
+
+
                 for element_pair in zip(*pair):
                     print('        Element pair:', element_pair, abs(element_pair[0] - element_pair[1]))
+
+                pair_distance = sum(map(abs, starmap(sub, zip(*pair))))
+                print('Pair distance:', pair_distance)
 
         # for row in symbol:
         #     print('Row:', row)
