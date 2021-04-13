@@ -1,7 +1,8 @@
 import re
 from collections import defaultdict
+from functools import partial
 from itertools import product
-from operator import sub
+from operator import sub, add
 
 
 def tokenize(expression):
@@ -20,6 +21,7 @@ def tokenize(expression):
                           (r'.', process_other)])
 
     tokens, unrecognised = scanner.scan(expression)
+
     return tokens
 
 
@@ -28,8 +30,8 @@ def reduce_polynomial(tokens):
     tokens = reduce_sub_expression(tokens)
 
     tokens = reduce_operation(tokens, '*', multiply_poly)
-    tokens = reduce_operation(tokens, '-', sub_poly)
-    tokens = reduce_operation(tokens, '+', add_poly)
+    tokens = reduce_operation(tokens, '-', partial(add_sub_poly, operation=sub))
+    tokens = reduce_operation(tokens, '+', partial(add_sub_poly, operation=add))
 
     return tokens
 
@@ -46,7 +48,6 @@ def reduce_sub_expression(tokens):
                 last_bracket_index = token_index
 
             if token == ')':
-
                 sub_expression = tokens[last_bracket_index + 1:token_index]
 
                 left_tokens = tokens[:last_bracket_index]
@@ -65,7 +66,6 @@ def reduce_operation(tokens, operation_symbol, operation_function):
         for token_index, token in enumerate(tokens):
 
             if token == operation_symbol:
-
                 a_poly = tokens[token_index - 1]
                 b_poly = tokens[token_index + 1]
 
@@ -79,14 +79,11 @@ def reduce_operation(tokens, operation_symbol, operation_function):
 
 def multiply_poly(a_poly, b_poly):
 
-    pairs = list(product(a_poly.items(), b_poly.items()))
+    term_pairs = list(product(a_poly.items(), b_poly.items()))
 
-    terms = []
-
-    for pair in pairs:
-        (u_degree, u_coefficient), (v_degree, v_coefficient) = pair
-        term = (u_degree + v_degree, u_coefficient * v_coefficient)
-        terms.append(term)
+    terms = [(u_degree + v_degree, u_coefficient * v_coefficient)
+             for (u_degree, u_coefficient), (v_degree, v_coefficient)
+             in term_pairs]
 
     c_poly = defaultdict(int)
 
@@ -97,60 +94,23 @@ def multiply_poly(a_poly, b_poly):
     return dict(c_poly)
 
 
-def add_poly(a_poly, b_poly):
-
-    degrees = set(a_poly.keys()) | set(b_poly.keys())
-
-    a_dict = defaultdict(int)
-    b_dict = defaultdict(int)
-    a_dict.update(a_poly)
-    b_dict.update(b_poly)
-
-    c_poly = {degree: a_dict[degree] + b_dict[degree] for degree in degrees}
-
-    return c_poly
-
-
-def sub_poly(a_poly, b_poly):
-
-    return add_sub_poly(a_poly, b_poly, sub)
-
-    degrees = set(a_poly.keys()) | set(b_poly.keys())
-
-    a_dict = defaultdict(int)
-    b_dict = defaultdict(int)
-    a_dict.update(a_poly)
-    b_dict.update(b_poly)
-
-    c_poly = {degree: a_dict[degree] - b_dict[degree] for degree in degrees}
-
-    return c_poly
-
-
 def add_sub_poly(a_poly, b_poly, operation):
 
-    degrees = set(a_poly.keys()) | set(b_poly.keys())
+    degrees = set(a_poly) | set(b_poly)
 
-    a_dict = defaultdict(int)
-    b_dict = defaultdict(int)
-    a_dict.update(a_poly)
-    b_dict.update(b_poly)
-
-    c_poly = {degree: operation(a_dict[degree], b_dict[degree]) for degree in degrees}
+    c_poly = {degree: operation(a_poly.get(degree, 0), b_poly.get(degree, 0))
+              for degree in degrees}
 
     return c_poly
 
 
 def polynomial_to_string(polynomial):
 
-    poly_items = sorted(polynomial.items(), reverse=True)
-
-    # print('Polynomial:', polynomial)
-    # print('Poly items:', poly_items)
-
     polynomial_string = ''
 
-    for degree, coefficient in poly_items:
+    sorted_polynomial = sorted(polynomial.items(), reverse=True)
+
+    for degree, coefficient in sorted_polynomial:
 
         if coefficient == 0:
             coefficient_string = ''
@@ -161,61 +121,56 @@ def polynomial_to_string(polynomial):
         elif coefficient > 0 and degree == max(degree for degree, coefficient in polynomial.items()):
             coefficient_string = f'{coefficient:d}'
 
-        elif coefficient in (1, -1) and degree > 0:
-            coefficient_string = f'{coefficient:+d}'[:-1]
+        elif coefficient == 1 and degree > 0:
+            coefficient_string = '+'
+
+        elif coefficient == -1 and degree > 0:
+            coefficient_string = '-'
 
         else:
             coefficient_string = f'{coefficient:+d}'
 
         if degree == 0 or coefficient == 0:
             degree_string = ''
+
         elif degree == 1:
             degree_string = f'x'
+
         else:
             degree_string = f'x**{degree}'
 
-        # print('Coefficient:', coefficient)
-        # print('Degree:', degree)
-        # print('    Coefficient string:', coefficient_string)
-        # print('    Degree string:', degree_string)
-        # print()
-
         if coefficient_string in '-+':
-            term_symbol = ''
+            inter_term_symbol = ''
         else:
-            term_symbol = '*'
+            inter_term_symbol = '*'
 
-        term_string = term_symbol.join(filter(None, (coefficient_string, degree_string)))
+        term_string = inter_term_symbol.join(filter(None, (coefficient_string, degree_string)))
 
         polynomial_string += term_string
 
     if polynomial_string == '':
         polynomial_string = '0'
 
-    # print('Polynomial string:', polynomial_string)
-
     return polynomial_string
 
 
 def simplify(expr):
-    print('Expr:', expr)
 
     tokens = tokenize(expr)
 
     resulting_polynomial = reduce_polynomial(tokens)[0]
 
-    print('Resulting polynomial:', resulting_polynomial)
-    print()
-
     resulting_polynomial_string = polynomial_to_string(resulting_polynomial)
 
+    print('Expression:                 ', expr)
+    print('Resulting polynomial:       ', resulting_polynomial)
     print('Resulting polynomial string:', resulting_polynomial_string)
     print()
+
     return resulting_polynomial_string
 
 
 if __name__ == "__main__":
-
     assert simplify("((x*5)*(x+1))-16456*x*x*x+(x*x)*(1)") == '-16456*x**3+6*x**2+5*x'
     assert simplify("x*x*x+5*x*x+x*x+3*x-1") == "x**3+6*x**2+3*x-1"
 
