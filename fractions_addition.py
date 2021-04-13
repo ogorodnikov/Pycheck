@@ -1,6 +1,20 @@
+from fractions import Fraction
+
+
 def add_fractions(fracts):
-    #replace this for solution
-    return 0
+
+    fractions_sum = sum(Fraction(*fraction) for fraction in fracts)
+
+    fraction_parts = divmod(fractions_sum, 1)
+
+    fraction_output = ' and '.join(map(str, filter(None, fraction_parts)))
+
+    try:
+        fraction_output = int(fraction_output)
+    except ValueError:
+        pass
+
+    return fraction_output
 
 if __name__ == '__main__':
 
