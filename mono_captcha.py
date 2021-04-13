@@ -26,45 +26,12 @@ def strings_to_binary(strings):
 
 
 def checkio(image: List[List[int]]) -> int:
-    print('Image:', image)
 
     template_strings = parse_image(FONT)
 
     template_images = strings_to_binary(template_strings)
 
     symbol_images = parse_image(image)
-
-    print('FONT:', FONT)
-    print('Template strings:', template_strings)
-    print('Template images:', template_images)
-    print('Symbol images:', symbol_images)
-
-    # for symbol in symbol_images:
-    #     distance = 0
-    #
-    #     # for number, template in enumerate(template_images, 1):
-    #     #     print()
-    #     #     print('Number:  ', number)
-    #     #     print('Symbol:  ', symbol)
-    #     #     print('Template:', template)
-    #     #
-    #     #     # for pair in zip(symbol, template):
-    #     #     #     print('    Pair:', pair)
-    #     #     #
-    #     #     #     pair_distance = sum(map(abs, starmap(sub, zip(*pair))))
-    #     #     #     print('Pair distance:', pair_distance)
-    #     #
-    #     #     pair_distance = sum(sum(map(abs, starmap(sub, zip(*line_pair))))
-    #     #                         for line_pair in zip(symbol, template))
-    #     #
-    #     #     print('Pair distance:', pair_distance)
-    #
-    #     min_distance, number = min((sum(sum(map(abs, starmap(sub, zip(*line_pair))))
-    #                                     for line_pair in zip(symbol, template)), number)
-    #                                for number, template in enumerate(template_images, 1))
-    #
-    #     print('Min distance:', min_distance)
-    #     print('Number:', number)
 
     digits = [min((sum(sum(map(abs, starmap(sub, zip(*line_pair))))
                        for line_pair in zip(symbol, template)), digit)
@@ -73,7 +40,14 @@ def checkio(image: List[List[int]]) -> int:
 
     number = sum(digit * 10 ** position for position, digit in (enumerate(reversed(digits))))
 
-    print('Digits:', digits)
+    print('Image:')
+    [print(''.join(MARK if cell == 1 else ' ' for cell in line)) for line in image]
+
+    # print('FONT:', FONT)
+    # print('Template strings:', template_strings)
+    # print('Template images:', template_images)
+    # print('Symbol images:', symbol_images)
+    # print('Digits:', digits)
     print('Number:', number)
     print()
     return number
