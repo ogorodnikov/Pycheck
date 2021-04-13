@@ -45,20 +45,22 @@ def checkio(image: List[List[int]]) -> int:
 
         for number, template in enumerate(template_images, 1):
             print()
-            print('Number:', number)
-            print('Symbol:', symbol)
+            print('Number:  ', number)
+            print('Symbol:  ', symbol)
             print('Template:', template)
 
-            for pair in zip(symbol, template):
-                print('    Pair:', pair)
+            # for pair in zip(symbol, template):
+            #     print('    Pair:', pair)
+            #
+            #     pair_distance = sum(map(abs, starmap(sub, zip(*pair))))
+            #     print('Pair distance:', pair_distance)
+
+            pair_distance = sum(sum(map(abs, starmap(sub, zip(*line_pair))))
+                                for line_pair in zip(symbol, template))
+
+            print('Pair distance:', pair_distance)
 
 
-
-                for element_pair in zip(*pair):
-                    print('        Element pair:', element_pair, abs(element_pair[0] - element_pair[1]))
-
-                pair_distance = sum(map(abs, starmap(sub, zip(*pair))))
-                print('Pair distance:', pair_distance)
 
         # for row in symbol:
         #     print('Row:', row)
