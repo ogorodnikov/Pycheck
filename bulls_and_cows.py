@@ -11,8 +11,8 @@ def filter_variants(variants, guess, result):
         cow_count = 0
         bulls_count = 0
 
-        print('    Guess:  ', guess)
-        print('    Variant:', variant)
+        # print('    Guess:  ', guess)
+        # print('    Variant:', variant)
 
         for v, g in zip(variant, guess):
             # print('        V:', v)
@@ -25,7 +25,7 @@ def filter_variants(variants, guess, result):
                 cow_count += 1
 
         variant_result = f'{bulls_count}B{cow_count}C'
-        print('    Variant result:', variant_result)
+        # print('    Variant result:', variant_result)
 
         if variant_result == result:
             new_variants.add(variant)
@@ -49,8 +49,7 @@ def checkio(data):
 
         new_variants = filter_variants(new_variants - {guess}, guess, result)
 
-        print('New variants:', new_variants, len(new_variants))
-        input()
+        print('New variants:', len(new_variants))
 
     new_guess = next(iter(new_variants))
     print('New guess:', new_guess)
@@ -78,6 +77,6 @@ if __name__ == '__main__':
         return False
 
     assert check_solution(checkio, "1234"), "1234"
-    # assert check_solution(checkio, "6130"), "6130"
-    # assert check_solution(checkio, "0317"), "0317"
-    # assert check_solution(checkio, "9876"), "9876"
+    assert check_solution(checkio, "6130"), "6130"
+    assert check_solution(checkio, "0317"), "0317"
+    assert check_solution(checkio, "9876"), "9876"
