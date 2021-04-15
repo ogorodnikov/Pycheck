@@ -1,25 +1,27 @@
 from contextlib import suppress
 
 
-def try_execute(function):
+# def try_execute(function):
+#
+#     def inner(*args, **kwargs):
+#         try:
+#             return function(*args, **kwargs)
+#         except:
+#             return None
+#
+#     return inner
 
-    def inner(*args, **kwargs):
+def try_execute(*functions):
+
+    def inner_function(*args, **kwargs):
         try:
-            return function(*args, **kwargs)
+            if len(functions) == 2:
+                return map(lambda inner: inner(*args, **kwargs), map(try_execute, functions))
+            return functions[0](*args, **kwargs)
         except:
             return None
 
-    return inner
-
-def alt_map(f, g):
-
-    def inner_map(*args, **kwargs):
-        try:
-            return map(lambda inner: inner(*args, **kwargs), map(try_execute, (f, g)))
-        except:
-            return None
-
-    return inner_map
+    return inner_function
 
 
 def checkio(f, g):
@@ -36,7 +38,7 @@ def checkio(f, g):
 
         # inner_functions = map(try_execute, (f, g))
 
-        f_result, g_result = alt_map(f, g)(*args, **kwargs)
+        f_result, g_result = try_execute(f, g)(*args, **kwargs)
 
         print('ALT F result:', f_result)
         print('ALT G result:', g_result)
