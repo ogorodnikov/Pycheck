@@ -1,46 +1,38 @@
+from contextlib import suppress
+
+
 def checkio(f, g):
     def h(*args, **kwargs):
 
-        is_f_passed = False
-        is_g_passed = False
+        f_result = g_result = None
 
-        f_result = None
-        g_result = None
-
-        try:
+        with suppress(Exception):
             f_result = f(*args, **kwargs)
-            is_f_passed = f_result is not None
-        except:
-            is_f_passed = False
-
-        try:
             g_result = g(*args, **kwargs)
-            is_g_passed = g_result is not None
-        except:
-            is_g_passed = False
+
+        is_f_passed = f_result is not None
+        is_g_passed = g_result is not None
 
         if is_f_passed and is_g_passed:
-
-            result = f_result
 
             if f_result == g_result:
                 status_string = 'same'
             else:
                 status_string = 'different'
 
-        elif is_f_passed and not is_g_passed:
-
             result = f_result
+
+        elif is_f_passed and not is_g_passed:
             status_string = 'g_error'
+            result = f_result
 
         elif is_g_passed and not is_f_passed:
-
-            result = g_result
             status_string = 'f_error'
+            result = g_result
 
         else:
-            result = None
             status_string = 'both_error'
+            result = None
 
         output = result, status_string
         print('Output:', output)
