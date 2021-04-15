@@ -1,15 +1,5 @@
-from contextlib import suppress
+from itertools import product
 
-
-# def try_execute(function):
-#
-#     def inner(*args, **kwargs):
-#         try:
-#             return function(*args, **kwargs)
-#         except:
-#             return None
-#
-#     return inner
 
 def try_execute(*functions):
 
@@ -27,26 +17,22 @@ def try_execute(*functions):
 def checkio(f, g):
     def h(*args, **kwargs):
 
-        # f_result = g_result = None
-        #
-        # with suppress(Exception):
-        #     f_result = f(*args, **kwargs)
-        #     g_result = g(*args, **kwargs)
-        #
-        # print('F result:', f_result)
-        # print('G result:', g_result)
-
-        # inner_functions = map(try_execute, (f, g))
-
         f_result, g_result = try_execute(f, g)(*args, **kwargs)
-
-        print('ALT F result:', f_result)
-        print('ALT G result:', g_result)
-
-        # input()
 
         is_f_passed = f_result is not None
         is_g_passed = g_result is not None
+
+        index = is_f_passed * 4 + is_g_passed * 2 + (f_result == g_result)
+        print('Index:', index)
+
+        results = list(product((f_result, 'f_error'), (g_result, 'g_error'), ('same', 'different')))[::-1]
+        print('Results:', results)
+
+        result = results[index]
+        print('Result:', result)
+
+
+
 
         if is_f_passed and is_g_passed:
 
@@ -71,6 +57,8 @@ def checkio(f, g):
 
         output = result, status_string
         print('Output:', output)
+
+        input()
 
         return output
 
