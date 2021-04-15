@@ -1,15 +1,56 @@
 def checkio(f, g):
-    # Replace with your code
     def h(*args, **kwargs):
-        return (f(*args, **kwargs), 'same')
+
+        is_f_passed = False
+        is_g_passed = False
+
+        f_result = None
+        g_result = None
+
+        try:
+            f_result = f(*args, **kwargs)
+            is_f_passed = f_result is not None
+        except:
+            is_f_passed = False
+
+        try:
+            g_result = g(*args, **kwargs)
+            is_g_passed = g_result is not None
+        except:
+            is_g_passed = False
+
+        if is_f_passed and is_g_passed:
+
+            result = f_result
+
+            if f_result == g_result:
+                status_string = 'same'
+            else:
+                status_string = 'different'
+
+        elif is_f_passed and not is_g_passed:
+
+            result = f_result
+            status_string = 'g_error'
+
+        elif is_g_passed and not is_f_passed:
+
+            result = g_result
+            status_string = 'f_error'
+
+        else:
+            result = None
+            status_string = 'both_error'
+
+        output = result, status_string
+        print('Output:', output)
+
+        return output
 
     return h
 
 
 if __name__ == '__main__':
-
-    # These "asserts" using only for self-checking and not necessary for auto-testing
-
     # (x+y)(x-y)/(x-y)
     assert checkio(lambda x, y: x + y,
                    lambda x, y: (x ** 2 - y ** 2) / (x - y)) \
