@@ -11,11 +11,11 @@ def try_execute(function):
 
     return inner
 
-def alt_map(inner_functions):
+def alt_map(f, g):
 
     def inner_map(*args, **kwargs):
         try:
-            return map(lambda inner: inner(*args, **kwargs), inner_functions)
+            return map(lambda inner: inner(*args, **kwargs), map(try_execute, (f, g)))
         except:
             return None
 
@@ -34,9 +34,9 @@ def checkio(f, g):
         # print('F result:', f_result)
         # print('G result:', g_result)
 
-        inner_functions = list(map(try_execute, (f, g)))
+        # inner_functions = map(try_execute, (f, g))
 
-        f_result, g_result = alt_map(inner_functions)(*args, **kwargs)
+        f_result, g_result = alt_map(f, g)(*args, **kwargs)
 
         print('ALT F result:', f_result)
         print('ALT G result:', g_result)
