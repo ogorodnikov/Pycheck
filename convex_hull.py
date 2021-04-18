@@ -1,3 +1,4 @@
+from itertools import starmap
 from operator import itemgetter
 
 
@@ -5,17 +6,17 @@ def checkio(data):
 
     print('Data:', data)
 
-    initial_a = min(data)
-    print('Initial a:', initial_a)
-
-    checked = []
-
-    min_x = min(map(itemgetter(0), data))
-    min_y = min(map(itemgetter(1), data))
+    complex_points = list(starmap(complex, data))
+    print('Complex points:', complex_points)
 
     min_x, min_y, max_x, max_y = (operation(map(itemgetter(coordinate), data))
                                   for operation in (min, max)
                                   for coordinate in (0, 1))
+
+    min_x, min_y, max_x, max_y = (operation(map(part, complex_points))
+                                  for operation in (min, max)
+                                  for part in (lambda c: c.real, lambda c: c.imag))
+
 
     print('Min x:', min_x)
     print('Min y:', min_y)
