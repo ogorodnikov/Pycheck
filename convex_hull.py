@@ -3,34 +3,34 @@ PRECISION = 10
 from itertools import starmap
 
 
+def get_center(points):
+
+    # return sum(points) / len(points)
+
+    min_x, max_x, min_y, max_y = (operation(map(part, points))
+                                  for part in (lambda c: c.real, lambda c: c.imag)
+                                  for operation in (min, max))
+
+    return complex(min_x + (max_x - min_x) / 2, min_y + (max_y - min_y) / 2)
+
+
 def checkio(data):
     print('Data:', data)
 
     complex_points = list(starmap(complex, data))
     print('Complex points:', complex_points)
 
-    min_x, max_x, min_y, max_y = (operation(map(part, complex_points))
-                                  for part in (lambda c: c.real, lambda c: c.imag)
-                                  for operation in (min, max))
-
-    print('Min x:', min_x)
-    print('Max x:', max_x)
-    print('Min y:', min_y)
-    print('Max y:', max_y)
-
-    center = complex(min_x + (max_x - min_x) / 2, min_y + (max_y - min_y) / 2)
+    center = get_center(complex_points)
     print('Center:', center)
-
-    center = sum(complex_points) / len(complex_points)
-    print('Center:', center)
-
-    quit()
 
     for step in range(PRECISION):
         print('Step:', step)
 
         for point in complex_points:
             print('    Point:', point)
+
+            moved_point = point - center
+            print('    Moved point:', moved_point)
 
     quit()
 
