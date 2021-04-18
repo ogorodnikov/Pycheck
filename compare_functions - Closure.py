@@ -1,69 +1,19 @@
-
-# def try_execute(*functions):
-#     def inner_function(*args, **kwargs):
-#         try:
-#             if len(functions) == 2:
-#                 return map(lambda inner: inner(*args, **kwargs), map(try_execute, functions))
-#             return functions[0](*args, **kwargs)
-#         except:
-#             return None
-#
-#     return inner_function
-
-
-# def get_results(*functions):
-#
-#     f_func, g_func = functions
-#
-#     def inner_get_results(*args, **kwargs):
-#
-#         # return try_execute(f_func)(*args, **kwargs), try_execute(g_func)(*args, **kwargs)
-#
-#         mapped_f, mapped_g = map(try_execute, (f_func, g_func))
-#
-#         return mapped_f(*args, **kwargs), mapped_g(*args, **kwargs)
-#
-#     return inner_get_results
-#
-#
-# def try_execute(function):
-#
-#     def inner_try_execute(*args, **kwargs):
-#         try:
-#             return function(*args, **kwargs)
-#         except:
-#             return None
-#
-#     return inner_try_execute
-
-
-
 def get_results(*functions):
 
-    def inner_get_results(*args, **kwargs):
+    def inner_function(*args, **kwargs):
 
-        tried_functions = map(try_execute, functions)
-
-        return (tried_function(*args, **kwargs) for tried_function in tried_functions)
-
-    return inner_get_results
-
-
-def try_execute(function):
-
-    def inner_try_execute(*args, **kwargs):
+        if len(functions) > 1:
+            return (inner(*args, **kwargs) for inner in map(get_results, functions))
         try:
-            return function(*args, **kwargs)
+            return functions[0](*args, **kwargs)
         except:
             return None
 
-    return inner_try_execute
-
-
-
+    return inner_function
 
 
 def checkio(f, g):
+
     def h(*args, **kwargs):
 
         f_result, g_result = get_results(f, g)(*args, **kwargs)
@@ -76,11 +26,6 @@ def checkio(f, g):
                   [None, 'g_error'][g_result is None] or 'different')
 
         output = result, status
-
-        print()
-        print('F result:', f_result)
-        print('G result:', g_result)
-        print('Output:', output)
 
         return output
 
