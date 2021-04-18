@@ -1,4 +1,31 @@
+from operator import itemgetter
+
+
 def checkio(data):
+
+    print('Data:', data)
+
+    initial_a = min(data)
+    print('Initial a:', initial_a)
+
+    checked = []
+
+    min_x = min(map(itemgetter(0), data))
+    min_y = min(map(itemgetter(1), data))
+
+    min_x, min_y, max_x, max_y = (operation(map(itemgetter(coordinate), data))
+                                  for operation in (min, max)
+                                  for coordinate in (0, 1))
+
+    print('Min x:', min_x)
+    print('Min y:', min_y)
+    print('Max x:', max_x)
+    print('Max y:', max_y)
+
+
+
+    quit()
+
     return [0, 1, 2]
 
 
