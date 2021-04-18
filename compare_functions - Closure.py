@@ -1,3 +1,6 @@
+from functools import reduce
+
+
 def get_results(*functions):
 
     def inner_function(*args, **kwargs):
@@ -19,6 +22,9 @@ def checkio(f, g):
         f_result, g_result = get_results(f, g)(*args, **kwargs)
 
         result = f_result if f_result is not None else g_result
+
+        # alt_result = reduce(lambda a, b: a if a is not None else b,
+        #                     get_results(f, g)(*args, **kwargs))
 
         status = ([None, 'both_error'][f_result is g_result is None] or
                   [None, 'same'][f_result == g_result] or
