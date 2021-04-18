@@ -1,9 +1,9 @@
+PRECISION = 10
+
 from itertools import starmap
-from operator import itemgetter
 
 
 def checkio(data):
-
     print('Data:', data)
 
     complex_points = list(starmap(complex, data))
@@ -18,7 +18,19 @@ def checkio(data):
     print('Min y:', min_y)
     print('Max y:', max_y)
 
+    center = complex(min_x + (max_x - min_x) / 2, min_y + (max_y - min_y) / 2)
+    print('Center:', center)
 
+    center = sum(complex_points) / len(complex_points)
+    print('Center:', center)
+
+    quit()
+
+    for step in range(PRECISION):
+        print('Step:', step)
+
+        for point in complex_points:
+            print('    Point:', point)
 
     quit()
 
@@ -26,7 +38,6 @@ def checkio(data):
 
 
 if __name__ == '__main__':
-
     assert checkio(
         [[7, 6], [8, 4], [7, 2], [3, 2], [1, 6], [1, 8], [4, 9]]
     ) == [4, 5, 6, 0, 1, 2, 3], "First example"
