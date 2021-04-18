@@ -18,7 +18,7 @@ def get_center(points):
 
 def checkio(data):
 
-
+    data = [[1, 1], [3, 3]]
 
     print('Data:', data)
 
@@ -39,6 +39,9 @@ def checkio(data):
 
             rotated_point = moved_point * e ** (2j * pi * segment_index / PRECISION)
             print('        Rotated point:', rotated_point)
+            
+            new_point = rotated_point + center
+            print('        New point:', new_point)
 
     quit()
 
