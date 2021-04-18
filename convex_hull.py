@@ -1,4 +1,6 @@
-PRECISION = 10
+from math import pi, e
+
+PRECISION = 4
 
 from itertools import starmap
 
@@ -15,6 +17,9 @@ def get_center(points):
 
 
 def checkio(data):
+
+
+
     print('Data:', data)
 
     complex_points = list(starmap(complex, data))
@@ -23,14 +28,17 @@ def checkio(data):
     center = get_center(complex_points)
     print('Center:', center)
 
-    for step in range(PRECISION):
-        print('Step:', step)
+    for segment_index in range(PRECISION):
+        print('Segment index:', segment_index)
 
         for point in complex_points:
             print('    Point:', point)
 
             moved_point = point - center
-            print('    Moved point:', moved_point)
+            print('        Moved point:', moved_point)
+
+            rotated_point = moved_point * e ** (2j * pi * segment_index / PRECISION)
+            print('        Rotated point:', rotated_point)
 
     quit()
 
