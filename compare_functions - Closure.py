@@ -22,14 +22,26 @@ def checkio(f, g):
         is_f_passed = f_result is not None
         is_g_passed = g_result is not None
 
-        index = is_f_passed * 4 + is_g_passed * 2 + (f_result == g_result)
-        print('Index:', index)
+        # index = is_f_passed * 4 + is_g_passed * 2 + (f_result == g_result)
+        # print('Index:', index)
+        #
+        # results = list(product((f_result, None), (g_result, None), ('same', 'different')))[::-1]
+        # print('Results:', results)
+        #
+        # result = results[index]
+        # print('Result:', result)
 
-        results = list(product((f_result, 'f_error'), (g_result, 'g_error'), ('same', 'different')))[::-1]
-        print('Results:', results)
+        result = f_result or g_result
+        # print('Result:', result)
 
-        result = results[index]
-        print('Result:', result)
+        status = [None, 'same'][f_result == g_result] or \
+                 [None, 'f_error'][f_result is None] or \
+                 [None, 'g_error'][g_result is None] or 'different'
+
+        # print('Status:', status)
+        
+        output = result, status
+        print('Output:', output)
 
 
 
@@ -57,8 +69,6 @@ def checkio(f, g):
 
         output = result, status_string
         print('Output:', output)
-
-        input()
 
         return output
 
