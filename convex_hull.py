@@ -9,18 +9,13 @@ def checkio(data):
     complex_points = list(starmap(complex, data))
     print('Complex points:', complex_points)
 
-    min_x, min_y, max_x, max_y = (operation(map(itemgetter(coordinate), data))
-                                  for operation in (min, max)
-                                  for coordinate in (0, 1))
-
-    min_x, min_y, max_x, max_y = (operation(map(part, complex_points))
-                                  for operation in (min, max)
-                                  for part in (lambda c: c.real, lambda c: c.imag))
-
+    min_x, max_x, min_y, max_y = (operation(map(part, complex_points))
+                                  for part in (lambda c: c.real, lambda c: c.imag)
+                                  for operation in (min, max))
 
     print('Min x:', min_x)
-    print('Min y:', min_y)
     print('Max x:', max_x)
+    print('Min y:', min_y)
     print('Max y:', max_y)
 
 
