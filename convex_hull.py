@@ -19,8 +19,7 @@ def get_center(points):
 def checkio(data):
 
     # data = [[1, 2], [2, 1], [2, 3], [3, 2]]
-
-    data = [[7, 6], [8, 4], [7, 2], [3, 2], [1, 6], [1, 8], [4, 9], [4, 4]]
+    # data = [[7, 6], [8, 4], [7, 2], [3, 2], [1, 6], [1, 8], [4, 9], [4, 4]]
 
     print('Data:', data)
 
@@ -78,12 +77,14 @@ def checkio(data):
     shifted_points = filtered_points[min_index:] + filtered_points[:min_index]
     print('Shifted points:', shifted_points)
 
-    quit()
-
-    return [0, 1, 2]
+    shifted_indices = [filtered_points.index(point) for point in shifted_points]
+    print('Shifted indices:', shifted_indices)
+    print()
+    return shifted_indices
 
 
 if __name__ == '__main__':
+
     assert checkio(
         [[7, 6], [8, 4], [7, 2], [3, 2], [1, 6], [1, 8], [4, 9]]
     ) == [4, 5, 6, 0, 1, 2, 3], "First example"
