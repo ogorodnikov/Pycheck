@@ -11,13 +11,40 @@
 #     return inner_function
 
 
-def get_results(*functions):
+# def get_results(*functions):
+#
+#     f_func, g_func = functions
+#
+#     def inner_get_results(*args, **kwargs):
+#
+#         # return try_execute(f_func)(*args, **kwargs), try_execute(g_func)(*args, **kwargs)
+#
+#         mapped_f, mapped_g = map(try_execute, (f_func, g_func))
+#
+#         return mapped_f(*args, **kwargs), mapped_g(*args, **kwargs)
+#
+#     return inner_get_results
+#
+#
+# def try_execute(function):
+#
+#     def inner_try_execute(*args, **kwargs):
+#         try:
+#             return function(*args, **kwargs)
+#         except:
+#             return None
+#
+#     return inner_try_execute
 
-    f_func, g_func = functions
+
+
+def get_results(*functions):
 
     def inner_get_results(*args, **kwargs):
 
-        return try_execute(f_func)(*args, **kwargs), try_execute(g_func)(*args, **kwargs)
+        tried_functions = map(try_execute, functions)
+
+        return (tried_function(*args, **kwargs) for tried_function in tried_functions)
 
     return inner_get_results
 
@@ -31,6 +58,7 @@ def try_execute(function):
             return None
 
     return inner_try_execute
+
 
 
 
