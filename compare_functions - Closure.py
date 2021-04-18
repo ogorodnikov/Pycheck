@@ -1,29 +1,44 @@
-from itertools import product
+
+# def try_execute(*functions):
+#     def inner_function(*args, **kwargs):
+#         try:
+#             if len(functions) == 2:
+#                 return map(lambda inner: inner(*args, **kwargs), map(try_execute, functions))
+#             return functions[0](*args, **kwargs)
+#         except:
+#             return None
+#
+#     return inner_function
 
 
-def try_execute(*functions):
-    def inner_function(*args, **kwargs):
+def get_results(*functions):
+
+    f_func, g_func = functions
+
+    def inner_get_results(*args, **kwargs):
+
+        return try_execute(f_func)(*args, **kwargs), try_execute(g_func)(*args, **kwargs)
+
+    return inner_get_results
+
+
+def try_execute(function):
+
+    def inner_try_execute(*args, **kwargs):
         try:
-            if len(functions) == 2:
-                return map(lambda inner: inner(*args, **kwargs), map(try_execute, functions))
-            return functions[0](*args, **kwargs)
+            return function(*args, **kwargs)
         except:
             return None
 
-    return inner_function
+    return inner_try_execute
+
+
 
 
 def checkio(f, g):
     def h(*args, **kwargs):
 
-        f_result, g_result = try_execute(f, g)(*args, **kwargs)
-
-        is_f_passed = f_result is not None
-        is_g_passed = g_result is not None
-
-        print()
-        print('F result:', f_result)
-        print('G result:', g_result)
+        f_result, g_result = get_results(f, g)(*args, **kwargs)
 
         result = f_result if f_result is not None else g_result
 
@@ -33,31 +48,11 @@ def checkio(f, g):
                   [None, 'g_error'][g_result is None] or 'different')
 
         output = result, status
-        print('New output:', output)
 
-        # if is_f_passed and is_g_passed:
-        #
-        #     if f_result == g_result:
-        #         status_string = 'same'
-        #     else:
-        #         status_string = 'different'
-        #
-        #     result = f_result
-        #
-        # elif is_f_passed and not is_g_passed:
-        #     status_string = 'g_error'
-        #     result = f_result
-        #
-        # elif is_g_passed and not is_f_passed:
-        #     status_string = 'f_error'
-        #     result = g_result
-        #
-        # else:
-        #     status_string = 'both_error'
-        #     result = None
-        #
-        # output = result, status_string
-        # print('Old output:', output)
+        print()
+        print('F result:', f_result)
+        print('G result:', g_result)
+        print('Output:', output)
 
         return output
 
