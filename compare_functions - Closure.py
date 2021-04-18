@@ -2,7 +2,6 @@ from itertools import product
 
 
 def try_execute(*functions):
-
     def inner_function(*args, **kwargs):
         try:
             if len(functions) == 2:
@@ -22,53 +21,43 @@ def checkio(f, g):
         is_f_passed = f_result is not None
         is_g_passed = g_result is not None
 
-        # index = is_f_passed * 4 + is_g_passed * 2 + (f_result == g_result)
-        # print('Index:', index)
-        #
-        # results = list(product((f_result, None), (g_result, None), ('same', 'different')))[::-1]
-        # print('Results:', results)
-        #
-        # result = results[index]
-        # print('Result:', result)
+        print()
+        print('F result:', f_result)
+        print('G result:', g_result)
 
-        result = f_result or g_result
-        # print('Result:', result)
+        result = f_result if f_result is not None else g_result
 
-        status = [None, 'same'][f_result == g_result] or \
-                 [None, 'f_error'][f_result is None] or \
-                 [None, 'g_error'][g_result is None] or 'different'
+        status = ([None, 'both_error'][f_result is g_result is None] or
+                  [None, 'same'][f_result == g_result] or
+                  [None, 'f_error'][f_result is None] or
+                  [None, 'g_error'][g_result is None] or 'different')
 
-        # print('Status:', status)
-        
         output = result, status
-        print('Output:', output)
+        print('New output:', output)
 
-
-
-
-        if is_f_passed and is_g_passed:
-
-            if f_result == g_result:
-                status_string = 'same'
-            else:
-                status_string = 'different'
-
-            result = f_result
-
-        elif is_f_passed and not is_g_passed:
-            status_string = 'g_error'
-            result = f_result
-
-        elif is_g_passed and not is_f_passed:
-            status_string = 'f_error'
-            result = g_result
-
-        else:
-            status_string = 'both_error'
-            result = None
-
-        output = result, status_string
-        print('Output:', output)
+        # if is_f_passed and is_g_passed:
+        #
+        #     if f_result == g_result:
+        #         status_string = 'same'
+        #     else:
+        #         status_string = 'different'
+        #
+        #     result = f_result
+        #
+        # elif is_f_passed and not is_g_passed:
+        #     status_string = 'g_error'
+        #     result = f_result
+        #
+        # elif is_g_passed and not is_f_passed:
+        #     status_string = 'f_error'
+        #     result = g_result
+        #
+        # else:
+        #     status_string = 'both_error'
+        #     result = None
+        #
+        # output = result, status_string
+        # print('Old output:', output)
 
         return output
 
@@ -114,3 +103,34 @@ if __name__ == '__main__':
     assert checkio(lambda n: ("Fizz " * (1 - n % 3) + "Buzz " * (1 - n % 5))[:-1] or str(n),
                    lambda n: ('Fizz' * (n % 3 == 0) + ' ' + 'Buzz' * (n % 5 == 0)).strip()) \
                (7) == ('7', 'different'), "fizz buzz, third"
+
+    assert checkio(lambda n: ("Fizz " * (1 - n % 3) + "Buzz " * (1 - n % 5))[:-1] or str(n),
+                   lambda n: ('Fizz' * (n % 3 == 0) + ' ' + 'Buzz' * (n % 5 == 0)).strip()) \
+               (7) == ('7', 'different'), "fizz buzz, third"
+
+    # Test 4
+
+    f = lambda x: abs(x)
+
+
+    def g(x):
+        if x > 0:
+            return x
+        elif x < 0:
+            return -x
+
+
+    assert checkio(f, g)(0) == (0, 'g_error')
+
+
+    # Test 3
+
+    def f(hello="hello", world="world"):
+        return hello + " " + world
+
+
+    def g(hello, world="world"):
+        return hello + " " + world
+
+
+    assert checkio(f, g)('planet', hello='ahoi') == (None, 'both_error')
