@@ -1,3 +1,4 @@
+from cmath import phase
 from itertools import starmap
 from math import pi, e
 
@@ -68,6 +69,7 @@ def checkio(data):
 
     # data = [[1, 2], [2, 1], [2, 3], [3, 2]]
     # data = [[7, 6], [8, 4], [7, 2], [3, 2], [1, 6], [1, 8], [4, 9], [4, 4]]
+    # data = [[7, 6], [8, 4], [7, 2], [3, 2], [1, 6], [1, 8], [4, 9], [1, 7]]
 
     print('Data:', data)
 
@@ -92,7 +94,33 @@ def checkio(data):
     shifted_indices = [convex_hull_points.index(point) for point in shifted_points]
     print('Shifted indices:', shifted_indices)
     print()
-    return shifted_indices
+
+    for point in convex_hull_points:
+        print('Point: ', point)
+
+        vector = point - starting_point
+        print('Vector:', vector)
+
+        angle = phase(vector)
+        print('Angle: ', angle)
+
+        print()
+
+    angles = [((-phase(point - starting_point), abs(point - starting_point)), point, convex_hull_points.index(point))
+              for point in convex_hull_points if point != starting_point]
+    print('Angles:', angles)
+
+    sorted_angles = sorted(angles)
+
+    print()
+    print('Sorted angles:')
+    [print(record) for record in sorted_angles]
+
+    output_indices = [starting_index] + [record[2] for record in sorted_angles]
+    print('Output indices:', output_indices)
+    print()
+
+    return output_indices
 
 
 if __name__ == '__main__':
