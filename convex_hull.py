@@ -1,13 +1,18 @@
-from cmath import phase
+from cmath import phase, pi, e, tau
 from itertools import starmap
-from math import pi, e
 
 PRECISION = 100
 
 
 def get_convex_hull_points(points, center):
+    """
+    get convex hull points:
+    - rotate input points by (2 * pi / PRECISION) radians at a time in a loop
+    - find min_point with minimum distance to beginning of coordinates and add to min_point_indices
+    - return points which indices are present in min_point_indices - which were min_point at least once
+    """
 
-    min_point_indices = []
+    min_point_indices = set()
 
     for segment_index in range(PRECISION):
 
@@ -24,7 +29,7 @@ def get_convex_hull_points(points, center):
         min_point = min(new_points, key=abs)
         min_point_index = new_points.index(min_point)
 
-        min_point_indices.append(min_point_index)
+        min_point_indices.add(min_point_index)
 
     filtered_points = [point for index, point in enumerate(points) if index in min_point_indices]
 
@@ -41,21 +46,15 @@ def checkio(data):
 
     starting_point = min(convex_hull_points, key=lambda c: (c.real, c.imag))
 
-    starting_angle = -phase(starting_point - center) % (2 * pi)
-    print('Starting angle:', starting_angle)
+    starting_angle = -phase(starting_point - center) % tau
 
-    angles = [((-phase(point - center) % (2 * pi) - starting_angle) % (2 * pi), point, points.index(point))
+    # clockwise angles between (starting_point - center) vector and (point - center) vector
+    angles = [((-phase(point - center) % tau - starting_angle) % tau, points.index(point))
               for point in convex_hull_points]
 
     sorted_angles = sorted(angles)
 
-    print()
-    print('Sorted angles:')
-    [print(record) for record in sorted_angles]
-
-    output_indices = [record[2] for record in sorted_angles]
-    print('Output indices:', output_indices)
-    print()
+    output_indices = [record[1] for record in sorted_angles]
 
     return output_indices
 
