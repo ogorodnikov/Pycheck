@@ -6,77 +6,46 @@ PRECISION = 100
 
 
 def get_convex_hull_points(points, center):
+
     min_point_indices = []
-    max_point_indices = []
 
     for segment_index in range(PRECISION):
-        # print('Segment index:', segment_index)
 
         new_points = []
 
         for point in points:
-            # print('    Point:', point)
 
             moved_point = point - center
-            # print('        Moved point:', moved_point)
-
             rotated_point = moved_point * e ** (2j * pi * segment_index / PRECISION)
-            # print('        Rotated point:', rotated_point)
+            moved_back_point = rotated_point + center
 
-            new_point = rotated_point + center
-            # print('        New point:', new_point)
-
-            new_points.append(new_point)
-
-        # print('New points:', new_points)
+            new_points.append(moved_back_point)
 
         min_point = min(new_points, key=abs)
-        # print('Min point:', min_point)
-
-        max_point = max(new_points, key=abs)
-        # print('Max point:', max_point)
-
         min_point_index = new_points.index(min_point)
-        # print('Min point index:', min_point_index)
-
-        max_point_index = new_points.index(max_point)
-        # print('Max point index:', max_point_index)
 
         min_point_indices.append(min_point_index)
-        max_point_indices.append(max_point_index)
 
     filtered_points = [point for index, point in enumerate(points) if index in min_point_indices]
-
-    # print()
-    # print('Min point indices:', min_point_indices)
-    # print('Max point indices:', max_point_indices)
-    # print('Filtered points:', filtered_points)
 
     return filtered_points
 
 
 def checkio(data):
 
-    print('Data:', data)
-
     points = list(starmap(complex, data))
-    print('Complex points:', points)
 
     center = sum(points) / len(points)
-    print('Center:', center)
 
     convex_hull_points = get_convex_hull_points(points, center)
-    print('Convex hull points:', convex_hull_points)
 
     starting_point = min(convex_hull_points, key=lambda c: (c.real, c.imag))
-    starting_index = points.index(starting_point)
-    print('Starting point:', starting_point)
-    print('Starting index:', starting_index)
-    print()
 
-    angles = [(-phase(point - center), point, points.index(point))
-              for point in convex_hull_points if point != starting_point]
-    print('Angles:', angles)
+    starting_angle = -phase(starting_point - center) % (2 * pi)
+    print('Starting angle:', starting_angle)
+
+    angles = [((-phase(point - center) % (2 * pi) - starting_angle) % (2 * pi), point, points.index(point))
+              for point in convex_hull_points]
 
     sorted_angles = sorted(angles)
 
@@ -84,7 +53,7 @@ def checkio(data):
     print('Sorted angles:')
     [print(record) for record in sorted_angles]
 
-    output_indices = [starting_index] + [record[2] for record in sorted_angles]
+    output_indices = [record[2] for record in sorted_angles]
     print('Output indices:', output_indices)
     print()
 
@@ -102,3 +71,5 @@ if __name__ == '__main__':
     ) == [1, 0, 6, 3, 5, 2], "Second example"
 
     assert checkio([[2, 6], [5, 5], [4, 4], [2, 2]]) == [3, 0, 1, 2]
+
+    assert checkio([[1, 1], [1, 2], [1, 5], [5, 5], [5, 1]]) == [0, 1, 2, 3, 4]
