@@ -81,34 +81,30 @@ def checkio(data):
 
     convex_hull_points = get_convex_hull_points(complex_points, center)
     print('Convex hull points:', convex_hull_points)
-
-    starting_point = min(convex_hull_points, key=lambda c: (c.real, c.imag))
-    print('Starting point:', starting_point)
-
-    starting_index = convex_hull_points.index(starting_point)
-    print('Starting index:', starting_index)
-
-    shifted_points = convex_hull_points[starting_index:] + convex_hull_points[:starting_index]
-    print('Shifted points:', shifted_points)
-
-    shifted_indices = [convex_hull_points.index(point) for point in shifted_points]
-    print('Shifted indices:', shifted_indices)
     print()
 
-    for point in convex_hull_points:
-        print('Point: ', point)
+    # for point in convex_hull_points:
+    #     print('Point: ', point)
+    #
+    #     vector = point - starting_point
+    #     print('Vector:', vector)
+    #
+    #     angle = phase(vector)
+    #     print('Angle: ', angle)
+    #
+    #     print()
 
-        vector = point - starting_point
-        print('Vector:', vector)
+    starting_point = min(convex_hull_points, key=lambda c: (c.real, c.imag))
+    starting_index = complex_points.index(starting_point)
+    print('Starting point:', starting_point)
+    print('Starting index:', starting_index)
+    print()
 
-        angle = phase(vector)
-        print('Angle: ', angle)
-
-        print()
-
-    angles = [((-phase(point - starting_point), abs(point - starting_point)), point, convex_hull_points.index(point))
+    angles = [((-phase(point - starting_point), abs(point - starting_point)), point, complex_points.index(point))
               for point in convex_hull_points if point != starting_point]
     print('Angles:', angles)
+
+
 
     sorted_angles = sorted(angles)
 
@@ -129,6 +125,6 @@ if __name__ == '__main__':
         [[7, 6], [8, 4], [7, 2], [3, 2], [1, 6], [1, 8], [4, 9]]
     ) == [4, 5, 6, 0, 1, 2, 3], "First example"
 
-    # assert checkio(
-    #     [[3, 8], [1, 6], [6, 2], [7, 6], [5, 5], [8, 4], [6, 8]]
-    # ) == [1, 0, 6, 3, 5, 2], "Second example"
+    assert checkio(
+        [[3, 8], [1, 6], [6, 2], [7, 6], [5, 5], [8, 4], [6, 8]]
+    ) == [1, 0, 6, 3, 5, 2], "Second example"
