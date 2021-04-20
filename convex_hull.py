@@ -101,7 +101,7 @@ def checkio(data):
     print('Starting index:', starting_index)
     print()
 
-    angles = [((-phase(point - starting_point), abs(point - starting_point)), point, complex_points.index(point))
+    angles = [(-phase(point - center), point, complex_points.index(point))
               for point in convex_hull_points if point != starting_point]
     print('Angles:', angles)
 
@@ -123,9 +123,9 @@ if __name__ == '__main__':
     assert checkio(
         [[7, 6], [8, 4], [7, 2], [3, 2], [1, 6], [1, 8], [4, 9]]
     ) == [4, 5, 6, 0, 1, 2, 3], "First example"
-    #
-    # assert checkio(
-    #     [[3, 8], [1, 6], [6, 2], [7, 6], [5, 5], [8, 4], [6, 8]]
-    # ) == [1, 0, 6, 3, 5, 2], "Second example"
 
-    # assert checkio([[2, 6], [5, 5], [4, 4], [2, 2]]) == [3, 0, 1, 2]
+    assert checkio(
+        [[3, 8], [1, 6], [6, 2], [7, 6], [5, 5], [8, 4], [6, 8]]
+    ) == [1, 0, 6, 3, 5, 2], "Second example"
+
+    assert checkio([[2, 6], [5, 5], [4, 4], [2, 2]]) == [3, 0, 1, 2]
