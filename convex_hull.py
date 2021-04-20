@@ -95,6 +95,7 @@ def checkio(data):
     #
     # quit()
 
+
     starting_point = min(convex_hull_points, key=lambda c: (c.real, c.imag))
     starting_index = complex_points.index(starting_point)
     print('Starting point:', starting_point)
