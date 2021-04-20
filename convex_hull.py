@@ -5,16 +5,6 @@ from math import pi, e
 PRECISION = 100
 
 
-def get_center(points):
-    # return sum(points) / len(points)
-
-    min_x, max_x, min_y, max_y = (operation(map(part, points))
-                                  for part in (lambda c: c.real, lambda c: c.imag)
-                                  for operation in (min, max))
-
-    return complex(min_x + (max_x - min_x) / 2, min_y + (max_y - min_y) / 2)
-
-
 def get_convex_hull_points(points, center):
     min_point_indices = []
     max_point_indices = []
@@ -66,43 +56,25 @@ def get_convex_hull_points(points, center):
 
 
 def checkio(data):
-    # data = [[1, 2], [2, 1], [2, 3], [3, 2]]
-    # data = [[7, 6], [8, 4], [7, 2], [3, 2], [1, 6], [1, 8], [4, 9], [4, 4]]
-    # data = [[7, 6], [8, 4], [7, 2], [3, 2], [1, 6], [1, 8], [4, 9], [1, 7]]
 
     print('Data:', data)
 
-    complex_points = list(starmap(complex, data))
-    print('Complex points:', complex_points)
+    points = list(starmap(complex, data))
+    print('Complex points:', points)
 
-    center = get_center(complex_points)
+    center = sum(points) / len(points)
     print('Center:', center)
 
-    convex_hull_points = get_convex_hull_points(complex_points, center)
+    convex_hull_points = get_convex_hull_points(points, center)
     print('Convex hull points:', convex_hull_points)
-    print()
-
-    # for point_index, point in enumerate(convex_hull_points):
-    #     print('Point: ', point, point_index)
-    #
-    #     vector = point - center
-    #     print('Vector:', vector)
-    #
-    #     angle = phase(vector)
-    #     print('Angle: ', angle)
-    #
-    #     print()
-    #
-    # quit()
-
 
     starting_point = min(convex_hull_points, key=lambda c: (c.real, c.imag))
-    starting_index = complex_points.index(starting_point)
+    starting_index = points.index(starting_point)
     print('Starting point:', starting_point)
     print('Starting index:', starting_index)
     print()
 
-    angles = [(-phase(point - center), point, complex_points.index(point))
+    angles = [(-phase(point - center), point, points.index(point))
               for point in convex_hull_points if point != starting_point]
     print('Angles:', angles)
 
