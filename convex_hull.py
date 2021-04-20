@@ -4,8 +4,8 @@ from math import pi, e
 
 PRECISION = 100
 
-def get_center(points):
 
+def get_center(points):
     # return sum(points) / len(points)
 
     min_x, max_x, min_y, max_y = (operation(map(part, points))
@@ -14,8 +14,8 @@ def get_center(points):
 
     return complex(min_x + (max_x - min_x) / 2, min_y + (max_y - min_y) / 2)
 
-def get_convex_hull_points(points, center):
 
+def get_convex_hull_points(points, center):
     min_point_indices = []
     max_point_indices = []
 
@@ -66,7 +66,6 @@ def get_convex_hull_points(points, center):
 
 
 def checkio(data):
-
     # data = [[1, 2], [2, 1], [2, 3], [3, 2]]
     # data = [[7, 6], [8, 4], [7, 2], [3, 2], [1, 6], [1, 8], [4, 9], [4, 4]]
     # data = [[7, 6], [8, 4], [7, 2], [3, 2], [1, 6], [1, 8], [4, 9], [1, 7]]
@@ -83,16 +82,18 @@ def checkio(data):
     print('Convex hull points:', convex_hull_points)
     print()
 
-    # for point in convex_hull_points:
-    #     print('Point: ', point)
+    # for point_index, point in enumerate(convex_hull_points):
+    #     print('Point: ', point, point_index)
     #
-    #     vector = point - starting_point
+    #     vector = point - center
     #     print('Vector:', vector)
     #
     #     angle = phase(vector)
     #     print('Angle: ', angle)
     #
     #     print()
+    #
+    # quit()
 
     starting_point = min(convex_hull_points, key=lambda c: (c.real, c.imag))
     starting_index = complex_points.index(starting_point)
@@ -103,8 +104,6 @@ def checkio(data):
     angles = [((-phase(point - starting_point), abs(point - starting_point)), point, complex_points.index(point))
               for point in convex_hull_points if point != starting_point]
     print('Angles:', angles)
-
-
 
     sorted_angles = sorted(angles)
 
@@ -124,7 +123,9 @@ if __name__ == '__main__':
     assert checkio(
         [[7, 6], [8, 4], [7, 2], [3, 2], [1, 6], [1, 8], [4, 9]]
     ) == [4, 5, 6, 0, 1, 2, 3], "First example"
+    #
+    # assert checkio(
+    #     [[3, 8], [1, 6], [6, 2], [7, 6], [5, 5], [8, 4], [6, 8]]
+    # ) == [1, 0, 6, 3, 5, 2], "Second example"
 
-    assert checkio(
-        [[3, 8], [1, 6], [6, 2], [7, 6], [5, 5], [8, 4], [6, 8]]
-    ) == [1, 0, 6, 3, 5, 2], "Second example"
+    # assert checkio([[2, 6], [5, 5], [4, 4], [2, 2]]) == [3, 0, 1, 2]
