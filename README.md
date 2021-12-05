@@ -1,6 +1,6 @@
 ## Checkio
 
-Competitive programming site with coding challanges and fun tasks:
+Competitive programming site with coding challenges and fun tasks:
 
 [py.checkio.org/user/ogoro](https://py.checkio.org/user/ogoro/) <br>
 
