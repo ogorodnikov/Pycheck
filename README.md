@@ -34,9 +34,21 @@ EAN-13 Barcode Reader:
 
 https://py.checkio.org/mission/barcode-reader/publications/ogoro/python-3/reversed/share/6e17c2c0f10b5659bcca4079db14352b/
 
+Number to Text synthesis:
+
+https://py.checkio.org/mission/speechmodule/publications/ogoro/python-3/doll-parts/share/67861b7b7f77faf97fd20fd75bbc065d/
+
 Hash libraries:
 
 https://py.checkio.org/mission/simple-hashlib/publications/ogoro/python-3/dict/share/296f472f5932e660d6e8ad8dad62f65a/
+
+Text justification:
+
+https://py.checkio.org/mission/text-formatting/publications/ogoro/python-3/join-join/share/c96cdc7b6de4cd0e0ad3e2a48481a441/
+
+Digits formatting - power form:
+
+https://py.checkio.org/mission/friendly-number/publications/ogoro/python-3/int-to-base/share/71f4b5245a74e36cf5b00878a221434a/
 
 Unix path simplification:
 
@@ -54,6 +66,15 @@ https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/re-
 
 
 #### Games
+
+Uncolored Cube - Heap on complex plane:
+
+https://py.checkio.org/mission/roll-the-cube/publications/ogoro/python-3/heap-on-complex-plane/share/bbceabfc00b912e30db4e1cf98d05147/
+
+Uncolored Cube - Heap on complex plane with transforms:
+
+https://py.checkio.org/mission/roll-the-cube/publications/ogoro/python-3/transforms/share/b914f010ce5df8abb73416533453dcb5/
+
 
 Nonogram row:
 
@@ -92,6 +113,10 @@ https://py.checkio.org/mission/on-the-same-path/publications/ogoro/python-3/inde
 
 #### Math
 
+One-digit factorization:
+
+https://py.checkio.org/mission/number-factory/publications/ogoro/python-3/cache-info/share/81bf058d940fc656a4dc4dd282940940/
+
 System of linear equations - permutations:
 
 https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/reduce/share/5a447356b8e035272dcdbf8151254eab/
@@ -110,6 +135,11 @@ https://py.checkio.org/mission/paper-dice/publications/ogoro/python-3/perimeters
 https://py.checkio.org/mission/paper-dice/publications/ogoro/python-3/perimeters-1-liner/share/87c9f3b120e6b0f2b1d0abb52680b79c/
 https://en.wikipedia.org/wiki/Net_(polyhedron)
 
+Equation of Circle by 3 points - sub-determinants:
+
+https://py.checkio.org/mission/three-points-circle/publications/ogoro/python-3/sub-determinants/share/485d17d30b4e42a21bc92f6d95cb4c27/
+http://www.ambrsoft.com/TrigoCalc/Circle3D.htm
+
 Area of a Convex Polygon - Shoelace formula:
 
 https://py.checkio.org/mission/area-of-a-convex-polygon/publications/ogoro/python-3/shoelace/share/7660c559dc61ad78fc3e8bc98abfe335/
@@ -125,6 +155,10 @@ https://py.checkio.org/mission/searchlights/publications/ogoro/python-3/vertices
 Line coefficients - Shooting range example:
 
 https://py.checkio.org/mission/shoot-range/publications/ogoro/python-3/line-coefficients/share/e05ffb8ea9d4b2f0c0cfccbdc504578b/
+
+Spheroid:
+
+https://py.checkio.org/mission/humpty-dumpty/publications/ogoro/python-3/wiki/share/238ff0ae4da41d661e30b07b89d12d80/
 
 <br>
 
