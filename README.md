@@ -34,6 +34,23 @@ EAN-13 Barcode Reader:
 
 https://py.checkio.org/mission/barcode-reader/publications/ogoro/python-3/reversed/share/6e17c2c0f10b5659bcca4079db14352b/
 
+Unix path simplification:
+
+https://py.checkio.org/mission/simplify-unix-path/publications/ogoro/python-3/directories/share/677dde9963fbfc38df68e087f3f67085/
+
+<br>
+
+
+#### Graphs
+
+Minimax with alpha-beta optimization - tic-tac-toe example:
+
+https://py.checkio.org/mission/x-and-o/publications/ogoro/python-3/minimax-alpha-beta/share/4ca33a8a734b109417ebbd1908a7ceb4/
+
+Graph fill-in - power stations example:
+
+https://py.checkio.org/mission/power-supply/publications/ogoro/python-3/recursive/share/7f09e4f955b79baca568902e73734fc3/
+
 <br>
 
 #### Geometry
@@ -48,7 +65,9 @@ Area of a Convex Polygon using Shoelace formula:
 
 https://py.checkio.org/mission/area-of-a-convex-polygon/publications/ogoro/python-3/shoelace/share/7660c559dc61ad78fc3e8bc98abfe335/
 
+Number of polygon vertices in circle:
 
+https://py.checkio.org/mission/searchlights/publications/ogoro/python-3/vertices/share/821bf249a6653c8a1079b2591fb7afc5/
 
 <br>
 
