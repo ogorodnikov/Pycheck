@@ -34,6 +34,10 @@ EAN-13 Barcode Reader:
 
 https://py.checkio.org/mission/barcode-reader/publications/ogoro/python-3/reversed/share/6e17c2c0f10b5659bcca4079db14352b/
 
+Hash libraries:
+
+https://py.checkio.org/mission/simple-hashlib/publications/ogoro/python-3/dict/share/296f472f5932e660d6e8ad8dad62f65a/
+
 Unix path simplification:
 
 https://py.checkio.org/mission/simplify-unix-path/publications/ogoro/python-3/directories/share/677dde9963fbfc38df68e087f3f67085/
@@ -42,8 +46,32 @@ URL normalization:
 
 https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/reduce/share/5a447356b8e035272dcdbf8151254eab/
 
+URL normalization - Re.sub:
+
+https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/re-sub/share/2f3cb39ca9c9fd858ef8cf0ec724dbd4/
+
 <br>
 
+
+#### Games
+
+Nonogram row:
+
+https://py.checkio.org/mission/nonogram-row/publications/ogoro/python-3/sets/share/0ecd522fdae703aaacf289422e76870e/
+
+Queens:
+
+https://py.checkio.org/mission/place-queens/publications/ogoro/python-3/combinations/share/7a040116c02b56fa18a628effb4d6446/
+
+Palindromes - generator:
+
+https://py.checkio.org/mission/the-longest-palindromic/publications/ogoro/python-3/next-generator/share/ab058f3c33c934dfc5ee8bfd7a1e724a/
+
+Palindromes - cycles:
+
+https://py.checkio.org/mission/the-longest-palindromic/publications/ogoro/python-3/while/share/67b4cf8aac0df5404a280aa8e9a41b73/
+
+<br>
 
 #### Graphs
 
@@ -58,6 +86,19 @@ https://py.checkio.org/mission/power-supply/publications/ogoro/python-3/recursiv
 Ancestor check:
 
 https://py.checkio.org/mission/on-the-same-path/publications/ogoro/python-3/indexes/share/a6edecb214ecd3595750aeff850299dd/
+
+<br>
+
+
+#### Math
+
+System of linear equations - permutations:
+
+https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/reduce/share/5a447356b8e035272dcdbf8151254eab/
+
+System of linear equations - Cramer EGCD:
+
+https://py.checkio.org/mission/hubspot-amulet/publications/ogoro/python-3/cramer-egcd/share/110046355149821ea9363fb8995f660d/
 
 <br>
 
