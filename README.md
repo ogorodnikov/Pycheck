@@ -70,11 +70,21 @@ https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/re-
 Uncolored Cube - Heap on complex plane:
 
 https://py.checkio.org/mission/roll-the-cube/publications/ogoro/python-3/heap-on-complex-plane/share/bbceabfc00b912e30db4e1cf98d05147/
+https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/cube.html
 
 Uncolored Cube - Heap on complex plane with transforms:
 
 https://py.checkio.org/mission/roll-the-cube/publications/ogoro/python-3/transforms/share/b914f010ce5df8abb73416533453dcb5/
 
+House of Mirrors - Heap with complex paths:
+
+https://py.checkio.org/mission/house-of-mirrors/publications/ogoro/python-3/board-heap-with-complex-paths/share/580851df54897072b038524037025d71/
+https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/undead.html
+
+Nonogram Packing - Complex patterns:
+
+https://py.checkio.org/mission/find-rectangles/publications/ogoro/python-3/nonogram-style/share/9ac15ef097f7742e011c21945a25b0f3/
+https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/rect.html
 
 Nonogram row:
 
