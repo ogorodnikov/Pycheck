@@ -38,6 +38,10 @@ Unix path simplification:
 
 https://py.checkio.org/mission/simplify-unix-path/publications/ogoro/python-3/directories/share/677dde9963fbfc38df68e087f3f67085/
 
+URL normalization:
+
+https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/reduce/share/5a447356b8e035272dcdbf8151254eab/
+
 <br>
 
 
@@ -51,6 +55,10 @@ Graph fill-in - power stations example:
 
 https://py.checkio.org/mission/power-supply/publications/ogoro/python-3/recursive/share/7f09e4f955b79baca568902e73734fc3/
 
+Ancestor check:
+
+https://py.checkio.org/mission/on-the-same-path/publications/ogoro/python-3/indexes/share/a6edecb214ecd3595750aeff850299dd/
+
 <br>
 
 #### Geometry
@@ -61,13 +69,21 @@ https://py.checkio.org/mission/paper-dice/publications/ogoro/python-3/perimeters
 https://py.checkio.org/mission/paper-dice/publications/ogoro/python-3/perimeters-1-liner/share/87c9f3b120e6b0f2b1d0abb52680b79c/
 https://en.wikipedia.org/wiki/Net_(polyhedron)
 
-Area of a Convex Polygon using Shoelace formula:
+Area of a Convex Polygon - Shoelace formula:
 
 https://py.checkio.org/mission/area-of-a-convex-polygon/publications/ogoro/python-3/shoelace/share/7660c559dc61ad78fc3e8bc98abfe335/
+
+Area of a Convex Polygon - Sub-polygons:
+
+https://py.checkio.org/mission/area-of-a-convex-polygon/publications/ogoro/python-3/sub-triangles/share/d641a69a3986c39a5f282f92b05bd3e8/
 
 Number of polygon vertices in circle:
 
 https://py.checkio.org/mission/searchlights/publications/ogoro/python-3/vertices/share/821bf249a6653c8a1079b2591fb7afc5/
+
+Line coefficients - Shooting range example:
+
+https://py.checkio.org/mission/shoot-range/publications/ogoro/python-3/line-coefficients/share/e05ffb8ea9d4b2f0c0cfccbdc504578b/
 
 <br>
 
