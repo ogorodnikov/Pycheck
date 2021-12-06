@@ -90,6 +90,10 @@ Nonogram row:
 
 https://py.checkio.org/mission/nonogram-row/publications/ogoro/python-3/sets/share/0ecd522fdae703aaacf289422e76870e/
 
+Sudoku - DFS:
+
+https://py.checkio.org/mission/sudokusolver/publications/ogoro/python-3/dfs-minimum-variants/share/a79dd6de8e02726574fc638828e12eea/
+
 Queens:
 
 https://py.checkio.org/mission/place-queens/publications/ogoro/python-3/combinations/share/7a040116c02b56fa18a628effb4d6446/
@@ -118,6 +122,10 @@ Ancestor check:
 
 https://py.checkio.org/mission/on-the-same-path/publications/ogoro/python-3/indexes/share/a6edecb214ecd3595750aeff850299dd/
 
+Email clusters:
+
+https://py.checkio.org/mission/node-crucial/publications/ogoro/python-3/set-intersection-clusters/share/748d90c39d9e44203fb564d982e70f89/
+
 <br>
 
 
@@ -139,6 +147,10 @@ https://py.checkio.org/mission/hubspot-amulet/publications/ogoro/python-3/cramer
 
 #### Geometry
 
+Ajax Sensor coverage - Complex locus:
+
+https://py.checkio.org/mission/four-to-the-floor/publications/ogoro/python-3/complex-locus/share/fdfb9595c390e8a6f1cd1efeee06e8c4/
+
 Analysis of geometrical net for paper dice:
 
 https://py.checkio.org/mission/paper-dice/publications/ogoro/python-3/perimeters/share/351104fd56c28a4738af9dfce4d5db4e/
@@ -149,6 +161,10 @@ Equation of Circle by 3 points - sub-determinants:
 
 https://py.checkio.org/mission/three-points-circle/publications/ogoro/python-3/sub-determinants/share/485d17d30b4e42a21bc92f6d95cb4c27/
 http://www.ambrsoft.com/TrigoCalc/Circle3D.htm
+
+Black Holes consumption:
+
+https://py.checkio.org/mission/black-holes/publications/ogoro/python-3/sorted-distances-intersection-areas/share/d97b0659144b8ae70c30f815f4ff4649/
 
 Area of a Convex Polygon - Shoelace formula:
 
