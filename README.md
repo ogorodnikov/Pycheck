@@ -22,9 +22,17 @@ Comparator with callback:
 
 https://py.checkio.org/mission/count-inversions/publications/ogoro/python-3/comparator-with-callback/share/47527bd741859091c7bdae359f9f3bc2/
 
-RPG OOP:
+Function comparison - Recursive closure:
 
-https://py.checkio.org/mission/the-warlords/publications/ogoro/python-3/lord-of-peace/share/93fb34c265576bd44f6115759e89d5d9/
+https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/recursive-closure/share/3405c6f274fd41b62834bc0bd9ad52bb/
+
+Function comparison - Or waterfall:
+
+https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/or-waterfall-and-closures/share/4a5bf250574e9cd76c97d1d7248b782c/
+
+Function comaprison - Supress:
+
+https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/suppress/share/08f8f51804292125fc7e810b3dc78b89/
 
 <br>
 
@@ -69,6 +77,10 @@ https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/re-
 ADFGVX Cipher:
 
 https://py.checkio.org/mission/adfgvx-cipher/publications/ogoro/python-3/islice-zip-wrap/share/22e714c6caf1687a38f84473d655841c/
+
+Logs - Groupby:
+
+https://py.checkio.org/mission/web-log-sessions/publications/ogoro/python-3/dict-groupby/share/c334f5e05185ac4658570eebc55e3c41/
 
 <br>
 
@@ -120,6 +132,10 @@ Bat Bunker - Complex connections and DFS:
 
 https://py.checkio.org/mission/bats-bunker/publications/ogoro/python-3/complex-connections-dfs/share/3cba5fb4ec48b21902f6388b5eb1cd19/
 
+Warriors - OOP:
+
+https://py.checkio.org/mission/the-warlords/publications/ogoro/python-3/lord-of-peace/share/93fb34c265576bd44f6115759e89d5d9/
+
 Magic Domino Square - DFS with Reshuffle:
 
 https://py.checkio.org/mission/magic-domino/publications/ogoro/python-3/dfs-with-uniform-reshuffle/share/0f7317cee31d6f221ffea95133a072b3/
@@ -133,6 +149,10 @@ Go:
 https://py.checkio.org/mission/eaten-go-stones/publications/ogoro/python-3/complex-sets/share/df10a3141bd8b2027f19b1e163ba6d83/
 https://py.checkio.org/mission/the-territory-of-go/publications/ogoro/python-3/surrounding/share/dec32aa8a355667158aa854b82bbcc29/
 
+Hexagonal Circles - Landing Sites:
+
+https://py.checkio.org/mission/landing-site/publications/ogoro/python-3/sets-recursion/share/ab2604b68db78afda31aa9f1bc192a95/
+
 Poker Combinations:
 
 https://py.checkio.org/mission/texas-referee/publications/ogoro/python-3/hand-patterns/share/a8ac8df0df10deb4f2e45f66688886a3/
@@ -141,9 +161,30 @@ Minesweeper:
 
 https://py.checkio.org/mission/minesweeper/publications/ogoro/python-3/simple-complex-sets/share/e9b34265149370ba5a3bc01b0201a8c4/
 
+5 Cards:
+
+https://py.checkio.org/mission/magic-with-5-cards/publications/ogoro/python-3/deltas/share/d80f7498d6f22825a3752395ca2bacea/
+
+Squares on dots:
+
+https://py.checkio.org/mission/the-square-chest/publications/ogoro/python-3/edge-generator/share/e6e7f3249e615dad04e0c5476f2888fd/
+
+Black and white Pearls:
+
+https://py.checkio.org/mission/box-probability/publications/ogoro/python-3/stack/share/b9bd157ba016a0074e11338bf422f07b/
+
+Stacking Cubes:
+
+https://py.checkio.org/mission/stacking-cubes/publications/ogoro/python-3/reduce-intersection/share/d7cc7d71326d1a18559255eeb1e9a928/
+https://py.checkio.org/mission/stacking-cubes/publications/ogoro/python-3/stack/share/5cfc6451b75d98c34e35354cb838d085/
+
 Queens:
 
 https://py.checkio.org/mission/place-queens/publications/ogoro/python-3/combinations/share/7a040116c02b56fa18a628effb4d6446/
+
+Berserker Rook - DFS generator:
+
+https://py.checkio.org/mission/berserk-rook/publications/ogoro/python-3/dfs-generator/share/d689333b0b065a0e49b6019672b4e41c/
 
 Palindromes:
 
@@ -154,11 +195,11 @@ https://py.checkio.org/mission/the-longest-palindromic/publications/ogoro/python
 
 #### Graphs
 
-Minimax with alpha-beta optimization - tic-tac-toe example:
+Tic-tac-toe - Minimax with alpha-beta optimization:
 
 https://py.checkio.org/mission/x-and-o/publications/ogoro/python-3/minimax-alpha-beta/share/4ca33a8a734b109417ebbd1908a7ceb4/
 
-Graph fill-in - power stations example:
+Power stations - Graph fill-in:
 
 https://py.checkio.org/mission/power-supply/publications/ogoro/python-3/recursive/share/7f09e4f955b79baca568902e73734fc3/
 
@@ -175,18 +216,6 @@ https://py.checkio.org/mission/node-crucial/publications/ogoro/python-3/set-inte
 
 #### Math
 
-Function comparison - Recursive closure:
-
-https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/recursive-closure/share/3405c6f274fd41b62834bc0bd9ad52bb/
-
-Function comparison - Or waterfall:
-
-https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/or-waterfall-and-closures/share/4a5bf250574e9cd76c97d1d7248b782c/
-
-Function comaprison - Supress:
-
-https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/suppress/share/08f8f51804292125fc7e810b3dc78b89/
-
 One-digit factorization:
 
 https://py.checkio.org/mission/number-factory/publications/ogoro/python-3/cache-info/share/81bf058d940fc656a4dc4dd282940940/
@@ -198,6 +227,15 @@ https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/red
 System of linear equations - Cramer EGCD:
 
 https://py.checkio.org/mission/hubspot-amulet/publications/ogoro/python-3/cramer-egcd/share/110046355149821ea9363fb8995f660d/
+
+Dice probabilities:
+
+https://py.checkio.org/mission/unfair-dice/publications/ogoro/python-3/filter-product/share/3ea8f55866cda1555a0b2c668ed84c1c/
+https://py.checkio.org/mission/probably-dice/publications/ogoro/python-3/group-cache/share/1c95e5e74ab29ce19db5556274c3267e/
+
+Picky Bride:
+
+https://py.checkio.org/mission/bag-of-santa-claus/publications/ogoro/python-3/picky-bride/share/81f2ae02e625e30ef0ac62f4f320158b/
 
 <br>
 
