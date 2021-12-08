@@ -1,11 +1,16 @@
 # Checkio
 
-Competitive programming site with coding challenges and fun tasks:
+My solutions from Checkio - competitive programming site with coding challenges and fun tasks!
+
+<br>
 
 https://py.checkio.org/user/ogoro/solutions/share/d98d8b1c3af7f68cbcdc6b5766f6f9f5/
 
 <br>
 
+[<img src="https://user-images.githubusercontent.com/8971690/145303865-da8b5029-9601-4f72-911e-1533d724986c.png" width="690">](https://checkio.org/)
+
+<br>
 
 ## Top 10 Solutions:
 
@@ -366,3 +371,5 @@ Function comaprison - Supress:
 https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/suppress/share/08f8f51804292125fc7e810b3dc78b89/
 
 <br>
+
+[<img src="https://user-images.githubusercontent.com/8971690/145302711-fd3a4149-4270-42e0-a998-b06133a29a0d.png" width="690">](#checkio)
