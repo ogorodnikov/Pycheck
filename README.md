@@ -62,6 +62,10 @@ URL normalization - Re.sub:
 
 https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/re-sub/share/2f3cb39ca9c9fd858ef8cf0ec724dbd4/
 
+ADFGVX Cipher:
+
+https://py.checkio.org/mission/adfgvx-cipher/publications/ogoro/python-3/islice-zip-wrap/share/22e714c6caf1687a38f84473d655841c/
+
 <br>
 
 
@@ -93,6 +97,10 @@ https://py.checkio.org/mission/nonogram-row/publications/ogoro/python-3/sets/sha
 Sudoku - DFS:
 
 https://py.checkio.org/mission/sudokusolver/publications/ogoro/python-3/dfs-minimum-variants/share/a79dd6de8e02726574fc638828e12eea/
+
+88 Game - Recursive BFS:
+
+https://py.checkio.org/mission/88th-puzzle/publications/ogoro/python-3/recursive-bfs-for-else/share/4d9b98b5450f4ff35b20777b318e88ca/
 
 Queens:
 
