@@ -136,6 +136,10 @@ Warriors - OOP:
 
 https://py.checkio.org/mission/the-warlords/publications/ogoro/python-3/lord-of-peace/share/93fb34c265576bd44f6115759e89d5d9/
 
+Climbing Route - Custom Cache and Manhattan Heap:
+
+https://py.checkio.org/mission/climbing-route/publications/ogoro/python-3/manhattan-heap-permutations-cache/share/7f66959a1dc9ae4d6c6dff1651e0d745/
+
 Magic Domino Square - DFS with Reshuffle:
 
 https://py.checkio.org/mission/magic-domino/publications/ogoro/python-3/dfs-with-uniform-reshuffle/share/0f7317cee31d6f221ffea95133a072b3/
@@ -177,6 +181,22 @@ Stacking Cubes:
 
 https://py.checkio.org/mission/stacking-cubes/publications/ogoro/python-3/reduce-intersection/share/d7cc7d71326d1a18559255eeb1e9a928/
 https://py.checkio.org/mission/stacking-cubes/publications/ogoro/python-3/stack/share/5cfc6451b75d98c34e35354cb838d085/
+
+Water Jars - BFS:
+
+https://py.checkio.org/mission/water-jars/publications/ogoro/python-3/bfs/share/0476438f19596a393cfb5005ece2df89/
+
+Box Teleports - DFS:
+
+https://py.checkio.org/mission/express-delivery/publications/ogoro/python-3/dfs-nearest-box/share/682c0d6bebdeffaf1b5a28da55b7066d/
+
+Maze - DFS generator:
+
+https://py.checkio.org/mission/open-labyrinth/publications/ogoro/python-3/dfs-generator/share/aed21a18176af6004513691a92702405/
+
+Dark Maze - DFS and Merge:
+
+https://py.checkio.org/mission/dark-labyrinth/publications/ogoro/python-3/dfs-maze-merge/share/0436432a1142ecc9a36f2a20f119f2a6/
 
 Queens:
 
