@@ -34,6 +34,10 @@ EAN-13 Barcode Reader:
 
 https://py.checkio.org/mission/barcode-reader/publications/ogoro/python-3/reversed/share/6e17c2c0f10b5659bcca4079db14352b/
 
+Polynomial simplification - Tokenizer:
+
+https://py.checkio.org/mission/simplification/publications/ogoro/python-3/scan-reduce/share/9f6ebeec1878cf03c4f01745769cce57/
+
 Number to Text synthesis:
 
 https://py.checkio.org/mission/speechmodule/publications/ogoro/python-3/doll-parts/share/67861b7b7f77faf97fd20fd75bbc065d/
@@ -112,6 +116,10 @@ https://py.checkio.org/mission/88th-puzzle/publications/ogoro/python-3/recursive
 https://py.checkio.org/mission/8-puzzle/publications/ogoro/python-3/also-rms-heap/share/ad88c9ebb95b06cb958c1b18fce7b2a4/
 https://en.wikipedia.org/wiki/15_puzzle
 
+Bat Bunker - Complex connections and DFS:
+
+https://py.checkio.org/mission/bats-bunker/publications/ogoro/python-3/complex-connections-dfs/share/3cba5fb4ec48b21902f6388b5eb1cd19/
+
 Magic Domino Square - DFS with Reshuffle:
 
 https://py.checkio.org/mission/magic-domino/publications/ogoro/python-3/dfs-with-uniform-reshuffle/share/0f7317cee31d6f221ffea95133a072b3/
@@ -124,6 +132,10 @@ https://py.checkio.org/mission/the-territory-of-go/publications/ogoro/python-3/s
 Poker Combinations:
 
 https://py.checkio.org/mission/texas-referee/publications/ogoro/python-3/hand-patterns/share/a8ac8df0df10deb4f2e45f66688886a3/
+
+Minesweeper:
+
+https://py.checkio.org/mission/minesweeper/publications/ogoro/python-3/simple-complex-sets/share/e9b34265149370ba5a3bc01b0201a8c4/
 
 Queens:
 
@@ -194,13 +206,18 @@ Black Holes consumption:
 
 https://py.checkio.org/mission/black-holes/publications/ogoro/python-3/sorted-distances-intersection-areas/share/d97b0659144b8ae70c30f815f4ff4649/
 
-Area of a Convex Polygon - Shoelace formula:
+Area of a Convex Polygon - Shoelace formula or subpoligons:
 
 https://py.checkio.org/mission/area-of-a-convex-polygon/publications/ogoro/python-3/shoelace/share/7660c559dc61ad78fc3e8bc98abfe335/
-
-Area of a Convex Polygon - Sub-polygons:
-
 https://py.checkio.org/mission/area-of-a-convex-polygon/publications/ogoro/python-3/sub-triangles/share/d641a69a3986c39a5f282f92b05bd3e8/
+
+Radial search - Complex set intersections:
+
+https://py.checkio.org/mission/ore-in-the-desert/publications/ogoro/python-3/complex-set-intersections/share/3015c393672011ed2664094690fad07f/
+
+Dichotomic search - Complex counts:
+
+https://py.checkio.org/mission/colder-warmer/publications/ogoro/python-3/difference-metric/share/67813167d07384facbd3683b4098d1a7/
 
 Number of polygon vertices in circle:
 
