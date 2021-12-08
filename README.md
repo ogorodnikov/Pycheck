@@ -71,14 +71,15 @@ https://py.checkio.org/mission/adfgvx-cipher/publications/ogoro/python-3/islice-
 
 #### Games
 
+2048 - Functional transforms:
+
+https://py.checkio.org/mission/simple2048/publications/ogoro/python-3/antidiagonal/share/69e195c0e49a4eb2c1657e17005ca9e0/
+
 Uncolored Cube - Heap on complex plane:
 
+https://py.checkio.org/mission/roll-the-cube/publications/ogoro/python-3/transforms/share/b914f010ce5df8abb73416533453dcb5/
 https://py.checkio.org/mission/roll-the-cube/publications/ogoro/python-3/heap-on-complex-plane/share/bbceabfc00b912e30db4e1cf98d05147/
 https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/cube.html
-
-Uncolored Cube - Heap on complex plane with transforms:
-
-https://py.checkio.org/mission/roll-the-cube/publications/ogoro/python-3/transforms/share/b914f010ce5df8abb73416533453dcb5/
 
 House of Mirrors - Heap with complex paths:
 
@@ -101,6 +102,15 @@ https://py.checkio.org/mission/sudokusolver/publications/ogoro/python-3/dfs-mini
 88 Game - Recursive BFS:
 
 https://py.checkio.org/mission/88th-puzzle/publications/ogoro/python-3/recursive-bfs-for-else/share/4d9b98b5450f4ff35b20777b318e88ca/
+
+8-Puzzle - Root Mean Square Heap:
+
+https://py.checkio.org/mission/8-puzzle/publications/ogoro/python-3/also-rms-heap/share/ad88c9ebb95b06cb958c1b18fce7b2a4/
+https://en.wikipedia.org/wiki/15_puzzle
+
+Magic Domino Square - DFS with Reshuffle:
+
+https://py.checkio.org/mission/magic-domino/publications/ogoro/python-3/dfs-with-uniform-reshuffle/share/0f7317cee31d6f221ffea95133a072b3/
 
 Queens:
 
