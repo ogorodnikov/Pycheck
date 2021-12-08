@@ -75,6 +75,10 @@ https://py.checkio.org/mission/adfgvx-cipher/publications/ogoro/python-3/islice-
 
 https://py.checkio.org/mission/simple2048/publications/ogoro/python-3/antidiagonal/share/69e195c0e49a4eb2c1657e17005ca9e0/
 
+Snake - Complex A* pathfinding:
+
+https://py.checkio.org/mission/snake/publications/ogoro/python-3/a-complex-escape/share/81152245055703524faa150c769a38a0/
+
 Uncolored Cube - Heap on complex plane:
 
 https://py.checkio.org/mission/roll-the-cube/publications/ogoro/python-3/transforms/share/b914f010ce5df8abb73416533453dcb5/
@@ -112,16 +116,22 @@ Magic Domino Square - DFS with Reshuffle:
 
 https://py.checkio.org/mission/magic-domino/publications/ogoro/python-3/dfs-with-uniform-reshuffle/share/0f7317cee31d6f221ffea95133a072b3/
 
+Go:
+
+https://py.checkio.org/mission/eaten-go-stones/publications/ogoro/python-3/complex-sets/share/df10a3141bd8b2027f19b1e163ba6d83/
+https://py.checkio.org/mission/the-territory-of-go/publications/ogoro/python-3/surrounding/share/dec32aa8a355667158aa854b82bbcc29/
+
+Poker Combinations:
+
+https://py.checkio.org/mission/texas-referee/publications/ogoro/python-3/hand-patterns/share/a8ac8df0df10deb4f2e45f66688886a3/
+
 Queens:
 
 https://py.checkio.org/mission/place-queens/publications/ogoro/python-3/combinations/share/7a040116c02b56fa18a628effb4d6446/
 
-Palindromes - generator:
+Palindromes:
 
 https://py.checkio.org/mission/the-longest-palindromic/publications/ogoro/python-3/next-generator/share/ab058f3c33c934dfc5ee8bfd7a1e724a/
-
-Palindromes - cycles:
-
 https://py.checkio.org/mission/the-longest-palindromic/publications/ogoro/python-3/while/share/67b4cf8aac0df5404a280aa8e9a41b73/
 
 <br>
