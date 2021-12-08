@@ -2,62 +2,65 @@
 
 Competitive programming site with coding challenges and fun tasks:
 
-[py.checkio.org/user/ogoro](https://py.checkio.org/user/ogoro/) <br>
-
-All solutions:
-
 https://py.checkio.org/user/ogoro/solutions/share/d98d8b1c3af7f68cbcdc6b5766f6f9f5/
 
 <br>
 
 
-## Top Solutions:
+## Top 10 Solutions:
 
-Ajax Sensor coverage - Complex locus:
+- Ajax Sensor coverage - Complex locus:
 
-https://py.checkio.org/mission/four-to-the-floor/publications/ogoro/python-3/complex-locus/share/fdfb9595c390e8a6f1cd1efeee06e8c4/
+  https://py.checkio.org/mission/four-to-the-floor/publications/ogoro/python-3/complex-locus/share/fdfb9595c390e8a6f1cd1efeee06e8c4/
 
-2048 - Functional transforms:
+- 2048 - Functional transforms:
 
-https://py.checkio.org/mission/simple2048/publications/ogoro/python-3/antidiagonal/share/69e195c0e49a4eb2c1657e17005ca9e0/
+  https://py.checkio.org/mission/simple2048/publications/ogoro/python-3/antidiagonal/share/69e195c0e49a4eb2c1657e17005ca9e0/
 
-Snake - Complex A* pathfinding:
+- Snake - Complex A* pathfinding:
 
-https://py.checkio.org/mission/snake/publications/ogoro/python-3/a-complex-escape/share/81152245055703524faa150c769a38a0/
+  https://py.checkio.org/mission/snake/publications/ogoro/python-3/a-complex-escape/share/81152245055703524faa150c769a38a0/
 
-Uncolored Cube - Heap on complex plane:
+- Uncolored Cube - Heap on complex plane:
 
-https://py.checkio.org/mission/roll-the-cube/publications/ogoro/python-3/transforms/share/b914f010ce5df8abb73416533453dcb5/
-https://py.checkio.org/mission/roll-the-cube/publications/ogoro/python-3/heap-on-complex-plane/share/bbceabfc00b912e30db4e1cf98d05147/
-https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/cube.html
+  https://py.checkio.org/mission/roll-the-cube/publications/ogoro/python-3/transforms/share/b914f010ce5df8abb73416533453dcb5/
+  https://py.checkio.org/mission/roll-the-cube/publications/ogoro/python-3/heap-on-complex-plane/share/bbceabfc00b912e30db4e1cf98d05147/
+  https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/cube.html
 
-Tic-tac-toe - Minimax with alpha-beta optimization:
+- Tic-tac-toe - Minimax with alpha-beta optimization:
 
-https://py.checkio.org/mission/x-and-o/publications/ogoro/python-3/minimax-alpha-beta/share/4ca33a8a734b109417ebbd1908a7ceb4/
+  https://py.checkio.org/mission/x-and-o/publications/ogoro/python-3/minimax-alpha-beta/share/4ca33a8a734b109417ebbd1908a7ceb4/
 
-System of linear equations - Cramer EGCD:
+- System of linear equations - Cramer EGCD:
 
-https://py.checkio.org/mission/hubspot-amulet/publications/ogoro/python-3/cramer-egcd/share/110046355149821ea9363fb8995f660d/
+  https://py.checkio.org/mission/hubspot-amulet/publications/ogoro/python-3/cramer-egcd/share/110046355149821ea9363fb8995f660d/
 
-Polynomial simplification - Tokenizer:
+- Polynomial simplification - Tokenizer:
 
-https://py.checkio.org/mission/simplification/publications/ogoro/python-3/scan-reduce/share/9f6ebeec1878cf03c4f01745769cce57/
+  https://py.checkio.org/mission/simplification/publications/ogoro/python-3/scan-reduce/share/9f6ebeec1878cf03c4f01745769cce57/
 
-Number to Text synthesis:
+- Number to Text synthesis:
 
-https://py.checkio.org/mission/speechmodule/publications/ogoro/python-3/doll-parts/share/67861b7b7f77faf97fd20fd75bbc065d/
+  https://py.checkio.org/mission/speechmodule/publications/ogoro/python-3/doll-parts/share/67861b7b7f77faf97fd20fd75bbc065d/
 
-Function comparison - Recursive closure:
+- Function comparison - Recursive closure:
 
-https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/recursive-closure/share/3405c6f274fd41b62834bc0bd9ad52bb/
+  https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/recursive-closure/share/3405c6f274fd41b62834bc0bd9ad52bb/
 
-EAN-13 Barcode Reader:
+- EAN-13 Barcode Reader:
 
-https://py.checkio.org/mission/barcode-reader/publications/ogoro/python-3/reversed/share/6e17c2c0f10b5659bcca4079db14352b/
+  https://py.checkio.org/mission/barcode-reader/publications/ogoro/python-3/reversed/share/6e17c2c0f10b5659bcca4079db14352b/
 
 <br>
 
 ## Solutions by category:
+
+- [Games](#games)
+- [Graphs](#graphs)
+- [Geometry](#geometry)
+- [Math](#math)
+- [Practical](#practical)
+- [General](#general)
 
 ## Games
 
