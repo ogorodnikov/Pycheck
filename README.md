@@ -1,13 +1,17 @@
-## Checkio
+# Checkio
 
 Competitive programming site with coding challenges and fun tasks:
 
 [py.checkio.org/user/ogoro](https://py.checkio.org/user/ogoro/) <br>
 
+All solutions:
+
+https://py.checkio.org/user/ogoro/solutions/share/d98d8b1c3af7f68cbcdc6b5766f6f9f5/
+
 <br>
 
 
-### Top Solutions:
+## Top Solutions:
 
 Ajax Sensor coverage - Complex locus:
 
@@ -53,87 +57,9 @@ https://py.checkio.org/mission/barcode-reader/publications/ogoro/python-3/revers
 
 <br>
 
-### All solutions:
+## Solutions by category:
 
-https://py.checkio.org/user/ogoro/solutions/share/d98d8b1c3af7f68cbcdc6b5766f6f9f5/
-
-<br>
-
-#### General
-
-Single Dispatch Method:
-
-https://py.checkio.org/mission/voice-tv-control/publications/ogoro/python-3/single-dispatch-method/share/15b1170ecc8db2cfa68d1affcac09ff5/
-
-Re.Scanner with code dictionary:
-
-https://py.checkio.org/mission/hacker-language/publications/ogoro/python-3/scanner-with-code-dictionary/share/1e30a0846a138bab14ac3c9622a10249/
-
-Comparator with callback:
-
-https://py.checkio.org/mission/count-inversions/publications/ogoro/python-3/comparator-with-callback/share/47527bd741859091c7bdae359f9f3bc2/
-
-Function comparison - Recursive closure:
-
-https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/recursive-closure/share/3405c6f274fd41b62834bc0bd9ad52bb/
-
-Function comparison - Or waterfall:
-
-https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/or-waterfall-and-closures/share/4a5bf250574e9cd76c97d1d7248b782c/
-
-Function comaprison - Supress:
-
-https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/suppress/share/08f8f51804292125fc7e810b3dc78b89/
-
-<br>
-
-#### Practical
-
-EAN-13 Barcode Reader:
-
-https://py.checkio.org/mission/barcode-reader/publications/ogoro/python-3/reversed/share/6e17c2c0f10b5659bcca4079db14352b/
-
-Polynomial simplification - Tokenizer:
-
-https://py.checkio.org/mission/simplification/publications/ogoro/python-3/scan-reduce/share/9f6ebeec1878cf03c4f01745769cce57/
-
-Number to Text synthesis:
-
-https://py.checkio.org/mission/speechmodule/publications/ogoro/python-3/doll-parts/share/67861b7b7f77faf97fd20fd75bbc065d/
-
-Hash libraries:
-
-https://py.checkio.org/mission/simple-hashlib/publications/ogoro/python-3/dict/share/296f472f5932e660d6e8ad8dad62f65a/
-
-Text justification:
-
-https://py.checkio.org/mission/text-formatting/publications/ogoro/python-3/join-join/share/c96cdc7b6de4cd0e0ad3e2a48481a441/
-
-Digits formatting - power form:
-
-https://py.checkio.org/mission/friendly-number/publications/ogoro/python-3/int-to-base/share/71f4b5245a74e36cf5b00878a221434a/
-
-Unix path simplification:
-
-https://py.checkio.org/mission/simplify-unix-path/publications/ogoro/python-3/directories/share/677dde9963fbfc38df68e087f3f67085/
-
-URL normalization:
-
-https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/reduce/share/5a447356b8e035272dcdbf8151254eab/
-https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/re-sub/share/2f3cb39ca9c9fd858ef8cf0ec724dbd4/
-
-ADFGVX Cipher:
-
-https://py.checkio.org/mission/adfgvx-cipher/publications/ogoro/python-3/islice-zip-wrap/share/22e714c6caf1687a38f84473d655841c/
-
-Logs - Groupby:
-
-https://py.checkio.org/mission/web-log-sessions/publications/ogoro/python-3/dict-groupby/share/c334f5e05185ac4658570eebc55e3c41/
-
-<br>
-
-
-#### Games
+## Games
 
 2048 - Functional transforms:
 
@@ -261,7 +187,7 @@ https://py.checkio.org/mission/the-longest-palindromic/publications/ogoro/python
 
 <br>
 
-#### Graphs
+## Graphs
 
 Tic-tac-toe - Minimax with alpha-beta optimization:
 
@@ -281,33 +207,7 @@ https://py.checkio.org/mission/node-crucial/publications/ogoro/python-3/set-inte
 
 <br>
 
-
-#### Math
-
-One-digit factorization:
-
-https://py.checkio.org/mission/number-factory/publications/ogoro/python-3/cache-info/share/81bf058d940fc656a4dc4dd282940940/
-
-System of linear equations - permutations:
-
-https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/reduce/share/5a447356b8e035272dcdbf8151254eab/
-
-System of linear equations - Cramer EGCD:
-
-https://py.checkio.org/mission/hubspot-amulet/publications/ogoro/python-3/cramer-egcd/share/110046355149821ea9363fb8995f660d/
-
-Dice probabilities:
-
-https://py.checkio.org/mission/unfair-dice/publications/ogoro/python-3/filter-product/share/3ea8f55866cda1555a0b2c668ed84c1c/
-https://py.checkio.org/mission/probably-dice/publications/ogoro/python-3/group-cache/share/1c95e5e74ab29ce19db5556274c3267e/
-
-Picky Bride:
-
-https://py.checkio.org/mission/bag-of-santa-claus/publications/ogoro/python-3/picky-bride/share/81f2ae02e625e30ef0ac62f4f320158b/
-
-<br>
-
-#### Geometry
+## Geometry
 
 Ajax Sensor coverage - Complex locus:
 
@@ -366,3 +266,100 @@ https://py.checkio.org/mission/humpty-dumpty/publications/ogoro/python-3/wiki/sh
 
 <br>
 
+## Math
+
+One-digit factorization:
+
+https://py.checkio.org/mission/number-factory/publications/ogoro/python-3/cache-info/share/81bf058d940fc656a4dc4dd282940940/
+
+System of linear equations - permutations:
+
+https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/reduce/share/5a447356b8e035272dcdbf8151254eab/
+
+System of linear equations - Cramer EGCD:
+
+https://py.checkio.org/mission/hubspot-amulet/publications/ogoro/python-3/cramer-egcd/share/110046355149821ea9363fb8995f660d/
+
+Dice probabilities:
+
+https://py.checkio.org/mission/unfair-dice/publications/ogoro/python-3/filter-product/share/3ea8f55866cda1555a0b2c668ed84c1c/
+https://py.checkio.org/mission/probably-dice/publications/ogoro/python-3/group-cache/share/1c95e5e74ab29ce19db5556274c3267e/
+
+Picky Bride:
+
+https://py.checkio.org/mission/bag-of-santa-claus/publications/ogoro/python-3/picky-bride/share/81f2ae02e625e30ef0ac62f4f320158b/
+
+<br>
+
+## Practical
+
+EAN-13 Barcode Reader:
+
+https://py.checkio.org/mission/barcode-reader/publications/ogoro/python-3/reversed/share/6e17c2c0f10b5659bcca4079db14352b/
+
+Polynomial simplification - Tokenizer:
+
+https://py.checkio.org/mission/simplification/publications/ogoro/python-3/scan-reduce/share/9f6ebeec1878cf03c4f01745769cce57/
+
+Number to Text synthesis:
+
+https://py.checkio.org/mission/speechmodule/publications/ogoro/python-3/doll-parts/share/67861b7b7f77faf97fd20fd75bbc065d/
+
+Hash libraries:
+
+https://py.checkio.org/mission/simple-hashlib/publications/ogoro/python-3/dict/share/296f472f5932e660d6e8ad8dad62f65a/
+
+Text justification:
+
+https://py.checkio.org/mission/text-formatting/publications/ogoro/python-3/join-join/share/c96cdc7b6de4cd0e0ad3e2a48481a441/
+
+Digits formatting - power form:
+
+https://py.checkio.org/mission/friendly-number/publications/ogoro/python-3/int-to-base/share/71f4b5245a74e36cf5b00878a221434a/
+
+Unix path simplification:
+
+https://py.checkio.org/mission/simplify-unix-path/publications/ogoro/python-3/directories/share/677dde9963fbfc38df68e087f3f67085/
+
+URL normalization:
+
+https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/reduce/share/5a447356b8e035272dcdbf8151254eab/
+https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/re-sub/share/2f3cb39ca9c9fd858ef8cf0ec724dbd4/
+
+ADFGVX Cipher:
+
+https://py.checkio.org/mission/adfgvx-cipher/publications/ogoro/python-3/islice-zip-wrap/share/22e714c6caf1687a38f84473d655841c/
+
+Logs - Groupby:
+
+https://py.checkio.org/mission/web-log-sessions/publications/ogoro/python-3/dict-groupby/share/c334f5e05185ac4658570eebc55e3c41/
+
+<br>
+
+## General
+
+Single Dispatch Method:
+
+https://py.checkio.org/mission/voice-tv-control/publications/ogoro/python-3/single-dispatch-method/share/15b1170ecc8db2cfa68d1affcac09ff5/
+
+Re.Scanner with code dictionary:
+
+https://py.checkio.org/mission/hacker-language/publications/ogoro/python-3/scanner-with-code-dictionary/share/1e30a0846a138bab14ac3c9622a10249/
+
+Comparator with callback:
+
+https://py.checkio.org/mission/count-inversions/publications/ogoro/python-3/comparator-with-callback/share/47527bd741859091c7bdae359f9f3bc2/
+
+Function comparison - Recursive closure:
+
+https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/recursive-closure/share/3405c6f274fd41b62834bc0bd9ad52bb/
+
+Function comparison - Or waterfall:
+
+https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/or-waterfall-and-closures/share/4a5bf250574e9cd76c97d1d7248b782c/
+
+Function comaprison - Supress:
+
+https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/suppress/share/08f8f51804292125fc7e810b3dc78b89/
+
+<br>
