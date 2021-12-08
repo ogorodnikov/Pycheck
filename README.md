@@ -372,4 +372,4 @@ https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/suppress/s
 
 <br>
 
-[<img src="https://user-images.githubusercontent.com/8971690/145302711-fd3a4149-4270-42e0-a998-b06133a29a0d.png" width="690">](#checkio)
+[<img src="https://user-images.githubusercontent.com/8971690/145302711-fd3a4149-4270-42e0-a998-b06133a29a0d.png" width="400">](#checkio)
