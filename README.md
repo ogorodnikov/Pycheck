@@ -124,6 +124,10 @@ Magic Domino Square - DFS with Reshuffle:
 
 https://py.checkio.org/mission/magic-domino/publications/ogoro/python-3/dfs-with-uniform-reshuffle/share/0f7317cee31d6f221ffea95133a072b3/
 
+Bulls and Cows - Permutation intersections:
+
+https://py.checkio.org/mission/bulls-and-cows/publications/ogoro/python-3/permutation-intersections/share/38fe02a29645d0744b25d6e5b1fcbfcb/
+
 Go:
 
 https://py.checkio.org/mission/eaten-go-stones/publications/ogoro/python-3/complex-sets/share/df10a3141bd8b2027f19b1e163ba6d83/
@@ -171,6 +175,18 @@ https://py.checkio.org/mission/node-crucial/publications/ogoro/python-3/set-inte
 
 #### Math
 
+Function comparison - Recursive closure:
+
+https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/recursive-closure/share/3405c6f274fd41b62834bc0bd9ad52bb/
+
+Function comparison - Or waterfall:
+
+https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/or-waterfall-and-closures/share/4a5bf250574e9cd76c97d1d7248b782c/
+
+Function comaprison - Supress:
+
+https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/suppress/share/08f8f51804292125fc7e810b3dc78b89/
+
 One-digit factorization:
 
 https://py.checkio.org/mission/number-factory/publications/ogoro/python-3/cache-info/share/81bf058d940fc656a4dc4dd282940940/
@@ -190,6 +206,10 @@ https://py.checkio.org/mission/hubspot-amulet/publications/ogoro/python-3/cramer
 Ajax Sensor coverage - Complex locus:
 
 https://py.checkio.org/mission/four-to-the-floor/publications/ogoro/python-3/complex-locus/share/fdfb9595c390e8a6f1cd1efeee06e8c4/
+
+Convex hull - Complex rotatation:
+
+https://py.checkio.org/mission/convex-hull/publications/ogoro/python-3/complex-rotation/share/79c70b65eed30c656149ebb196306a4f/
 
 Analysis of geometrical net for paper dice:
 
@@ -211,11 +231,19 @@ Area of a Convex Polygon - Shoelace formula or subpoligons:
 https://py.checkio.org/mission/area-of-a-convex-polygon/publications/ogoro/python-3/shoelace/share/7660c559dc61ad78fc3e8bc98abfe335/
 https://py.checkio.org/mission/area-of-a-convex-polygon/publications/ogoro/python-3/sub-triangles/share/d641a69a3986c39a5f282f92b05bd3e8/
 
+Image recognition - Code distance:
+
+https://py.checkio.org/mission/mono-captcha/publications/ogoro/python-3/code-distance/share/0e0a2cc357ec5b61284ea6f47ad20b95/
+
+Image recognition - Pattern models and BFS:
+
+https://py.checkio.org/mission/bacteria-colonies/publications/ogoro/python-3/pattern-model-bfs/share/e78470cc0111f6a6b2939aa69ace6aff/
+
 Radial search - Complex set intersections:
 
 https://py.checkio.org/mission/ore-in-the-desert/publications/ogoro/python-3/complex-set-intersections/share/3015c393672011ed2664094690fad07f/
 
-Dichotomic search - Complex counts:
+Dichotomic search - Counts metric:
 
 https://py.checkio.org/mission/colder-warmer/publications/ogoro/python-3/difference-metric/share/67813167d07384facbd3683b4098d1a7/
 
