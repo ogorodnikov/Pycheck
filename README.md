@@ -6,7 +6,58 @@ Competitive programming site with coding challenges and fun tasks:
 
 <br>
 
-### Some interesting solutions:
+
+### Top Solutions:
+
+Ajax Sensor coverage - Complex locus:
+
+https://py.checkio.org/mission/four-to-the-floor/publications/ogoro/python-3/complex-locus/share/fdfb9595c390e8a6f1cd1efeee06e8c4/
+
+2048 - Functional transforms:
+
+https://py.checkio.org/mission/simple2048/publications/ogoro/python-3/antidiagonal/share/69e195c0e49a4eb2c1657e17005ca9e0/
+
+Snake - Complex A* pathfinding:
+
+https://py.checkio.org/mission/snake/publications/ogoro/python-3/a-complex-escape/share/81152245055703524faa150c769a38a0/
+
+Uncolored Cube - Heap on complex plane:
+
+https://py.checkio.org/mission/roll-the-cube/publications/ogoro/python-3/transforms/share/b914f010ce5df8abb73416533453dcb5/
+https://py.checkio.org/mission/roll-the-cube/publications/ogoro/python-3/heap-on-complex-plane/share/bbceabfc00b912e30db4e1cf98d05147/
+https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/cube.html
+
+Tic-tac-toe - Minimax with alpha-beta optimization:
+
+https://py.checkio.org/mission/x-and-o/publications/ogoro/python-3/minimax-alpha-beta/share/4ca33a8a734b109417ebbd1908a7ceb4/
+
+System of linear equations - Cramer EGCD:
+
+https://py.checkio.org/mission/hubspot-amulet/publications/ogoro/python-3/cramer-egcd/share/110046355149821ea9363fb8995f660d/
+
+Polynomial simplification - Tokenizer:
+
+https://py.checkio.org/mission/simplification/publications/ogoro/python-3/scan-reduce/share/9f6ebeec1878cf03c4f01745769cce57/
+
+Number to Text synthesis:
+
+https://py.checkio.org/mission/speechmodule/publications/ogoro/python-3/doll-parts/share/67861b7b7f77faf97fd20fd75bbc065d/
+
+Function comparison - Recursive closure:
+
+https://py.checkio.org/mission/comp-funcs/publications/ogoro/python-3/recursive-closure/share/3405c6f274fd41b62834bc0bd9ad52bb/
+
+EAN-13 Barcode Reader:
+
+https://py.checkio.org/mission/barcode-reader/publications/ogoro/python-3/reversed/share/6e17c2c0f10b5659bcca4079db14352b/
+
+<br>
+
+### All solutions:
+
+https://py.checkio.org/user/ogoro/solutions/share/d98d8b1c3af7f68cbcdc6b5766f6f9f5/
+
+<br>
 
 #### General
 
@@ -69,9 +120,6 @@ https://py.checkio.org/mission/simplify-unix-path/publications/ogoro/python-3/di
 URL normalization:
 
 https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/reduce/share/5a447356b8e035272dcdbf8151254eab/
-
-URL normalization - Re.sub:
-
 https://py.checkio.org/mission/url-normalization/publications/ogoro/python-3/re-sub/share/2f3cb39ca9c9fd858ef8cf0ec724dbd4/
 
 ADFGVX Cipher:
@@ -292,7 +340,6 @@ https://py.checkio.org/mission/area-of-a-convex-polygon/publications/ogoro/pytho
 Image recognition - Code distance:
 
 https://py.checkio.org/mission/mono-captcha/publications/ogoro/python-3/code-distance/share/0e0a2cc357ec5b61284ea6f47ad20b95/
-
 Image recognition - Pattern models and BFS:
 
 https://py.checkio.org/mission/bacteria-colonies/publications/ogoro/python-3/pattern-model-bfs/share/e78470cc0111f6a6b2939aa69ace6aff/
@@ -319,6 +366,3 @@ https://py.checkio.org/mission/humpty-dumpty/publications/ogoro/python-3/wiki/sh
 
 <br>
 
-### All solutions:
-
-https://py.checkio.org/user/ogoro/solutions/share/d98d8b1c3af7f68cbcdc6b5766f6f9f5/
