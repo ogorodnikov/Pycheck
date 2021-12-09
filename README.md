@@ -248,6 +248,7 @@ https://py.checkio.org/mission/area-of-a-convex-polygon/publications/ogoro/pytho
 Image recognition - Code distance:
 
 https://py.checkio.org/mission/mono-captcha/publications/ogoro/python-3/code-distance/share/0e0a2cc357ec5b61284ea6f47ad20b95/
+
 Image recognition - Pattern models and BFS:
 
 https://py.checkio.org/mission/bacteria-colonies/publications/ogoro/python-3/pattern-model-bfs/share/e78470cc0111f6a6b2939aa69ace6aff/
